@@ -137,19 +137,20 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
                 <span>100%</span>
             </div>
         </div>
-        <div class="action-buttons" style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+        <div class="action-buttons" style="flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 20px;">
             <!-- Examen Inicial Button -->
-            <button onclick="window.location.href='<?php echo esc_url($first_quiz_url); ?>'" class="button exam-inicial-btn" style="background-color: #2196f3; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+            <button onclick="window.location.href='<?php echo esc_url($first_quiz_url); ?>'" 
+                    class="button exam-inicial-btn" 
+                    style="flex: 1; background-color: #2196f3; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer; text-align: center;">
                 Examen Inicial
             </button>
 
             <!-- Comprar Curso Button -->
-            <div class="buy-button" style="flex: 1; width: 50%; text-align: right;">
-                <button style="width: 80%; background-color: #4c8bf5; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;"
-                        onclick="window.location.href='<?php echo esc_url(get_permalink($product_id)); ?>'">
-                    Comprar Curso
-                </button>
-            </div>
+            <button onclick="window.location.href='<?php echo esc_url(get_permalink($product_id)); ?>'" 
+                    class="button buy-button" 
+                    style="flex: 1; background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer; text-align: center;">
+                Comprar Curso
+            </button>
         </div>
     </div>
     <?php

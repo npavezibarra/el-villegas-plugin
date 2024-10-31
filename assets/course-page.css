@@ -250,3 +250,18 @@ div#autor-box {
     border-radius: 3px;
     vertical-align: 3px;
 }
+
+button.button.exam-inicial-btn {
+    border: 0px;
+}
+
+button.button.buy-button {
+    border: 0px;
+}
+
+/* Media query for screen widths below 1318px */
+@media (max-width: 1318px) {
+    #body-content {
+        border-radius: 0px; /* Set border radius to 0px on smaller screens */
+    }
+}
