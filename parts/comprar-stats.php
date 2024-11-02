@@ -139,11 +139,19 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
         </div>
         <div class="action-buttons" style="flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 20px;">
             <!-- Examen Inicial Button -->
+            <?php
+                // Check quiz attempts and display result
+                list($has_completed_quiz, $percentage_correct) = get_latest_quiz_percentage($user_id, $first_quiz_id);
+                if ($has_completed_quiz) {
+                    echo "<strong>$percentage_correct%</strong>"; // Show percentage
+                    echo '<p id="primer-test-legend">Primer Test</p>';
+                } else { ?>
             <button onclick="window.location.href='<?php echo esc_url($first_quiz_url); ?>'" 
                     class="button exam-inicial-btn" 
                     style="flex: 1; background-color: #2196f3; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer; text-align: center;">
                 Examen Inicial
-            </button>
+            </button> 
+            <?php } ?>
 
             <!-- Comprar Curso Button -->
             <button onclick="window.location.href='<?php echo esc_url(get_permalink($product_id)); ?>'" 

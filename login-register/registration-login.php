@@ -1,4 +1,5 @@
 <?php
+
 function villegas_registration_login_shortcode() {
     // Enqueue CSS and JavaScript files
     wp_enqueue_style('ingresa-roma-css', plugins_url('assets/ingresa-roma.css', __FILE__));
@@ -18,16 +19,25 @@ function villegas_registration_login_shortcode() {
 
     // Handle registration
     if (isset($_POST['action']) && $_POST['action'] === 'register') {
-        $username = sanitize_user($_POST['username']);
+        $first_name = sanitize_text_field($_POST['first_name']);
+        $last_name = sanitize_text_field($_POST['last_name']);
         $password = $_POST['password'];
         $email = sanitize_email($_POST['email']);
         
+        // Generate a unique username based on email or first and last names
+        $username = sanitize_user($first_name . $last_name);
+        if (username_exists($username)) {
+            $username = sanitize_user($first_name . '.' . $last_name . rand(1000, 9999)); // Add random number if username exists
+        }
+
         // Register user
         $userdata = array(
             'user_login' => $username,
             'user_pass' => $password,
             'user_email' => $email,
-            'role' => 'pending' // Set role to 'pending' for unconfirmed users
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'role' => 'subscriber' // Set role to 'subscriber' for new users
         );
         $user_id = wp_insert_user($userdata);
         
@@ -85,7 +95,12 @@ function villegas_registration_login_shortcode() {
         echo '<div id="mensaje-registro" style="text-align: center; padding: 80px 0px;">';
         echo '<h3>Registro exitoso.</h3>';
         echo '<p>Por favor revisa tu correo para confirmar tu cuenta.</p>';
-        echo '<a href="' . esc_url(home_url('/la-republica-romana')) . '" class="button">Ir al curso</a>'; // Adjust to your course URL
+        
+        // Adjusted to display as a button
+        echo '<button onclick="window.location.href=\'' . esc_url(home_url('/la-republica-romana')) . '\'" class="button" style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;">';
+        echo 'Ir al curso';
+        echo '</button>';
+        
         echo '</div>';
     } else {
         // Display the login and registration forms if registration was not successful
@@ -107,7 +122,8 @@ function villegas_registration_login_shortcode() {
                 <form method="POST" id="registration-form" style="display:none;">
                     <h2 id="form-title-register">Registro</h2>
                     <p id="form-subtitle-register">Si ya tienes cuenta, <a href="#" id="toggle-form-login">inicia sesión aquí</a></p>
-                    <input type="text" name="username" placeholder="Nombre de usuario" required id="register-username">
+                    <input type="text" name="first_name" placeholder="Nombre" required id="register-first-name">
+                    <input type="text" name="last_name" placeholder="Apellido" required id="register-last-name">
                     <input type="email" name="email" placeholder="Correo electrónico" required id="register-email">
                     <input type="password" name="password" placeholder="Contraseña" required id="register-password">
                     <input type="hidden" name="action" value="register">

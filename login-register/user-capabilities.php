@@ -1,15 +1,16 @@
 <?php
-// user-capabilities.php
-add_action('init', 'restrict_non_confirmed_user_capabilities');
 
-function restrict_non_confirmed_user_capabilities() {
-    if (is_user_logged_in()) {
-        $current_user = wp_get_current_user();
-        if (in_array('pending', $current_user->roles)) {
-            // Quitar capacidades
-            $current_user->remove_cap('edit_posts');
-            $current_user->remove_cap('comment'); // Si has habilitado capacidades de comentario
-        }
+function allow_no_role_users_access_quiz( $has_access, $post_id, $user_id ) {
+    // Get the user's role(s)
+    $user = get_userdata( $user_id );
+    $user_roles = (array) $user->roles;
+
+    // Check if the user has no roles (empty roles array) and is logged in
+    if ( empty( $user_roles ) && is_user_logged_in() ) {
+        // Allow access to the quiz for users with "None" role
+        $has_access = true;
     }
+    
+    return $has_access;
 }
-?>
+add_filter( 'learndash_is_course_accessable', 'allow_no_role_users_access_quiz', 10, 3 );

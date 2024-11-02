@@ -34,6 +34,7 @@ add_action( 'wp_enqueue_scripts', 'my_custom_ld_course_styles' );
     wp_enqueue_script('form-toggle-js', plugins_url('login-register/form-toggle.js', __FILE__), array('jquery'), null, true);
 // Incluir metabox personalizado
 include_once 'learndash-course-metabox.php';
+include_once 'functions.php';
 include plugin_dir_path( __FILE__ ) . 'parts/comprar-stats.php';
 include_once plugin_dir_path( __FILE__ ) . 'metabox-course-first-quiz.php';
 include_once plugin_dir_path(__FILE__) . 'user-profile-photo.php';
