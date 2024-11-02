@@ -278,77 +278,71 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$quiz_view->showAddToplist();
 	}
 	?>
+	<!--BOTONES DESPUeES DEL QUIZ   -->
 	<div class="ld-quiz-actions" style="margin: 10px 0px;">
-		<?php
-			/**
-			 *  See snippet https://developers.learndash.com/hook/show_quiz_continue_buttom_on_fail/
-			 *
-			 * @since 2.3.0.2
-			 */
-			$show_quiz_continue_buttom_on_fail = apply_filters( 'show_quiz_continue_buttom_on_fail', false, learndash_get_quiz_id_by_pro_quiz_id( $quiz->getId() ) );
-		?>
-		<div class='quiz_continue_link
-		<?php
-		if ( $show_quiz_continue_buttom_on_fail == true ) {
-			echo ' show_quiz_continue_buttom_on_fail'; }
-		?>
-		'>
+	<?php
+		// Step 1: Get the current quiz ID
+		$quiz_id = get_the_ID();
 
-		</div>
-		<?php if ( ! $quiz->isBtnRestartQuizHidden() ) { ?>
-			<input class="wpProQuiz_button wpProQuiz_button_restartQuiz" type="button" name="restartQuiz"
-					value="<?php // phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentBeforeOpen,Squiz.PHP.EmbeddedPhp.ContentAfterOpen
-						echo wp_kses_post(
-							SFWD_LMS::get_template(
-								'learndash_quiz_messages',
-								array(
-									'quiz_post_id' => $quiz->getID(),
-									'context'      => 'quiz_restart_button_label',
-									'message'      => sprintf(
-										// translators: Restart Quiz Button Label.
-										esc_html_x( 'Restart %s', 'Restart Quiz Button Label', 'learndash' ),
-										LearnDash_Custom_Label::get_label( 'quiz' )
-									),
-								)
-							)
-						); // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect
-							?>"/><?php // phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentAfterEnd ?>
-			<?php
+		// Step 2: Query for the course that has this quiz as its first quiz
+		$args = array(
+			'post_type' => 'sfwd-courses',
+			'meta_query' => array(
+				array(
+					'key' => '_first_quiz_id',
+					'value' => $quiz_id,
+					'compare' => '='
+				)
+			),
+			'posts_per_page' => 1
+		);
+
+		$courses = get_posts($args);
+		$course_id = !empty($courses) ? $courses[0]->ID : null;
+
+		// Step 3: Get the course URL if a course is found
+		if ($course_id) {
+			$course_url = get_permalink($course_id);
+		} else {
+			$course_url = ''; // Empty URL if no course is found
 		}
-		if ( ! $quiz->isBtnViewQuestionHidden() ) {
-			?>
-			<input class="wpProQuiz_button wpProQuiz_button_reShowQuestion" type="button" name="reShowQuestion"
-					value="<?php // phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentBeforeOpen,Squiz.PHP.EmbeddedPhp.ContentAfterOpen
-						echo wp_kses_post(
-							SFWD_LMS::get_template(
-								'learndash_quiz_messages',
-								array(
-									'quiz_post_id' => $quiz->getID(),
-									'context'      => 'quiz_view_questions_button_label',
-									'message'      => sprintf(
-										// translators: View Questions Button Label.
-										esc_html_x( 'View %s', 'View Questions Button Label', 'learndash' ),
-										LearnDash_Custom_Label::get_label( 'questions' )
-									),
-								)
-							)
-						); // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect
-							?>" /><?php // phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentAfterEnd ?>
-		<?php } ?>
-		<?php if ( $quiz->isToplistActivated() && $quiz->getToplistDataShowIn() == WpProQuiz_Model_Quiz::QUIZ_TOPLIST_SHOW_IN_BUTTON ) { ?>
-			<input class="wpProQuiz_button" type="button" name="showToplist"
-			value="<?php // phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentBeforeOpen,Squiz.PHP.EmbeddedPhp.ContentAfterOpen
-				echo wp_kses_post(
-					SFWD_LMS::get_template(
-						'learndash_quiz_messages',
-						array(
-							'quiz_post_id' => $quiz->getID(),
-							'context'      => 'quiz_show_leaderboard_button_label',
-							'message'      => esc_html__( 'Show leaderboard', 'learndash' ),
-						)
-					)
-				); // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect
-					?>" /><?php // phpcs:ignore Squiz.PHP.EmbeddedPhp.ContentAfterEnd ?>
-		<?php } ?>
-	</div>
+
+		// Step 4: Retrieve WooCommerce product ID associated with this course, if any
+		$product_id = get_post_meta($course_id, '_wc_product_id', true);
+
+		// If no product ID found, look up with meta query
+		if (empty($product_id)) {
+			$args = array(
+				'post_type' => 'product',
+				'meta_query' => array(
+					array(
+						'key' => '_related_course',
+						'value' => $course_id,
+						'compare' => 'LIKE',
+					),
+				),
+				'posts_per_page' => 1,
+			);
+			$products = get_posts($args);
+			if (!empty($products)) {
+				$product_id = $products[0]->ID;
+			}
+		}
+
+		// Generate the product URL for "Comprar Curso"
+		$product_url = get_permalink($product_id);
+
+		// Display both buttons for testing
+		?>
+		<button onclick="window.location.href='<?php echo esc_url($course_url); ?>'" class="button go-to-course-btn" style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+			Ir al Curso
+		</button>
+
+		<button onclick="window.location.href='<?php echo esc_url($product_url); ?>'" class="button buy-course-btn" style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+			Comprar Curso
+		</button>
+	<?php
+	?>
+</div>
+
 </div>
