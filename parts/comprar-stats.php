@@ -78,7 +78,6 @@ function mostrar_comprar_stats() {
     $percentage_complete = ($total_lessons > 0) ? min(100, ($completed_lessons / $total_lessons) * 100) : 0;
 
     // Display the appropriate buttons based on login and enrollment status
-// Display the appropriate buttons based on login and enrollment status
 if (!is_user_logged_in()) {
     // User not logged in
     ?>
@@ -112,11 +111,10 @@ function get_ingresa_roma_url() {
 $register_page_url = get_ingresa_roma_url();
 
 // Debugging: Print the URL to check if it's set correctly
-echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
+echo '';
 
 ?>
 
-<!-- Button with dynamic redirection to the 'Ingresa Roma' page -->
 <button style="width: 100%; background-color: #4c8bf5; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;"
         onclick="window.location.href='<?php echo esc_url($register_page_url . '?redirect_to=' . urlencode(get_permalink())); ?>'">
     Iniciar Sesión
@@ -138,7 +136,6 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
             </div>
         </div>
         <div class="action-buttons" style="flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 20px;">
-            <!-- Examen Inicial Button -->
             <?php
                 // Check quiz attempts and display result
                 list($has_completed_quiz, $percentage_correct) = get_latest_quiz_percentage($user_id, $first_quiz_id);
@@ -153,9 +150,8 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
             </button> 
             <?php } ?>
 
-            <!-- Comprar Curso Button -->
-            <button onclick="window.location.href='<?php echo esc_url(get_permalink($product_id)); ?>'" 
-                    class="button buy-button" 
+            <button onclick="window.location.href='<?php echo esc_url(get_permalink($product_id)); ?>'"
+            class="button buy-button" 
                     style="flex: 1; background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer; text-align: center;">
                 Comprar Curso
             </button>
@@ -176,20 +172,21 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
             </div>
         </div>
         <div class="test-buttons" style="flex: 1; text-align: right; display: flex; gap: 20px;">
-            <!-- Quiz Percentage Display -->
-            <div id="primer-test-score" style="display: flex; width: 50%; justify-content: center; align-items: center;">
+            <div id="primer-test-score" class="quiz-score-display" style="width: 50%;">
                 <?php
                 // Check quiz attempts and display result
                 list($has_completed_quiz, $percentage_correct) = get_latest_quiz_percentage($user_id, $first_quiz_id);
                 if ($has_completed_quiz) {
+                    // Instead of just showing the percentage, now we show a styled result
+                    echo '<div class="quiz-result" style="background-color: #e0e0e0; border-radius: 5px; text-align: center;">';
                     echo "<strong>$percentage_correct%</strong>"; // Show percentage
                     echo '<p id="primer-test-legend">Primer Test</p>';
+                    echo '</div>'; // Closing the quiz-result div
                 } else {
                     echo '<button onclick="window.location.href=\'' . esc_url($first_quiz_url) . '\'" style="width: auto; color: white; border: none; width: 100%; height: auto; background: #2196f3; padding: 10px 0px; border-radius: 5px; font-size: 14px; text-align: center;">Examen Inicial</button>';
                 }
                 ?>
             </div>
-            <!-- Button with Tooltip for "Evaluación Final" -->
             <div id="final-test-button" class="tooltip" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <?php
 
@@ -201,8 +198,9 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
                     'posts_per_page' => -1,
                 ));
 
-                // Initialize final quiz URL
+                // Initialize final quiz URL and ID
                 $final_quiz_url = '';
+                $final_quiz_id = null; // Initialize the final quiz ID
 
                 if ($quiz_query->have_posts()) {
                     while ($quiz_query->have_posts()) {
@@ -210,6 +208,7 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
                         // Search for the quiz named 'Examen Final' (adjust if necessary)
                         if (stripos(get_the_title(), 'Examen Final') !== false) {
                             $final_quiz_url = get_permalink(); // Get the permalink of the final quiz
+                            $final_quiz_id = get_the_ID(); // Get the ID of the final quiz
                             break; // Break once we find the desired quiz
                         }
                     }
@@ -217,7 +216,7 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
 
                 wp_reset_postdata(); // Always reset the post data after querying
 
-                // Check quiz attempts for the final exam
+                // Check quiz attempts for the final exam (now using $final_quiz_id)
                 list($has_completed_final_quiz, $final_percentage_correct) = get_latest_quiz_percentage($user_id, $final_quiz_id);
 
                 // Get the total number of lessons and completed lessons
@@ -227,10 +226,12 @@ echo '<!-- Debug: Ingresa Roma URL: ' . esc_url($register_page_url) . ' -->';
                 // Check if all lessons are completed
                 if ($completed_lessons === $total_lessons && !empty($final_quiz_url)) {
                     // All lessons completed, show clickable button linking to the final quiz
-                    echo '<button onclick="window.location.href=\'' . esc_url($final_quiz_url) . '\'" style="width: 100%; background-color: #4c8bf5; color: white; border: none; padding: 10px 0px; border-radius: 5px; font-size: 14px;">Examen Final</button>';
+                    echo '<button onclick="window.location.href=\'' . esc_url($final_quiz_url) . '\'" style="width: 100%; background-color: #4c8bf5; color: white; border: none; padding: 10px 0px; border-radius: 5px; font-size: 12px;">Examen Final</button>';
                 } elseif ($has_completed_final_quiz) {
-                    // Show the percentage if the final quiz has been completed
-                    echo "<strong>$final_percentage_correct%</strong><p>Examen Final</p>";
+                    // Show the percentage in a styled container if the final quiz has been completed
+                    echo '<div class="quiz-result" style="background-color: #e0e0e0; border-radius: 5px; text-align: center;">';
+                    echo "<strong>$final_percentage_correct%</strong><p style='font-size: 9px;'>Examen Final</p>";
+                    echo '</div>'; // Closing the quiz-result div
                 } else {
                     // Not completed, show disabled button
                     echo '<button id="final-evaluation-button" style="width: 100%; background-color: #ccc; color: #333; border: none; padding: 10px 0px; border-radius: 5px; font-size: 14px; cursor: not-allowed; display: flex; align-items: center; justify-content: center;">

@@ -22,6 +22,7 @@ add_filter( 'template_include', 'my_custom_ld_course_template' );
 function my_custom_ld_course_styles() {
     wp_enqueue_style( 'my-course-page-style', plugin_dir_url( __FILE__ ) . 'assets/course-page.css', array(), '1.0', 'all' );
     wp_enqueue_style('ingresa-roma-css', plugins_url('assets/ingresa-roma.css', __FILE__));
+    wp_enqueue_style('comprar-stats-css', plugins_url('assets/comprar-stats.css', __FILE__));
     wp_enqueue_script('form-toggle-js', plugins_url('login-register/form-toggle.js', __FILE__), array('jquery'), null, true);
 }
 add_action( 'wp_enqueue_scripts', 'my_custom_ld_course_styles' );

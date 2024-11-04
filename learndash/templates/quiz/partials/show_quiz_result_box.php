@@ -278,71 +278,82 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$quiz_view->showAddToplist();
 	}
 	?>
-	<!--BOTONES DESPUeES DEL QUIZ   -->
+	
 	<div class="ld-quiz-actions" style="margin: 10px 0px;">
-	<?php
-		// Step 1: Get the current quiz ID
-		$quiz_id = get_the_ID();
+    <?php
+        // Step 1: Get the current quiz ID
+        $quiz_id = get_the_ID();
 
-		// Step 2: Query for the course that has this quiz as its first quiz
-		$args = array(
-			'post_type' => 'sfwd-courses',
-			'meta_query' => array(
-				array(
-					'key' => '_first_quiz_id',
-					'value' => $quiz_id,
-					'compare' => '='
-				)
-			),
-			'posts_per_page' => 1
-		);
+        // Step 2: Check if the quiz is the "First Quiz" for any course
+        $args = array(
+            'post_type' => 'sfwd-courses',
+            'meta_query' => array(
+                array(
+                    'key' => '_first_quiz_id',
+                    'value' => $quiz_id,
+                    'compare' => '='
+                )
+            ),
+            'posts_per_page' => 1
+        );
 
-		$courses = get_posts($args);
-		$course_id = !empty($courses) ? $courses[0]->ID : null;
+        $courses = get_posts($args);
+        $course_id = !empty($courses) ? $courses[0]->ID : null;
 
-		// Step 3: Get the course URL if a course is found
-		if ($course_id) {
-			$course_url = get_permalink($course_id);
-		} else {
-			$course_url = ''; // Empty URL if no course is found
-		}
+        // Step 3: Determine if this quiz is a "First Quiz" or "Final Quiz"
+        $is_first_quiz = !empty($course_id);
 
-		// Step 4: Retrieve WooCommerce product ID associated with this course, if any
-		$product_id = get_post_meta($course_id, '_wc_product_id', true);
+        // If it's not the First Quiz, check if it belongs to a course as a Final Quiz
+        if (!$is_first_quiz) {
+            $course_id = learndash_get_course_id($quiz_id); // Get the course ID linked to this quiz if it’s a Final Quiz
+            $is_final_quiz = !empty($course_id); // Assume it's the Final Quiz if associated with a course
+        }
 
-		// If no product ID found, look up with meta query
-		if (empty($product_id)) {
-			$args = array(
-				'post_type' => 'product',
-				'meta_query' => array(
-					array(
-						'key' => '_related_course',
-						'value' => $course_id,
-						'compare' => 'LIKE',
-					),
-				),
-				'posts_per_page' => 1,
-			);
-			$products = get_posts($args);
-			if (!empty($products)) {
-				$product_id = $products[0]->ID;
-			}
-		}
+        // If a course is found, get its URL
+        $course_url = $course_id ? get_permalink($course_id) : '';
 
-		// Generate the product URL for "Comprar Curso"
-		$product_url = get_permalink($product_id);
+        // Step 4: Retrieve the WooCommerce product ID associated with this course, if any
+        $product_id = get_post_meta($course_id, '_linked_woocommerce_product', true);
 
-		// Display both buttons for testing
-		?>
-		<button onclick="window.location.href='<?php echo esc_url($course_url); ?>'" class="button go-to-course-btn" style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-			Ir al Curso
-		</button>
+        // If no product ID is found, look up with meta query on the product itself
+        if (empty($product_id)) {
+            $args = array(
+                'post_type' => 'product',
+                'meta_query' => array(
+                    array(
+                        'key' => '_related_course',
+                        'value' => $course_id,
+                        'compare' => 'LIKE',
+                    ),
+                ),
+                'posts_per_page' => 1,
+            );
+            $products = get_posts($args);
+            if (!empty($products)) {
+                $product_id = $products[0]->ID;
+            }
+        }
 
-		<button onclick="window.location.href='<?php echo esc_url($product_url); ?>'" class="button buy-course-btn" style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-			Comprar Curso
-		</button>
-	<?php
-	?>
+        // Generate the product URL for "Comprar Curso"
+        $product_url = get_permalink($product_id);
+
+        // Step 5: Check if the current user has purchased the associated product
+        if (wc_customer_bought_product('', get_current_user_id(), $product_id)) {
+            // If the course is purchased, show "Ir al Curso"
+            ?>
+            <button onclick="window.location.href='<?php echo esc_url($course_url); ?>'" class="button go-to-course-btn" style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Ir al Curso
+            </button>
+            <?php
+        } else {
+            // If the course is not purchased, show "Comprar Curso"
+            ?>
+            <button onclick="window.location.href='<?php echo esc_url($product_url); ?>'" class="button buy-course-btn" style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Comprar Curso
+            </button>
+            <?php
+        }
+    ?>
 </div>
 
 </div>

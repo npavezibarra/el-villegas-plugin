@@ -47,11 +47,79 @@ function villegas_registration_login_shortcode() {
             update_user_meta($user_id, 'confirmation_code', $confirmation_code);
 
             // Send confirmation email
-            $to = $email;
-            $subject = 'Confirma tu cuenta';
-            $message = 'Por favor, confirma tu cuenta haciendo clic en el siguiente enlace: ' . 
-                       home_url('/?confirm=' . $confirmation_code . '&user=' . $user_id);
-            wp_mail($to, $subject, $message);
+$to = $email;
+$subject = 'Confirma tu cuenta';
+
+// Define the confirmation link
+$confirmation_link = home_url('/?confirm=' . $confirmation_code . '&user=' . $user_id);
+
+// Set the HTML content for the email
+$message = '
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirma tu cuenta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        h2 {
+            color: #4c8bf5;
+            text-align: center;
+        }
+        p {
+            text-align: center;
+            font-size: 16px;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .button {
+            padding: 12px 24px;
+            background-color: #4c8bf5;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #357ae8;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h2>¡Te has registrado en Tienda El Villegas!</h2>
+        <p>Para verificar que realmente quisiste registrarte, haz click en el botón de abajo:</p>
+        <div class="button-container">
+            <a href="' . esc_url($confirmation_link) . '" class="button">CONFIRMAR</a>
+        </div>
+        <p>Si no te registraste, puedes ignorar este mensaje.</p>
+    </div>
+</body>
+</html>';
+
+// Set the Content-Type header to send HTML email
+$headers = array('Content-Type: text/html; charset=UTF-8');
+
+// Send the email
+wp_mail($to, $subject, $message, $headers);
+
 
             // Automatically log in the user
             $creds = array(
