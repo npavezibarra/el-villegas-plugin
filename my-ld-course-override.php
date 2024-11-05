@@ -18,6 +18,16 @@ function my_custom_ld_course_template( $template ) {
 }
 add_filter( 'template_include', 'my_custom_ld_course_template' );
 
+function enqueue_ingresa_roma_assets() {
+    // Check if we are on the specific page where these assets are needed.
+    if (is_page('ingresa-roma')) { // Replace 'ingresa-roma' with your page slug or ID if necessary
+        wp_enqueue_style('ingresa-roma-css', plugin_dir_url(__FILE__) . 'assets/ingresa-roma.css');
+        wp_enqueue_script('form-toggle-js', plugin_dir_url(__FILE__) . 'assets/ingresa-roma.js', array('jquery'), null, true);
+    }
+}
+add_action('wp_enqueue_scripts', 'enqueue_ingresa_roma_assets');
+
+
 // Encolar estilo de Course Page
 function my_custom_ld_course_styles() {
     wp_enqueue_style( 'my-course-page-style', plugin_dir_url( __FILE__ ) . 'assets/course-page.css', array(), '1.0', 'all' );
@@ -115,6 +125,10 @@ require_once plugin_dir_path(__FILE__) . 'login-register/email-confirmation.php'
 require_once plugin_dir_path(__FILE__) . 'login-register/user-capabilities.php';
 
 
+require_once plugin_dir_path(__FILE__) . 'woo-transaction/helpers.php';
+require_once plugin_dir_path(__FILE__) . 'woo-transaction/email-customization.php';
+require_once plugin_dir_path(__FILE__) . 'woo-transaction/order-confirmation-page.php';
+
 
 
 /**
@@ -125,4 +139,38 @@ add_action('wp_footer', 'insert_div_before_entry_content');
 // Register the shortcode for the registration/login functionality
 add_shortcode('villegas_registration_login', 'villegas_registration_login_shortcode');
 
-?>
+
+add_filter('woocommerce_locate_template', 'villegas_override_woocommerce_template', 10, 3);
+
+function villegas_override_woocommerce_template($template, $template_name, $template_path) {
+    $plugin_path = plugin_dir_path(__FILE__) . 'woocommerce/';
+
+    // Check if the requested template exists in your plugin's WooCommerce folder
+    if (file_exists($plugin_path . $template_name)) {
+        $template = $plugin_path . $template_name;
+    }
+
+    return $template;
+}
+
+/* ENQUE BLOCK FILES */
+
+// el-villegas-plugin.php
+
+function el_villegas_load_blocks() {
+    require_once plugin_dir_path(__FILE__) . 'blocks/course-link-block.php';
+    el_villegas_register_course_link_block();
+}
+add_action('init', 'el_villegas_load_blocks');
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,18 +1,23 @@
 <?php
 
-function allow_pending_role_users_access_quiz( $has_access, $post_id, $user_id ) {
-    // Get the user's role(s)
-    $user = get_userdata( $user_id );
-    $user_roles = (array) $user->roles;
+// Add course slug to body class on lesson pages
+function add_course_slug_to_body_class($classes) {
+    if (is_singular('sfwd-lessons')) { // Check if we're on a lesson page
+        global $post;
 
-    // Check if the user has the 'pending' role and is logged in
-    if ( in_array( 'pending', $user_roles ) && is_user_logged_in() ) {
-        // Allow access to the quiz for users with 'pending' role
-        $has_access = true;
+        // Get the course ID associated with the lesson
+        $course_id = learndash_get_course_id($post->ID);
+
+        // Retrieve the course slug
+        if ($course_id) {
+            $course = get_post($course_id);
+            if ($course) {
+                $course_slug = $course->post_name;
+                $classes[] = $course_slug; // Add course slug to the body classes
+            }
+        }
     }
-    
-    return $has_access;
+    return $classes;
 }
-add_filter( 'learndash_is_course_accessable', 'allow_pending_role_users_access_quiz', 10, 3 );
-
+add_filter('body_class', 'add_course_slug_to_body_class');
 

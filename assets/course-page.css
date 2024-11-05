@@ -132,7 +132,7 @@ div#buy-button-stats {
     height: 70px;
     margin: auto;
     margin-top: 30px;
-    margin-bottom: 60px;
+    margin-bottom: 0px;
     border-radius: 8px;
 }
 
@@ -349,4 +349,23 @@ button.button.buy-button {
         max-width: 100%;
         padding: 30px 60px;
     }
+}
+
+/*  TITULO LESSON PAGE */
+
+.la-republica-romana > div > main > div {
+    padding-top: 20px !important;
+}
+
+
+/* LESSON PAGE */
+
+.ld-content-action {
+    border: 1px solid black;
+    color: black;
+    border-radius: 3px;
+}
+
+.ld-content-action > a > span {
+    color: black;
 }
