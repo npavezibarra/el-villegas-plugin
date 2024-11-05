@@ -115,8 +115,6 @@ require_once plugin_dir_path(__FILE__) . 'login-register/email-confirmation.php'
 require_once plugin_dir_path(__FILE__) . 'login-register/user-capabilities.php';
 
 
-
-
 /**
  * Hook into 'wp_footer' to dynamically add the new div before entry content.
  */
@@ -125,4 +123,5 @@ add_action('wp_footer', 'insert_div_before_entry_content');
 // Register the shortcode for the registration/login functionality
 add_shortcode('villegas_registration_login', 'villegas_registration_login_shortcode');
 
-?>
+
+

@@ -15,4 +15,40 @@ function allow_pending_role_users_access_quiz( $has_access, $post_id, $user_id )
 }
 add_filter( 'learndash_is_course_accessable', 'allow_pending_role_users_access_quiz', 10, 3 );
 
+// Add a button "Ir al Curso" after the product name on the order-received page
+add_action('woocommerce_order_item_meta_end', 'add_course_button_after_product_name', 10, 3);
+
+function add_course_button_after_product_name($item_id, $item, $order) {
+    // Get the product ID from the order item
+    $product_id = $item->get_product_id();
+
+    // Retrieve the course ID associated with this product
+    $course_meta = get_post_meta($product_id, '_related_course', true);
+
+    // Check if course_meta is serialized
+    if (is_serialized($course_meta)) {
+        $course_meta = unserialize($course_meta);
+    }
+
+    // If course_meta is an array, get the first item (assuming one course)
+    if (is_array($course_meta) && isset($course_meta[0])) {
+        $course_id = $course_meta[0];
+    } else {
+        $course_id = $course_meta;
+    }
+
+    // Check if a valid course ID was retrieved
+    if (!empty($course_id) && is_numeric($course_id)) {
+        // Generate the course URL
+        $course_url = get_permalink($course_id);
+
+        // Display the button with the course URL
+        echo '<a href="' . esc_url($course_url) . '" class="button" style="display: inline-block; margin-top: 10px; padding: 5px 10px; background-color: #0071a1; color: #fff; text-decoration: none; border-radius: 3px;">Ir al Curso</a>';
+    } else {
+        // Debugging message in case the course ID isn't found
+        echo '<p style="color: red;">No associated course found for Product ID: ' . esc_html($product_id) . '</p>';
+    }
+}
+
+
 
