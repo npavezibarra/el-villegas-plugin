@@ -2,8 +2,7 @@
 
 function villegas_registration_login_shortcode() {
     // Enqueue CSS and JavaScript files
-    wp_enqueue_style('ingresa-roma-css', plugins_url('assets/ingresa-roma.css', __FILE__));
-    wp_enqueue_script('form-toggle-js', plugins_url('login-register/form-toggle.js', __FILE__), array('jquery'), null, true);
+    
     
     ob_start();
 

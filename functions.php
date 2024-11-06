@@ -37,18 +37,26 @@ function add_course_button_after_product_name($item_id, $item, $order) {
         $course_id = $course_meta;
     }
 
-    // Check if a valid course ID was retrieved
+    // Check if a valid course ID was retrieved and generate the button if it exists
     if (!empty($course_id) && is_numeric($course_id)) {
         // Generate the course URL
         $course_url = get_permalink($course_id);
 
         // Display the button with the course URL
-        echo '<a href="' . esc_url($course_url) . '" class="button" style="display: inline-block; margin-top: 10px; padding: 5px 10px; background-color: #0071a1; color: #fff; text-decoration: none; border-radius: 3px;">Ir al Curso</a>';
-    } else {
-        // Debugging message in case the course ID isn't found
-        echo '<p style="color: red;">No associated course found for Product ID: ' . esc_html($product_id) . '</p>';
+        echo '<br><a href="' . esc_url($course_url) . '" class="button" style="display: inline-block; margin-top: 10px; padding: 5px 10px; background-color: black; color: #fff; text-decoration: none; border-radius: 3px; font-size: 12px;">Ir al Curso</a>';
     }
 }
+
+
+add_filter('the_title', 'custom_learndash_lesson_title', 10, 2);
+function custom_learndash_lesson_title($title, $post_id) {
+    if (is_singular('sfwd-lessons') && in_the_loop()) {
+        $title = '📘 ' . $title; // Example modification: adding an icon
+    }
+    return $title;
+}
+
+
 
 
 

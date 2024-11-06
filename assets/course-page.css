@@ -350,3 +350,22 @@ button.button.buy-button {
         padding: 30px 60px;
     }
 }
+
+.sfwd-lessons-template-default>div>main>div {
+    padding-top: 30px !important;
+}
+
+@media (max-width: 970px) {
+    .course-outline ul li:last-child {
+        border-bottom: 0px !important;
+    }
+
+    .course-outline > ul {
+        margin-bottom: 0;
+        border-bottom: none;
+        margin-top: 0px;
+        border: 1px solid #c0bebe;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+}
