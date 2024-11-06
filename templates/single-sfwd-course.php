@@ -1,5 +1,12 @@
+<!-- templates/header.php -->
 <?php
-get_header(); ?>
+?><!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+    <meta charset="<?php bloginfo('charset'); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php wp_head(); ?>
+</head>
 <style>
     html {
     margin-top: 0px !important;
@@ -49,11 +56,7 @@ get_header(); ?>
     ?>
 </div>
 
-
-
-
-<div id="body-content" 
-    style="background-image: url(<?php 
+<div id="body-content" style="background-image: url(<?php 
         // Verificar si el post tiene una imagen destacada.
         if (has_post_thumbnail()) {
             // Obtener la URL de la imagen destacada.
