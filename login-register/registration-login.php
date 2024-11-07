@@ -1,9 +1,6 @@
 <?php
 
 function villegas_registration_login_shortcode() {
-    // Enqueue CSS and JavaScript files
-    
-    
     ob_start();
 
     // Check if the user is already logged in
