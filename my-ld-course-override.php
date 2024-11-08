@@ -24,6 +24,7 @@ function my_custom_ld_course_styles() {
     wp_enqueue_style('my-course-page-style', plugin_dir_url(__FILE__) . 'assets/course-page.css', [], '1.0', 'all');
     wp_enqueue_style('ingresa-roma-css', plugin_dir_url(__FILE__) . 'assets/ingresa-roma.css', [], '1.0', 'all');
     wp_enqueue_style('comprar-stats-css', plugin_dir_url(__FILE__) . 'assets/comprar-stats.css', [], '1.0', 'all');
+    wp_enqueue_style('my-account-css', plugin_dir_url(__FILE__) . 'assets/my-account.css', [], '1.0', 'all');
     wp_enqueue_style('login-form-styles', plugin_dir_url(__FILE__) . 'login/login-form-styles.css', [], '1.0', 'all');
 
     // Verificar si el shortcode [login_register_form] está presente en la página
@@ -46,7 +47,6 @@ require_once plugin_dir_path(__FILE__) . 'woo-tabs.php';
 require_once plugin_dir_path(__FILE__) . 'login/shortcode-login-register.php';
 require_once plugin_dir_path(__FILE__) . 'login/email-confirmation.php';
 require_once plugin_dir_path(__FILE__) . 'login/process-registration.php';
-
 
 /**
  * Customize LearnDash quiz result template by replacing the original with a custom one.

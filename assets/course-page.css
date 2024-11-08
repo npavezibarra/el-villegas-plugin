@@ -369,3 +369,10 @@ button.button.buy-button {
         margin-top: 10px;
     }
 }
+
+
+/* LINEA NAVIGATION BAR */
+
+.single-sfwd-courses > header {
+    border-bottom: 1px solid black;;
+}

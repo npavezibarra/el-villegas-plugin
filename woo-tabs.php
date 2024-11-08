@@ -74,20 +74,20 @@ function mostrar_cursos_usuario() {
         $course_title = get_the_title( $course_id );
         $course_link = get_permalink( $course_id );
         $course_image = get_the_post_thumbnail( $course_id, 'medium' ); // Obtener la imagen destacada del curso
-
+    
         // Obtener el número total de lecciones en el curso
         $total_lessons = count(learndash_get_course_steps($course_id));
-
+    
         // Obtener el número de lecciones completadas por el usuario
         $completed_lessons = learndash_course_get_completed_steps_legacy( $user_id, $course_id );
-
-        // Calcular el porcentaje completado
+    
+        // Calcular el porcentaje completado y limitar a 100%
         if ($total_lessons > 0) {
-            $percentage_complete = ($completed_lessons / $total_lessons) * 100;
+            $percentage_complete = min(100, ($completed_lessons / $total_lessons) * 100);
         } else {
             $percentage_complete = 0;
         }
-
+    
         // Mostrar el curso
         $output .= '<div class="curso-item" style="display: flex; align-items: center; margin-bottom: 20px;">';
         
@@ -97,27 +97,27 @@ function mostrar_cursos_usuario() {
         } else {
             $output .= '<div class="curso-imagen" style="width: 150px; height: 150px; background-color: #add8e6; margin-right: 20px;"></div>';
         }
-
+    
         // Mostrar el título del curso y el progreso
         $output .= '<div class="curso-info" style="flex-grow: 1;">';
         $output .= '<a href="' . esc_url( $course_link ) . '">';
         $output .= '<h4 style="margin: 0 0 10px;">' . esc_html( $course_title ) . '</h4>';
         $output .= '</a>';
-
+    
         // Mostrar el progreso personalizado usando <progress>
         $output .= '<div class="card__progress">';
         $output .= '<progress max="100" value="' . esc_attr( $percentage_complete ) . '"></progress>';
         $output .= '<p>' . esc_html( round($percentage_complete) ) . '% completado</p>';
         $output .= '</div>'; // Cerrar card__progress
-
+    
         $output .= '</div>'; // Cerrar div curso-info
         $output .= '</div>'; // Cerrar div curso-item
     }
-
+    
     $output .= '</div>'; // Cerrar div cursos-usuario
-
+    
     return $output;
-}
+}    
 
 
 

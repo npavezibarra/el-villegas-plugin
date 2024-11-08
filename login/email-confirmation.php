@@ -25,7 +25,7 @@ function handle_email_confirmation() {
             wp_set_auth_cookie($user_id);
         
             // Success message and redirection
-            echo '<div style="text-align: center; padding: 80px 0;">';
+            echo '<div style="text-align: center; padding: 80px 0; style">';
             echo '<h2>Tu cuenta ha sido confirmada. ¡Bienvenido!</h2>';
             echo '<p>Serás redirigido automáticamente al curso en <span id="countdown">5</span> segundos.</p>';
             echo '<a href="' . esc_url(get_permalink($course_id)) . '" style="display: inline-block; padding: 10px 20px; background-color: #000; color: #fff; border-radius: 5px; text-decoration: none;">Ir al curso</a>';

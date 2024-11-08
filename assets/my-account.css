@@ -1,0 +1,27 @@
+/* MY ACCOUNT PAGE */
+
+.curso-info > a > h4 {
+    color: black !important;
+}
+
+.card__progress > p {
+    margin-top: 0px;
+}
+
+.woocommerce-account > div > header {
+    border-bottom: 1px solid black;
+}
+
+.woocommerce-account > div > main > div > .wp-block-spacer {
+    display: none;
+}
+
+
+.woocommerce-account > div > main > .wp-block-post-content {
+    border-top: 1px solid black;
+    padding-top: 50px;
+}
+
+.cursos-usuario > h3 {
+    margin-top: 0px;
+}

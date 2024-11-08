@@ -56,6 +56,39 @@ function custom_learndash_lesson_title($title, $post_id) {
     return $title;
 }
 
+/* PASAR A CHECKOUT INMEDIATAMENTE (solo para cursos) */
+
+add_action('woocommerce_add_to_cart', 'redirect_to_checkout_on_add_to_cart');
+
+function redirect_to_checkout_on_add_to_cart() {
+    if (!is_admin() && !wp_doing_ajax()) {
+        wp_safe_redirect(wc_get_checkout_url());
+        exit;
+    }
+}
+
+
+add_action('wp_footer', 'redirect_to_checkout_js');
+
+function redirect_to_checkout_js() {
+    // Only add JavaScript on WooCommerce pages to avoid unnecessary loading
+    if (is_shop() || is_product_category() || is_product()) {
+        ?>
+        <script type="text/javascript">
+            jQuery(function($) {
+                // Listen for WooCommerce's AJAX add to cart event
+                $(document.body).on('added_to_cart', function() {
+                    // Redirect to the checkout page
+                    window.location.href = '<?php echo esc_url(wc_get_checkout_url()); ?>';
+                });
+            });
+        </script>
+        <?php
+    }
+}
+
+
+
 
 
 
