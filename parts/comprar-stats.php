@@ -91,32 +91,64 @@ if (!is_user_logged_in()) {
                 <span>100%</span>
             </div>
         </div>
-        <?php
-            $register_page_id = get_option('villegas_lm_register_page_id'); // Correct key
-
-            if (!empty($register_page_id)) {
-                $register_page_url = get_permalink($register_page_id); // Retrieve the permalink
-            } else {
-                $register_page_url = '#';
-            }
-            ?>
         <div class="buy-button" style="flex: 1; width: 50%; text-align: right;">
-        <?php
-// Function to dynamically get the 'Ingresa Roma' page URL
-function get_ingresa_roma_url() {
-    $page = get_page_by_path('ingresa-roma');
-    return $page ? get_permalink($page->ID) : '';
-}
 
-$register_page_url = get_ingresa_roma_url();
-
-// Debugging: Print the URL to check if it's set correctly
-echo '';
-
-?>
+    <!-- LOGICA DEL BOTON QUE REDIRIGE A PAGINA ESPECIAL LOGIN -->
+    <?php
+            function get_login_redirect_url_for_course() {
+                // Step 1: Search all pages for the `villegas_login_register` shortcode and retrieve `course_id`
+                $args = array(
+                    'post_type' => 'page',
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                    'fields' => 'ids', // Only get post IDs for efficiency
+                );
+            
+                $pages = get_posts($args);
+                $login_page_id = null;
+                $course_id = null;
+            
+                foreach ($pages as $page_id) {
+                    $content = get_post_field('post_content', $page_id);
+            
+                    // Check if the page content has the `villegas_login_register` shortcode
+                    if (has_shortcode($content, 'villegas_login_register')) {
+                        preg_match_all('/' . get_shortcode_regex() . '/s', $content, $matches, PREG_SET_ORDER);
+                        
+                        foreach ($matches as $shortcode_match) {
+                            if ($shortcode_match[2] === 'villegas_login_register') {
+                                $atts = shortcode_parse_atts($shortcode_match[3]);
+                                if (isset($atts['course_id'])) {
+                                    $login_page_id = $page_id; // Get the page ID where the shortcode is found
+                                    $course_id = $atts['course_id']; // Get the course_id parameter
+                                    break 2; // Exit both loops if found
+                                }
+                            }
+                        }
+                    }
+                }
+            
+                // Step 3: If the shortcode wasn't found, redirect to the default WordPress login page
+                if (!$login_page_id || !$course_id) {
+                    return wp_login_url(); // Default WordPress login page
+                }
+            
+                // Step 4: Get the current course page ID (assuming this is called from a course page)
+                global $post;
+                $current_course_id = $post->ID;
+            
+                // Step 5: Generate the URL to redirect with `fref` parameter
+                $login_url = get_permalink($login_page_id);
+                $redirect_url = add_query_arg('fref', $current_course_id, $login_url);
+            
+                return $redirect_url;
+            }        
+        // Use the function to get the redirect URL
+        $login_redirect_url = get_login_redirect_url_for_course();
+    ?>
 
 <button style="width: 100%; background-color: #4c8bf5; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;"
-        onclick="window.location.href='<?php echo esc_url($register_page_url . '?redirect_to=' . urlencode(get_permalink())); ?>'">
+        onclick="window.location.href='<?php echo esc_url($login_redirect_url); ?>'">
     Iniciar Sesión
 </button>
         </div>

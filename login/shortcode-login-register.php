@@ -66,7 +66,7 @@ function villegas_login_register_shortcode($atts) {
             </form>
 
             <!-- Registration Form -->
-            <form method="POST" id="register-form">
+            <form method="POST" id="register-form" style="display: none;">
                 <h2 id="form-title-register">Registro</h2>
                 <p id="form-subtitle-register">Si ya tienes cuenta, <a href="#" id="toggle-form-login">inicia sesión aquí</a></p>
                 
