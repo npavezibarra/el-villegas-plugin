@@ -118,3 +118,5 @@ add_action('wp_footer', 'insert_div_before_entry_content');
  */
 add_shortcode('login_register_form', 'login_register_form_shortcode');
 
+
+

@@ -27,3 +27,9 @@
         padding: 10px 0px !important;
     }
 }
+
+.examen-inicial {
+    width: 50%;
+    margin: auto !important;
+    text-align: center;
+}

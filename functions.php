@@ -47,38 +47,16 @@ function add_course_button_after_product_name($item_id, $item, $order) {
     }
 }
 
-
-add_filter('the_title', 'custom_learndash_lesson_title', 10, 2);
-function custom_learndash_lesson_title($title, $post_id) {
-    if (is_singular('sfwd-lessons') && in_the_loop()) {
-        $title = '📘 ' . $title; // Example modification: adding an icon
-    }
-    return $title;
-}
-
 /* PASAR A CHECKOUT INMEDIATAMENTE (solo para cursos) */
 
-add_action('woocommerce_add_to_cart', 'redirect_to_checkout_on_add_to_cart');
-
-function redirect_to_checkout_on_add_to_cart() {
-    if (!is_admin() && !wp_doing_ajax()) {
-        wp_safe_redirect(wc_get_checkout_url());
-        exit;
-    }
-}
-
-
-add_action('wp_footer', 'redirect_to_checkout_js');
-
-function redirect_to_checkout_js() {
-    // Only add JavaScript on WooCommerce pages to avoid unnecessary loading
-    if (is_shop() || is_product_category() || is_product()) {
+function custom_redirect_to_checkout() {
+    if (is_product() || is_shop()) {
         ?>
         <script type="text/javascript">
             jQuery(function($) {
-                // Listen for WooCommerce's AJAX add to cart event
+                // Listen for the WooCommerce AJAX add to cart event
                 $(document.body).on('added_to_cart', function() {
-                    // Redirect to the checkout page
+                    // Redirect to checkout page
                     window.location.href = '<?php echo esc_url(wc_get_checkout_url()); ?>';
                 });
             });
@@ -86,7 +64,17 @@ function redirect_to_checkout_js() {
         <?php
     }
 }
+add_action('wp_footer', 'custom_redirect_to_checkout');
 
+// Redirect to checkout for non-AJAX add to cart (for single product pages)
+function non_ajax_redirect_to_checkout($url) {
+    // Ensure we are on the front end and not in the admin area
+    if (!is_admin()) {
+        $url = wc_get_checkout_url();
+    }
+    return $url;
+}
+add_filter('woocommerce_add_to_cart_redirect', 'non_ajax_redirect_to_checkout');
 
 
 

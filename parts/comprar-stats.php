@@ -172,8 +172,10 @@ if (!is_user_logged_in()) {
                 // Check quiz attempts and display result
                 list($has_completed_quiz, $percentage_correct) = get_latest_quiz_percentage($user_id, $first_quiz_id);
                 if ($has_completed_quiz) {
+                    echo '<div class="examen-inicial">';
                     echo "<strong>$percentage_correct%</strong>"; // Show percentage
                     echo '<p id="primer-test-legend">Primer Test</p>';
+                    echo '</div>';
                 } else { ?>
             <button onclick="window.location.href='<?php echo esc_url($first_quiz_url); ?>'" 
                     class="button exam-inicial-btn" 
