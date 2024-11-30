@@ -75,9 +75,3 @@ function non_ajax_redirect_to_checkout($url) {
     return $url;
 }
 add_filter('woocommerce_add_to_cart_redirect', 'non_ajax_redirect_to_checkout');
-
-
-
-
-
-

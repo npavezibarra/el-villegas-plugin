@@ -47,10 +47,13 @@ require_once plugin_dir_path(__FILE__) . 'woo-tabs.php';
 require_once plugin_dir_path(__FILE__) . 'login/shortcode-login-register.php';
 require_once plugin_dir_path(__FILE__) . 'login/email-confirmation.php';
 require_once plugin_dir_path(__FILE__) . 'login/process-registration.php';
+/* CLASSES */
+require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
+require_once plugin_dir_path(__FILE__) . 'shortcodes/quiz-class-shortcodes.php';
 
-/**
- * Customize LearnDash quiz result template by replacing the original with a custom one.
- */
+
+// Customize LearnDash quiz result template by replacing the original with a custom one.
+
 add_filter('learndash_template', 'custom_quiz_result_template', 10, 5);
 function custom_quiz_result_template($filepath, $name, $args, $echo, $return_file_path) {
     if ($name == 'quiz/partials/show_quiz_result_box.php') {
@@ -68,9 +71,8 @@ function enqueue_login_scripts() {
 add_action('wp_enqueue_scripts', 'enqueue_login_scripts');
 
 
-/**
- * Enqueue custom CSS and JavaScript for quiz and lesson pages.
- */
+// Enqueue custom CSS and JavaScript for quiz and lesson pages.
+
 function enqueue_quiz_resources() {
     $plugin_url = plugin_dir_url(__FILE__);
 
