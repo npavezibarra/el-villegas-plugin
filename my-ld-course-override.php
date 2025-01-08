@@ -25,6 +25,7 @@ function my_custom_ld_course_styles() {
     wp_enqueue_style('ingresa-roma-css', plugin_dir_url(__FILE__) . 'assets/ingresa-roma.css', [], '1.0', 'all');
     wp_enqueue_style('comprar-stats-css', plugin_dir_url(__FILE__) . 'assets/comprar-stats.css', [], '1.0', 'all');
     wp_enqueue_style('my-account-css', plugin_dir_url(__FILE__) . 'assets/my-account.css', [], '1.0', 'all');
+    wp_enqueue_style('single-lessons-css', plugin_dir_url(__FILE__) . 'assets/single-lessons.css', [], '1.0', 'all');
     wp_enqueue_style('login-form-styles', plugin_dir_url(__FILE__) . 'login/login-form-styles.css', [], '1.0', 'all');
 
     // Verificar si el shortcode [login_register_form] está presente en la página
@@ -41,8 +42,7 @@ include_once 'learndash-course-metabox.php';
 include_once 'functions.php';
 include plugin_dir_path(__FILE__) . 'parts/comprar-stats.php';
 include_once plugin_dir_path(__FILE__) . 'metabox-course-first-quiz.php';
-include_once plugin_dir_path(__FILE__) . 'user-profile-photo.php';
-require_once plugin_dir_path(__FILE__) . 'woo-tabs.php';
+include_once plugin_dir_path(__FILE__) . 'woo-tabs.php';
 /* LOGIN MECHANISM */
 require_once plugin_dir_path(__FILE__) . 'login/shortcode-login-register.php';
 require_once plugin_dir_path(__FILE__) . 'login/email-confirmation.php';
@@ -57,7 +57,7 @@ require_once plugin_dir_path(__FILE__) . 'shortcodes/quiz-class-shortcodes.php';
 add_filter('learndash_template', 'custom_quiz_result_template', 10, 5);
 function custom_quiz_result_template($filepath, $name, $args, $echo, $return_file_path) {
     if ($name == 'quiz/partials/show_quiz_result_box.php') {
-        $custom_template_path = plugin_dir_path(__FILE__) . 'learndash/templates/quiz/partials/show_quiz_result_box.php';
+        $custom_template_path = plugin_dir_path(__FILE__) . 'templates/show_quiz_result_box.php';
         if (file_exists($custom_template_path)) {
             return $custom_template_path;
         }
@@ -104,11 +104,7 @@ add_action('wp_enqueue_scripts', 'enqueue_quiz_resources');
  * Require the course outline functionality from an external file.
  */
 require_once plugin_dir_path(__FILE__) . 'course-outline.php';
-/*
-require_once plugin_dir_path(__FILE__) . 'login-register/create-page.php';
-require_once plugin_dir_path(__FILE__) . 'login-register/registration-login.php';
-require_once plugin_dir_path(__FILE__) . 'login-register/email-confirmation.php';
-require_once plugin_dir_path(__FILE__) . 'login-register/user-capabilities.php';
+
 
 /**
  * Hook into 'wp_footer' to dynamically add the new div before entry content.
@@ -120,5 +116,33 @@ add_action('wp_footer', 'insert_div_before_entry_content');
  */
 add_shortcode('login_register_form', 'login_register_form_shortcode');
 
+/* OVERRIDE LESSON PAGE */
 
+add_filter('template_include', 'el_villegas_override_single_sfwd_lessons', 99);
+
+function el_villegas_override_single_sfwd_lessons($template) {
+    if (is_singular('sfwd-lessons')) { // Check if it's a lesson page
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/single-sfwd-lessons.php';
+        if (file_exists($custom_template)) {
+            return $custom_template;
+        }
+    }
+    return $template; // Fallback to the default template
+}
+
+/* OVERRIDE INFOBAR PHP */
+
+add_filter('learndash_template', 'el_villegas_override_infobar_template', 10, 5);
+
+function el_villegas_override_infobar_template($filepath, $name, $args, $type, $template_key) {
+    // Check if the requested template is the infobar.php file
+    if ($name === 'modules/infobar.php') {
+        // Return the path to your custom infobar.php
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/infobar.php';
+        if (file_exists($custom_template)) {
+            return $custom_template;
+        }
+    }
+    return $filepath; // Return the original template if no override
+}
 
