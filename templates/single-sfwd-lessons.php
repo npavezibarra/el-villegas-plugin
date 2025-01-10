@@ -12,7 +12,7 @@
         #lesson-wrapper {
             display: flex;
             width: 100%;
-            max-width: 1300px;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
@@ -43,11 +43,15 @@
         }
 
         .lesson-item.completed .lesson-circle {
-            background-color: #4caf50;
+            background: #ff9800;
+        }
+
+        .lesson-item.completed {
+            padding: 10px;
         }
 
         .lesson-item.current-lesson .lesson-circle {
-            background-color: #ff9800;
+            background-color: #dfdfdf;
         }
     </style>
 </head>

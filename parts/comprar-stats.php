@@ -64,7 +64,7 @@ function mostrar_comprar_stats() {
     if (!empty($first_quiz_id)) {
         $quiz_post = get_post($first_quiz_id);
         if ($quiz_post) {
-            $first_quiz_url = home_url('/quizzes/' . $quiz_post->post_name . '/');
+            $first_quiz_url = home_url('/evaluaciones/' . $quiz_post->post_name . '/');
         }
     } else {
         $first_quiz_url = '#';

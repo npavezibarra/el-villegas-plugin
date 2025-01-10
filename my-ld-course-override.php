@@ -27,6 +27,7 @@ function my_custom_ld_course_styles() {
     wp_enqueue_style('my-account-css', plugin_dir_url(__FILE__) . 'assets/my-account.css', [], '1.0', 'all');
     wp_enqueue_style('single-lessons-css', plugin_dir_url(__FILE__) . 'assets/single-lessons.css', [], '1.0', 'all');
     wp_enqueue_style('login-form-styles', plugin_dir_url(__FILE__) . 'login/login-form-styles.css', [], '1.0', 'all');
+    wp_enqueue_style('quiz-styles', plugin_dir_url(__FILE__) . 'assets/quiz-styles.css', [], '1.0', 'all');
 
     // Verificar si el shortcode [login_register_form] está presente en la página
     global $post;
@@ -145,4 +146,55 @@ function el_villegas_override_infobar_template($filepath, $name, $args, $type, $
     }
     return $filepath; // Return the original template if no override
 }
+
+
+/* OVERRIDE QUIZ.PHP */
+
+add_filter('learndash_template', 'el_villegas_override_quiz_template', 10, 5);
+
+function el_villegas_override_quiz_template($filepath, $name, $args, $type, $template_key) {
+    // Debug logging
+    error_log("LearnDash Template Name: $name");
+
+    // Check if the main quiz template is being requested
+    if ($name === 'quiz') {
+        error_log("Main Quiz Template Detected");
+
+        // Path to your custom template
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/quiz.php';
+
+        // Check if the custom template exists
+        if (file_exists($custom_template)) {
+            error_log("Custom Quiz Template Found: $custom_template");
+            return $custom_template;
+        } else {
+            error_log("Custom Quiz Template Not Found: $custom_template");
+        }
+    }
+
+    // Otherwise, fallback to the original
+    return $filepath;
+}
+
+/* OVERRIDE SINGLE QUIZ PHP */
+
+add_filter('single_template', 'el_villegas_override_single_quiz_template');
+
+function el_villegas_override_single_quiz_template($template) {
+    // Check if we are viewing a single post of type 'sfwd-quiz'
+    if ('sfwd-quiz' === get_post_type()) {
+        // Build the path to your custom template
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/single-sfwd-quiz.php';
+
+        // If our custom template exists, return it instead of the theme file
+        if (file_exists($custom_template)) {
+            return $custom_template;
+        }
+    }
+    // Otherwise, return the default $template
+    return $template;
+}
+
+
+
 
