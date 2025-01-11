@@ -4,7 +4,9 @@ include plugin_dir_path(__FILE__) . 'template-parts/header.php';
 // Load the default Twenty Twenty-Four header template part
 echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName":"header"} /-->');
 ?>
+
 <body>
+
 <div class="custom-quiz-layout">
     <div id="quiz-card">
     <?php
