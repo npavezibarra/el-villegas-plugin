@@ -44,6 +44,9 @@ include_once 'functions.php';
 include plugin_dir_path(__FILE__) . 'parts/comprar-stats.php';
 include_once plugin_dir_path(__FILE__) . 'metabox-course-first-quiz.php';
 include_once plugin_dir_path(__FILE__) . 'woo-tabs.php';
+// Include the leaderboard-villegas.php file
+require_once plugin_dir_path(__FILE__) . 'leaderboard-villegas/leaderboard-villegas.php';
+
 /* LOGIN MECHANISM */
 require_once plugin_dir_path(__FILE__) . 'login/shortcode-login-register.php';
 require_once plugin_dir_path(__FILE__) . 'login/email-confirmation.php';
@@ -174,25 +177,6 @@ function el_villegas_override_quiz_template($filepath, $name, $args, $type, $tem
 
     // Otherwise, fallback to the original
     return $filepath;
-}
-
-/* OVERRIDE SINGLE QUIZ PHP */
-
-add_filter('single_template', 'el_villegas_override_single_quiz_template');
-
-function el_villegas_override_single_quiz_template($template) {
-    // Check if we are viewing a single post of type 'sfwd-quiz'
-    if ('sfwd-quiz' === get_post_type()) {
-        // Build the path to your custom template
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/single-sfwd-quiz.php';
-
-        // If our custom template exists, return it instead of the theme file
-        if (file_exists($custom_template)) {
-            return $custom_template;
-        }
-    }
-    // Otherwise, return the default $template
-    return $template;
 }
 
 

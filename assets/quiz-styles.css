@@ -16,3 +16,12 @@ ul.wpProQuiz_questionList {
 .wpProQuiz_question_text > p {
     font-weight:700;
 }
+
+p.wpProQuiz_points {
+    max-width: 595px;
+    margin: auto !important;
+}
+
+.ld-quiz-actions > div > input {
+    width: 200px !important;
+}

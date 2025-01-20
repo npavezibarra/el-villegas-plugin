@@ -279,7 +279,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	}
 	?>
 	
-    <div class="ld-quiz-actions" style="margin: 10px 0px;">
+    <div class="ld-quiz-actions" style="margin: 10px 0px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
     <?php
         // Get the current quiz ID.
         $current_quiz_id = 7346;  // Replace this with dynamic value if necessary.
@@ -298,10 +298,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         // If we get any result, that means the quiz is marked as the first quiz
         if (!empty($results)) {
-            // SUCCESS: Display three custom buttons
-            echo '<input class="wpProQuiz_button" type="button" name="comprarCurso" value="Comprar Curso" />';
-            echo '<input class="wpProQuiz_button" type="button" name="publicarRanking" value="Publicar en Ranking" />';
-            echo '<input class="wpProQuiz_button" type="button" name="verRanking" value="Ver Ranking" />';
+            // SUCCESS: Display two custom buttons
+            echo '<div class="buttons" style="display: flex; gap: 15px;">';
+            echo '<input class="wpProQuiz_button" type="button" name="comprarCurso" value="Comprar Curso" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
+            echo '<input class="wpProQuiz_button" type="button" name="verRanking" value="Ver Ranking" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
+            echo '</div>';
         } else {
             // FAIL: Display the regular buttons
 
@@ -315,23 +316,55 @@ if ( ! defined( 'ABSPATH' ) ) {
             <?php
             // Restart Quiz button
             if ( ! $quiz->isBtnRestartQuizHidden() ) {
-                echo '<input class="wpProQuiz_button wpProQuiz_button_restartQuiz" type="button" name="restartQuiz" value="' . esc_attr( LearnDash_Custom_Label::get_label('quiz') ) . '" />';
+                echo '<input class="wpProQuiz_button wpProQuiz_button_restartQuiz" type="button" name="restartQuiz" value="' . esc_attr( LearnDash_Custom_Label::get_label('quiz') ) . '" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
             }
 
             // Show Question button
             if ( ! $quiz->isBtnViewQuestionHidden() ) {
-                echo '<input class="wpProQuiz_button wpProQuiz_button_reShowQuestion" type="button" name="reShowQuestion" value="' . esc_attr( LearnDash_Custom_Label::get_label('questions') ) . '" />';
+                echo '<input class="wpProQuiz_button wpProQuiz_button_reShowQuestion" type="button" name="reShowQuestion" value="' . esc_attr( LearnDash_Custom_Label::get_label('questions') ) . '" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
             }
 
             // Show leaderboard button if activated
             if ( $quiz->isToplistActivated() && $quiz->getToplistDataShowIn() == WpProQuiz_Model_Quiz::QUIZ_TOPLIST_SHOW_IN_BUTTON ) {
-                echo '<input class="wpProQuiz_button" type="button" name="showToplist" value="' . esc_html__( 'Show leaderboard', 'learndash' ) . '" />';
+                echo '<input class="wpProQuiz_button" type="button" name="showToplist" value="' . esc_html__( 'Show leaderboard', 'learndash' ) . '" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
             }
         }
     ?>
+
+    <!-- Toggle for hiding the score -->
+    <div class="toggle" style="display: flex; align-items: center; gap: 10px;">
+        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+            <input type="checkbox" id="ocultar-puntaje" onclick="toggleScore()">
+            <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: 0.4s; border-radius: 50px;"></span>
+            <span class="slider round" style="position: absolute; content: ''; height: 16px; width: 16px; border-radius: 50px; left: 5px; bottom: 5px; background-color: white; transition: 0.4s;"></span>
+        </label>
+        <span>Ocultar Puntaje</span>
+    </div>
 </div>
 
+<script>
+    function toggleScore() {
+        var scoreButton = document.querySelector('.wpProQuiz_button_restartQuiz');
+        var toggle = document.getElementById('ocultar-puntaje');
 
+        // Check if the button exists to avoid errors
+        if (scoreButton) {
+            if (toggle.checked) {
+                scoreButton.style.display = 'none';  // Hide the score
+            } else {
+                scoreButton.style.display = 'block'; // Show the score
+            }
+        }
 
+        // Change the background color of the switch when active (green)
+        if (toggle.checked) {
+            toggle.nextElementSibling.style.backgroundColor = '#4caf50';  // Green
+            toggle.nextElementSibling.nextElementSibling.style.transform = 'translateX(24px)';
+        } else {
+            toggle.nextElementSibling.style.backgroundColor = '#ccc';  // Gray
+            toggle.nextElementSibling.nextElementSibling.style.transform = 'translateX(0)';
+        }
+    }
+</script>
 
 </div>

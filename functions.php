@@ -76,3 +76,55 @@ function non_ajax_redirect_to_checkout($url) {
 }
 add_filter('woocommerce_add_to_cart_redirect', 'non_ajax_redirect_to_checkout');
 
+/* LEARNDAH LEADERBOARD FILTER */
+
+// Hook into the leaderboard query to modify it
+add_filter('learndash_quiz_results', 'filter_latest_quiz_results', 10, 2);
+
+function filter_latest_quiz_results($quiz_results, $quiz_id) {
+    global $wpdb;
+
+    // Get all users who have taken the quiz
+    $user_ids = $wpdb->get_col($wpdb->prepare(
+        "SELECT user_id FROM {$wpdb->prefix}learndash_user_activity 
+        WHERE course_id = %d AND post_id = %d",
+        $quiz_id, $quiz_id
+    ));
+
+    $latest_results = array();
+
+    foreach ($user_ids as $user_id) {
+        // Get the latest quiz attempt for each user
+        $latest_result = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}learndash_user_activity 
+            WHERE course_id = %d AND post_id = %d AND user_id = %d
+            ORDER BY activity_completed DESC LIMIT 1",
+            $quiz_id, $quiz_id, $user_id
+        ));
+
+        if ($latest_result) {
+            // Store the result in the array
+            $latest_results[] = $latest_result;
+        }
+    }
+
+    return $latest_results;
+}
+
+
+/* TEST SHORTCODE */
+
+// Shortcode minimalista para probar con ID de curso = 7359
+add_shortcode('prueba_final_quiz_7359', function() {
+    $user_id   = get_current_user_id();
+    $course_id = 7359;
+
+    $analytics = new LearnDashCourseAnalytics($user_id, $course_id);
+    $final_quiz_data = $analytics->get_final_quiz();
+
+    $output  = '<p>Intentos: ' . $final_quiz_data['attempts'] . '</p>';
+    $output .= '<p>Último Score: ' . $final_quiz_data['score'] . '</p>';
+    $output .= '<p>Último Porcentaje: ' . $final_quiz_data['percentage'] . '</p>';
+
+    return $output;
+});
