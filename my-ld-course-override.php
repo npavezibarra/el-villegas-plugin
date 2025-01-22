@@ -151,34 +151,16 @@ function el_villegas_override_infobar_template($filepath, $name, $args, $type, $
 }
 
 
-/* OVERRIDE QUIZ.PHP */
+/* OVERRIDE QUIZ PAGE */
 
-add_filter('learndash_template', 'el_villegas_override_quiz_template', 10, 5);
+add_filter('template_include', 'el_villegas_override_single_sfwd_quiz', 99);
 
-function el_villegas_override_quiz_template($filepath, $name, $args, $type, $template_key) {
-    // Debug logging
-    error_log("LearnDash Template Name: $name");
-
-    // Check if the main quiz template is being requested
-    if ($name === 'quiz') {
-        error_log("Main Quiz Template Detected");
-
-        // Path to your custom template
-        $custom_template = plugin_dir_path(__FILE__) . 'templates/quiz.php';
-
-        // Check if the custom template exists
+function el_villegas_override_single_sfwd_quiz($template) {
+    if (is_singular('sfwd-quiz')) { // Check if it's a quiz page
+        $custom_template = plugin_dir_path(__FILE__) . 'templates/single-sfwd-quiz.php';
         if (file_exists($custom_template)) {
-            error_log("Custom Quiz Template Found: $custom_template");
             return $custom_template;
-        } else {
-            error_log("Custom Quiz Template Not Found: $custom_template");
         }
     }
-
-    // Otherwise, fallback to the original
-    return $filepath;
+    return $template; // Fallback to the default template
 }
-
-
-
-
