@@ -25,3 +25,11 @@ p.wpProQuiz_points {
 .ld-quiz-actions > div > input {
     width: 200px !important;
 }
+
+input.wpProQuiz_button {
+    border-radius: 4px !important;
+}
+
+h4.wpProQuiz_header {
+    color: black;
+}

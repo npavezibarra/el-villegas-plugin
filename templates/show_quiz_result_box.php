@@ -1,4 +1,20 @@
 <?php
+
+
+// Debug section - add this near the top of show_quiz_result_box.php
+if (!function_exists('learndash_get_course_id')) {
+    require_once WP_PLUGIN_DIR . '/sfwd-lms/includes/course/ld-course-functions.php';
+}
+
+// Debug output
+error_log('Debug Quiz Results:');
+error_log('Current Quiz ID: ' . $quiz->getID());
+$course_id = learndash_get_course_id();
+error_log('Course ID: ' . $course_id);
+error_log('User ID: ' . get_current_user_id());
+$first_quiz_id = get_post_meta($course_id, '_first_quiz_id', true);
+error_log('First Quiz ID: ' . $first_quiz_id);
+
 /**
  * Displays Quiz Result Box
  *
@@ -20,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div style="display: none;" class="wpProQuiz_sending">
-	<h4 class="wpProQuiz_header"><?php esc_html_e( 'Results', 'learndash' ); ?></h4>
+	<h4 class="wpProQuiz_header">RESULTADO</h4>
 	<p>
 		<div>
 		<?php
@@ -47,57 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 </div>
 
 <div style="display: none;" class="wpProQuiz_results">
-	<h4 class="wpProQuiz_header"><?php esc_html_e( 'Results', 'learndash' ); ?></h4>
-	<?php
-	if ( ! $quiz->isHideResultCorrectQuestion() ) {
-		echo wp_kses_post(
-			SFWD_LMS::get_template(
-				'learndash_quiz_messages',
-				array(
-					'quiz_post_id' => $quiz->getID(),
-					'context'      => 'quiz_questions_answered_correctly_message',
-					// translators: placeholder: correct answer, question count, questions.
-					'message'      => '<p>' . sprintf( esc_html_x( '%1$s of %2$s %3$s answered correctly', 'placeholder: correct answer, question count, questions', 'learndash' ), '<span class="wpProQuiz_correct_answer">0</span>', '<span>' . $question_count . '</span><br>', learndash_get_custom_label( 'questions' ) ) . '</p>',
-					'placeholders' => array( '0', $question_count ),
-				)
-			)
-		);
-	}
-
-	if ( ! $quiz->isHideResultQuizTime() ) {
-		?>
-		<p class="wpProQuiz_quiz_time">
-		<?php
-			echo wp_kses_post(
-				SFWD_LMS::get_template(
-					'learndash_quiz_messages',
-					array(
-						'quiz_post_id' => $quiz->getID(),
-						'context'      => 'quiz_your_time_message',
-						// translators: placeholder: quiz time.
-						'message'      => sprintf( esc_html_x( 'Your time: %s', 'placeholder: quiz time.', 'learndash' ), '<span></span>' ),
-					)
-				)
-			);
-		?>
-		</p>
-		<?php
-	}
-	?>
-	<p class="wpProQuiz_time_limit_expired" style="display: none;">
-	<?php
-		echo wp_kses_post(
-			SFWD_LMS::get_template(
-				'learndash_quiz_messages',
-				array(
-					'quiz_post_id' => $quiz->getID(),
-					'context'      => 'quiz_time_has_elapsed_message',
-					'message'      => esc_html__( 'Time has elapsed', 'learndash' ),
-				)
-			)
-		);
-		?>
-	</p>
+	
 
 	<?php
 	if ( ! $quiz->isHideResultPoints() ) {
@@ -163,52 +129,133 @@ if ( ! defined( 'ABSPATH' ) ) {
 	if ( $quiz->isShowAverageResult() ) {
 		?>
 		<div class="wpProQuiz_resultTable">
-			<table>
-			<tbody>
-			<tr>
-				<td class="wpProQuiz_resultName">
-				<?php
-					echo wp_kses_post(
-						SFWD_LMS::get_template(
-							'learndash_quiz_messages',
-							array(
-								'quiz_post_id' => $quiz->getID(),
-								'context'      => 'quiz_average_score_message',
-								'message'      => esc_html__( 'Average score', 'learndash' ),
-							)
-						)
-					);
-				?>
-				</td>
-				<td class="wpProQuiz_resultValue wpProQuiz_resultValue_AvgScore">
-					<div class="progress-meter" style="background-color: #6CA54C;">&nbsp;</div>
-					<span class="progress-number">&nbsp;</span>
-				</td>
-			</tr>
-			<tr>
-			<td class="wpProQuiz_resultName">
-			<?php
-				echo wp_kses_post(
-					SFWD_LMS::get_template(
-						'learndash_quiz_messages',
-						array(
-							'quiz_post_id' => $quiz->getID(),
-							'context'      => 'quiz_your_score_message',
-							'message'      => esc_html__( 'Your score', 'learndash' ),
-						)
-					)
-				);
-			?>
-			</td>
-			<td class="wpProQuiz_resultValue wpProQuiz_resultValue_YourScore">
-				<div class="progress-meter">&nbsp;</div>
-				<span class="progress-number">&nbsp;</span>
-			</td>
-		</tr>
-		</tbody>
-		</table>
-	</div>
-		<?php
+		<table>
+    <tbody>
+	<style>
+.quiz-results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.quiz-results-table td {
+    padding: 15px 0;
+}
+
+.quiz-name {
+    width: 250px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 25px;
+    background-color: #E0E0E0;
+    padding: 0;
+}
+
+.progress-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #FFB6C1;
+    transition: width 0.5s ease-out;
+}
+
+.percentage {
+    width: 80px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 16px;
+    padding-left: 20px;
+}
+</style>
+
+<table class="quiz-results-table">
+    <tbody>
+        <!-- Primera Evaluación -->
+        <?php
+        global $wpdb;
+        $current_quiz_id = $quiz->getID();
+        $course_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_first_quiz_id' AND meta_value = %d",
+                7346
+            )
+        );
+        $user_id = get_current_user_id();
+
+        if (class_exists('LearnDashCourseAnalytics') && !empty($course_id)) {
+            $analytics = new LearnDashCourseAnalytics($user_id, $course_id);
+            $first_quiz_data = $analytics->get_first_quiz();
+
+            if (isset($first_quiz_data['percentage']) && $first_quiz_data['percentage'] !== 'N/A') {
+                ?>
+                <tr>
+                    <td class="quiz-name">Primera Evaluación</td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: <?php echo esc_attr($first_quiz_data['percentage']); ?>%;"></div>
+                        </div>
+                    </td>
+                    <td class="percentage"><?php echo esc_html($first_quiz_data['percentage']); ?>%</td>
+                </tr>
+                <?php
+            }
+        }
+        ?>
+
+        <!-- Evaluación Final -->
+        <tr>
+            <td class="quiz-name">Evaluación Final</td>
+            <td>
+                <div class="progress-container">
+                    <div class="progress-bar final-progress" style="width: 0%;"></div>
+                </div>
+            </td>
+            <td class="percentage final-percentage">0%</td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+jQuery(document).ready(function($) {
+    function updateFinalScore() {
+        var pointsText = $('.wpProQuiz_points').text();
+        var matches = pointsText.match(/Has alcanzado (\d+) de (\d+) puntos,\s*\((\d+(?:\.\d+)?)%\)/);
+        
+        if (matches) {
+            var percentage = parseFloat(matches[3]);
+            $('.final-progress').css('width', percentage + '%');
+            $('.final-percentage').text(percentage + '%');
+        }
+    }
+
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if ($(mutation.target).is(':visible')) {
+                updateFinalScore();
+            }
+        });
+    });
+    
+    var resultsDiv = document.querySelector('.wpProQuiz_results');
+    if (resultsDiv) {
+        observer.observe(resultsDiv, { 
+            attributes: true, 
+            attributeFilter: ['style'] 
+        });
+    }
+
+    $(document).on('learndash-quiz-finished', function() {
+        setTimeout(updateFinalScore, 1000);
+    });
+});
+</script>
+</div>
+	<?php
 	}
 	?>
 
@@ -281,90 +328,60 @@ if ( ! defined( 'ABSPATH' ) ) {
 	
     <div class="ld-quiz-actions" style="margin: 10px 0px; display: flex; flex-direction: column; align-items: center; gap: 20px;">
     <?php
-        // Get the current quiz ID.
-        $current_quiz_id = 7346;  // Replace this with dynamic value if necessary.
+        // Get the current quiz ID dynamically
+        $current_quiz_id = get_the_ID();
 
-        // Search the wp_postmeta table to check if the quiz is marked as the first quiz.
+        // Get the course ID associated with the current quiz
         global $wpdb;
-
-        // Query to find if the quiz is the first quiz for the course
         $query = $wpdb->prepare(
-            "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = '_first_quiz_id' AND meta_value = %d",
+            "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_first_quiz_id' AND meta_value = %d",
             $current_quiz_id
         );
+        $course_id = $wpdb->get_var($query);
 
-        // Execute the query
-        $results = $wpdb->get_results($query);
+        // Get the first quiz ID for the course
+        $first_quiz_id = get_post_meta($course_id, '_first_quiz_id', true);
 
-        // If we get any result, that means the quiz is marked as the first quiz
-        if (!empty($results)) {
-            // SUCCESS: Display two custom buttons
+        // Find the WooCommerce product ID associated with the course
+        $product_query = $wpdb->prepare(
+            "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_related_course'"
+        );
+        $related_courses = $wpdb->get_results($product_query);
+
+        $product_id = null;
+
+        // Loop through related courses to find the product associated with the course ID
+        if (!empty($related_courses)) {
+            foreach ($related_courses as $related_course) {
+                $meta_value = maybe_unserialize($related_course->meta_value); // Unserialize meta_value
+
+                if (is_array($meta_value) && in_array($course_id, $meta_value)) {
+                    $product_id = $related_course->post_id;
+                    break;
+                }
+            }
+        }
+
+        // Generate the WooCommerce product URL
+        $product_url = !empty($product_id) ? get_permalink($product_id) : null;
+
+        // If the current quiz is the first quiz, display "Comprar Curso" and "Ver Ranking" buttons
+        if ($current_quiz_id == $first_quiz_id) {
             echo '<div class="buttons" style="display: flex; gap: 15px;">';
-            echo '<input class="wpProQuiz_button" type="button" name="comprarCurso" value="Comprar Curso" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
-            echo '<input class="wpProQuiz_button" type="button" name="verRanking" value="Ver Ranking" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
-            echo '</div>';
+            if ($product_url) {
+                echo '<input class="wpProQuiz_button" type="button" name="comprarCurso" value="Comprar Curso" 
+                    style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" 
+                    onclick="window.location.href=\'' . esc_url($product_url) . '\'" />';
+            } echo '</div>';
         } else {
-            // FAIL: Display the regular buttons
-
-            /**
-             * Check if the "continue on fail" button should be shown
-             */
-            $show_quiz_continue_buttom_on_fail = apply_filters( 'show_quiz_continue_buttom_on_fail', false, learndash_get_quiz_id_by_pro_quiz_id( $quiz->getId() ) );
-            ?>
-            <div class='quiz_continue_link <?php echo $show_quiz_continue_buttom_on_fail ? 'show_quiz_continue_buttom_on_fail' : ''; ?>'></div>
-
-            <?php
-            // Restart Quiz button
-            if ( ! $quiz->isBtnRestartQuizHidden() ) {
-                echo '<input class="wpProQuiz_button wpProQuiz_button_restartQuiz" type="button" name="restartQuiz" value="' . esc_attr( LearnDash_Custom_Label::get_label('quiz') ) . '" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
-            }
-
-            // Show Question button
-            if ( ! $quiz->isBtnViewQuestionHidden() ) {
-                echo '<input class="wpProQuiz_button wpProQuiz_button_reShowQuestion" type="button" name="reShowQuestion" value="' . esc_attr( LearnDash_Custom_Label::get_label('questions') ) . '" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
-            }
-
-            // Show leaderboard button if activated
-            if ( $quiz->isToplistActivated() && $quiz->getToplistDataShowIn() == WpProQuiz_Model_Quiz::QUIZ_TOPLIST_SHOW_IN_BUTTON ) {
-                echo '<input class="wpProQuiz_button" type="button" name="showToplist" value="' . esc_html__( 'Show leaderboard', 'learndash' ) . '" style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
-            }
+            // If not the first quiz, display only the "Ver Ranking" button
+            echo '<div class="buttons" style="display: flex; gap: 15px;">';
+            echo '<input class="wpProQuiz_button" type="button" name="verRanking" value="Ver Ranking" 
+                style="background-color: #000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;" />';
+            echo '</div>';
         }
     ?>
-
-    <!-- Toggle for hiding the score -->
-    <div class="toggle" style="display: flex; align-items: center; gap: 10px;">
-        <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
-            <input type="checkbox" id="ocultar-puntaje" onclick="toggleScore()">
-            <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: 0.4s; border-radius: 50px;"></span>
-            <span class="slider round" style="position: absolute; content: ''; height: 16px; width: 16px; border-radius: 50px; left: 5px; bottom: 5px; background-color: white; transition: 0.4s;"></span>
-        </label>
-        <span>Ocultar Puntaje</span>
-    </div>
+    
 </div>
-
-<script>
-    function toggleScore() {
-        var scoreButton = document.querySelector('.wpProQuiz_button_restartQuiz');
-        var toggle = document.getElementById('ocultar-puntaje');
-
-        // Check if the button exists to avoid errors
-        if (scoreButton) {
-            if (toggle.checked) {
-                scoreButton.style.display = 'none';  // Hide the score
-            } else {
-                scoreButton.style.display = 'block'; // Show the score
-            }
-        }
-
-        // Change the background color of the switch when active (green)
-        if (toggle.checked) {
-            toggle.nextElementSibling.style.backgroundColor = '#4caf50';  // Green
-            toggle.nextElementSibling.nextElementSibling.style.transform = 'translateX(24px)';
-        } else {
-            toggle.nextElementSibling.style.backgroundColor = '#ccc';  // Gray
-            toggle.nextElementSibling.nextElementSibling.style.transform = 'translateX(0)';
-        }
-    }
-</script>
 
 </div>

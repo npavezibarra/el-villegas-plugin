@@ -2,8 +2,6 @@
 ob_start();
 
 // (1) Dejamos la función get_latest_quiz_percentage SÓLO si aún la usas para el "Primer Test". 
-//     Si el primer test también pasa a la clase, podrías eliminarla. 
-//     Pero en tu pregunta indicas que sólo quieres cambiar la parte del Final Quiz.
 function get_latest_quiz_percentage($user_id, $quiz_id) {
     $quiz_attempts = get_user_meta($user_id, '_sfwd-quizzes', true);
     $latest_attempt = null;
@@ -84,7 +82,6 @@ function mostrar_comprar_stats() {
                 </div>
             </div>
             <div class="buy-button" style="flex: 1; width: 50%; text-align: right;">
-
             <?php
             // Botón de iniciar sesión
             function get_login_redirect_url_for_course() {
@@ -174,7 +171,7 @@ function mostrar_comprar_stats() {
                 <button onclick="window.location.href='<?php echo esc_url(get_permalink($product_id)); ?>'"
                         class="button buy-button" 
                         style="flex: 1; background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer; text-align: center;">
-                    Comprar Curso
+                    Comprar Cursoss
                 </button>
             </div>
         </div>
@@ -234,32 +231,26 @@ function mostrar_comprar_stats() {
                     }
                     wp_reset_postdata();
 
-                    // (3) NUEVO: En vez de get_latest_quiz_percentage()
-                    //     usamos la CLASE y su método get_final_quiz().
-                    //     Ojo: get_final_quiz() normalmente busca automáticamente el "quiz final"
-                    //     en ld_course_steps; si en tu clase no usas esa lógica, podrías usar
-                    //     un método distinto o forzar $final_quiz_id.  
-                    //     Si tu clase, como la que mostraste, igual hace un "descubrimiento" del quiz final,
-                    //     podrías en su lugar crear un método p.ej. get_quiz_attempts($quiz_id).
+                    // (3) NUEVO: En vez de usar completed_lessons === total_lessons,
+                    //     verificamos si el porcentaje es >= 100 para habilitar el botón.
                     
-                    // Instanciamos la clase (asumiendo que su constructor recibe $user_id, $course_id)
-                    $analytics = new LearnDashCourseAnalytics($user_id, $course_id);
+                    // Instanciamos la clase (si existiera). O si no, deja tu lógica normal.
+                    // $analytics = new LearnDashCourseAnalytics($user_id, $course_id);
+                    // $final_quiz_data = $analytics->get_final_quiz(); 
+                    // $has_completed_final_quiz = ($final_quiz_data['attempts'] > 0);
+                    // $final_percentage_correct = ($final_quiz_data['percentage'] !== 'N/A') 
+                    //     ? $final_quiz_data['percentage'] 
+                    //     : 0;
 
-                    // Obtenemos un array: [score => X, percentage => Y, attempts => Z]
-                    $final_quiz_data = $analytics->get_final_quiz(); 
-                    
-                    // Decidimos si hay o no intentos:
-                    $has_completed_final_quiz = ($final_quiz_data['attempts'] > 0);
-                    
-                    // El porcentaje. Si no hay intentos, en la clase suele ser 'N/A'.
-                    // Lo convertimos a un número o string para mostrarlo con '%'.
-                    $final_percentage_correct = ($final_quiz_data['percentage'] !== 'N/A') 
-                        ? $final_quiz_data['percentage'] 
-                        : 0;
+                    // Si solo quieres reutilizar la misma lógica previa, hazlo. 
+                    // Aquí asumimos que $has_completed_final_quiz llega de otra parte.
+                    // Por simplicidad, comentaré la parte de la clase y hago lo mismo que antes:
+                    list($has_completed_final_quiz, $final_percentage_correct) = get_latest_quiz_percentage($user_id, $final_quiz_id);
 
-                    // Revisamos que todas las lecciones estén completadas
-                    if ($completed_lessons === $total_lessons && !empty($final_quiz_url) && !$has_completed_final_quiz) {
-                        // Mostrar botón Final Quiz
+                    // -- Aquí la condición que cambia:
+                    // en vez de ($completed_lessons === $total_lessons), usamos (int)$percentage_complete >= 100
+                    if ((int)$percentage_complete >= 100 && !empty($final_quiz_url) && !$has_completed_final_quiz) {
+                        // Mostrar botón Final Quiz habilitado
                         echo '<button onclick="window.location.href=\'' . esc_url($final_quiz_url) . '\'" style="width: 100%; background-color: #4c8bf5; color: white; border: none; padding: 10px 0px; border-radius: 5px; font-size: 12px;">
                                 Examen Final
                               </button>';
@@ -269,7 +260,7 @@ function mostrar_comprar_stats() {
                         echo "<strong>" . esc_html($final_percentage_correct) . "%</strong><p style='font-size: 9px;'>Examen Final</p>";
                         echo '</div>';
                     } else {
-                        // No hay intentos y tampoco todas las lecciones completadas => botón deshabilitado
+                        // No hay intentos y el progreso no es 100% => botón deshabilitado
                         echo '<button id="final-evaluation-button" style="width: 100%; background-color: #ccc; color: #333; border: none; padding: 10px 0px; border-radius: 5px; font-size: 14px; cursor: not-allowed; display: flex; align-items: center; justify-content: center;">
                                 Examen Final
                               </button>';
