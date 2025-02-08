@@ -33,3 +33,7 @@ input.wpProQuiz_button {
 h4.wpProQuiz_header {
     color: black;
 }
+
+.quiz-name {
+    margin: auto;
+}
