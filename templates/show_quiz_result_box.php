@@ -6,14 +6,6 @@ if (!function_exists('learndash_get_course_id')) {
     require_once WP_PLUGIN_DIR . '/sfwd-lms/includes/course/ld-course-functions.php';
 }
 
-// Debug output
-error_log('Debug Quiz Results:');
-error_log('Current Quiz ID: ' . $quiz->getID());
-$course_id = learndash_get_course_id();
-error_log('Course ID: ' . $course_id);
-error_log('User ID: ' . get_current_user_id());
-$first_quiz_id = get_post_meta($course_id, '_first_quiz_id', true);
-error_log('First Quiz ID: ' . $first_quiz_id);
 
 /**
  * Displays Quiz Result Box

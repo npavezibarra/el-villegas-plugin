@@ -18,6 +18,20 @@ function my_custom_ld_course_template( $template ) {
 }
 add_filter( 'template_include', 'my_custom_ld_course_template' );
 
+// Reemplaza Archive COurses
+function villegas_override_learndash_templates( $template ) {
+    if ( is_post_type_archive( 'sfwd-courses' ) ) {
+        $custom_template = plugin_dir_path( __FILE__ ) . 'templates/archive-sfwd-courses.php';
+        if ( file_exists( $custom_template ) ) {
+            return $custom_template;
+        }
+    }
+    return $template;
+}
+add_filter( 'template_include', 'villegas_override_learndash_templates', 99 );
+
+
+
 // Encolar estilo de Course Page
 function my_custom_ld_course_styles() {
     // Encolar estilos específicos de la página del curso
@@ -29,6 +43,11 @@ function my_custom_ld_course_styles() {
     wp_enqueue_style('login-form-styles', plugin_dir_url(__FILE__) . 'login/login-form-styles.css', [], '1.0', 'all');
     wp_enqueue_style('quiz-styles', plugin_dir_url(__FILE__) . 'assets/quiz-styles.css', [], '1.0', 'all');
 
+    // Encolar estilo solo en la página de cursos
+    if (is_post_type_archive('sfwd-courses')) {
+        wp_enqueue_style('archive-courses-style', plugin_dir_url(__FILE__) . 'assets/archive-courses.css', [], '1.0', 'all');
+    }
+
     // Verificar si el shortcode [login_register_form] está presente en la página
     global $post;
     if (isset($post->post_content) && has_shortcode($post->post_content, 'login_register_form')) {
@@ -37,6 +56,7 @@ function my_custom_ld_course_styles() {
     }
 }
 add_action('wp_enqueue_scripts', 'my_custom_ld_course_styles');
+
 
 // Incluir metabox personalizado y otros archivos necesarios
 include_once 'learndash-course-metabox.php';

@@ -116,4 +116,60 @@ input.wpProQuiz_button2 {
     margin: auto;
 }
 
+.quiz-results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
+.quiz-results-table td {
+    padding: 15px 0;
+}
+
+.quiz-name {
+    width: 250px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+}
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    height: 25px;
+    background-color: #E0E0E0;
+    padding: 0;
+    border-radius: 10px;
+    margin: auto;
+}
+
+.progress-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #4c8bf5;
+    border-radius: 10px;
+    transition: width 0.5s ease-out;
+}
+
+.final-progress {
+    background-color: #FFB6C1;
+}
+
+.percentage {
+    width: 80px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 16px;
+    padding-left: 20px;
+}
+
+.quiz-percentage-box {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
