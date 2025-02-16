@@ -207,67 +207,65 @@ function mostrar_comprar_stats() {
                 </div>
 
                 <div id="final-test-button" class="tooltip" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <?php
-                    // Búsqueda de "Examen Final" en quiz
-                    $quiz_query = new WP_Query(array(
-                        'post_type' => 'sfwd-quiz',
-                        'meta_key' => 'course_id',
-                        'meta_value' => $course_id,
-                        'posts_per_page' => -1,
-                    ));
+    <?php
+    global $wpdb;
 
-                    $final_quiz_url = '';
-                    $final_quiz_id = null;
+    // Fetch Final Quiz ID: Get the last quiz attached to the course
+    $final_quiz_id = 0;
+    $course_steps = learndash_course_get_steps_by_type($course_id, 'sfwd-quiz');
+    if (!empty($course_steps)) {
+        $final_quiz_id = end($course_steps);
+    }
 
-                    if ($quiz_query->have_posts()) {
-                        while ($quiz_query->have_posts()) {
-                            $quiz_query->the_post();
-                            if (stripos(get_the_title(), 'Examen Final') !== false) {
-                                $final_quiz_url = get_permalink();
-                                $final_quiz_id = get_the_ID();
-                                break;
-                            }
-                        }
-                    }
-                    wp_reset_postdata();
+    // Get the URL of the Final Quiz
+    $final_quiz_url = ($final_quiz_id) ? get_permalink($final_quiz_id) : '';
 
-                    // (3) NUEVO: En vez de usar completed_lessons === total_lessons,
-                    //     verificamos si el porcentaje es >= 100 para habilitar el botón.
-                    
-                    // Instanciamos la clase (si existiera). O si no, deja tu lógica normal.
-                    // $analytics = new LearnDashCourseAnalytics($user_id, $course_id);
-                    // $final_quiz_data = $analytics->get_final_quiz(); 
-                    // $has_completed_final_quiz = ($final_quiz_data['attempts'] > 0);
-                    // $final_percentage_correct = ($final_quiz_data['percentage'] !== 'N/A') 
-                    //     ? $final_quiz_data['percentage'] 
-                    //     : 0;
+    // Get the latest attempt for Final Quiz
+    $latest_attempt_final = $wpdb->get_row($wpdb->prepare(
+        "SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity 
+        WHERE user_id = %d 
+        AND post_id = %d 
+        AND activity_type = 'quiz' 
+        ORDER BY activity_completed DESC 
+        LIMIT 1",
+        $user_id,
+        $final_quiz_id
+    ));
 
-                    // Si solo quieres reutilizar la misma lógica previa, hazlo. 
-                    // Aquí asumimos que $has_completed_final_quiz llega de otra parte.
-                    // Por simplicidad, comentaré la parte de la clase y hago lo mismo que antes:
-                    list($has_completed_final_quiz, $final_percentage_correct) = get_latest_quiz_percentage($user_id, $final_quiz_id);
+    $final_quiz_score = 0;
+    $has_completed_final_quiz = false;
 
-                    // -- Aquí la condición que cambia:
-                    // en vez de ($completed_lessons === $total_lessons), usamos (int)$percentage_complete >= 100
-                    if ((int)$percentage_complete >= 100 && !empty($final_quiz_url) && !$has_completed_final_quiz) {
-                        // Mostrar botón Final Quiz habilitado
-                        echo '<button onclick="window.location.href=\'' . esc_url($final_quiz_url) . '\'" style="width: 100%; background-color: #4c8bf5; color: white; border: none; padding: 10px 0px; border-radius: 5px; font-size: 12px;">
-                                Examen Final
-                              </button>';
-                    } elseif ($has_completed_final_quiz) {
-                        // Mostrar el porcentaje en una cajita
-                        echo '<div class="quiz-result" style="background-color: #e0e0e0; border-radius: 5px; text-align: center;">';
-                        echo "<strong>" . esc_html($final_percentage_correct) . "%</strong><p style='font-size: 9px;'>Examen Final</p>";
-                        echo '</div>';
-                    } else {
-                        // No hay intentos y el progreso no es 100% => botón deshabilitado
-                        echo '<button id="final-evaluation-button" style="width: 100%; background-color: #ccc; color: #333; border: none; padding: 10px 0px; border-radius: 5px; font-size: 14px; cursor: not-allowed; display: flex; align-items: center; justify-content: center;">
-                                Examen Final
-                              </button>';
-                    }
-                    ?>
-                    <span class="tooltiptext">Completa todas las lecciones de este curso para tomar el Examen Final</span>
-                </div>
+    if ($latest_attempt_final) {
+        $final_quiz_score = $wpdb->get_var($wpdb->prepare(
+            "SELECT activity_meta_value FROM {$wpdb->prefix}learndash_user_activity_meta 
+            WHERE activity_id = %d 
+            AND activity_meta_key = 'percentage'",
+            $latest_attempt_final->activity_id
+        ));
+        $has_completed_final_quiz = ($final_quiz_score !== null && $final_quiz_score > 0);
+    }
+
+    // If user has completed all lessons and not taken the final quiz yet, show the button
+    if ((int)$percentage_complete >= 100 && !empty($final_quiz_url) && !$has_completed_final_quiz) {
+        echo '<button onclick="window.location.href=\'' . esc_url($final_quiz_url) . '\'" style="width: 100%; background-color: #4c8bf5; color: white; border: none; padding: 10px 0px; border-radius: 5px; font-size: 12px;">
+                Examen Final
+              </button>';
+    } elseif ($has_completed_final_quiz) {
+        // Display Final Quiz score instead of the button
+        echo '<div class="quiz-result" style="background-color: #e0e0e0; border-radius: 5px; text-align: center; padding: 10px;">
+                <strong>' . esc_html($final_quiz_score) . '%</strong>
+                <p style="font-size: 9px;">Examen Final</p>
+              </div>';
+    } else {
+        // If progress is not 100% and user hasn't attempted the quiz, disable the button
+        echo '<button id="final-evaluation-button" style="width: 100%; background-color: #ccc; color: #333; border: none; padding: 10px 0px; border-radius: 5px; font-size: 14px; cursor: not-allowed;">
+                Examen Final
+              </button>';
+    }
+    ?>
+    <span class="tooltiptext">Completa todas las lecciones de este curso para tomar el Examen Final</span>
+</div>
+
             </div>
         </div>
         <?php
