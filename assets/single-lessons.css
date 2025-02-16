@@ -54,7 +54,7 @@ span#status-complete {
     padding: 3px 5px;
     bottom: 3px;
 }
-
+/* BORRE PARA UNIFORMAR LESSON COMPLETED Y NOT COMPLETED
 li.lesson-item.not-completed.current-lesson {
     padding: 10px;
 }
@@ -62,6 +62,7 @@ li.lesson-item.not-completed.current-lesson {
 li.lesson-item.not-completed {
     padding: 10px;
 }
+*/
 .learndash-wrapper #learndash_mark_complete_button:disabled, .learndash-wrapper .learndash_mark_complete_button:disabled {
     background: #4c4c4c !important;
     cursor: pointer;

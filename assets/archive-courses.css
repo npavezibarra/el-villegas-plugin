@@ -36,7 +36,7 @@ main#main-course-grid {
     height: 100%;
     object-fit: cover;
     object-position: center;
-    border-radius: 5px;
+    border-radius: 5px 5px 0px 0px;
 }
 
 /* EVALUACIONES WIDGET */
@@ -91,6 +91,12 @@ main#main-course-grid {
 
 #bottom-course-card {
     padding: 20px;
+}
+
+.course-post-evaluations {
+    border-top: 1px solid #cccccc;
+    border-radius: 0px;
+    border-bottom: 1px solid #cccccc;
 }
 
 
