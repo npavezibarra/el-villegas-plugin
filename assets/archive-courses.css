@@ -90,7 +90,7 @@ main#main-course-grid {
 }
 
 #bottom-course-card {
-    padding: 20px;
+    padding: 20px 20px 0px 20px;
 }
 
 .course-post-evaluations {
@@ -99,5 +99,6 @@ main#main-course-grid {
     border-bottom: 1px solid #cccccc;
 }
 
-
-
+footer.entry-footer {
+    padding: 20px;
+}

@@ -74,6 +74,9 @@ require_once plugin_dir_path(__FILE__) . 'login/process-registration.php';
 /* CLASSES */
 require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
 require_once plugin_dir_path(__FILE__) . 'shortcodes/quiz-class-shortcodes.php';
+/* AJAX HANDLER*/
+require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
+
 
 
 // Customize LearnDash quiz result template by replacing the original with a custom one.

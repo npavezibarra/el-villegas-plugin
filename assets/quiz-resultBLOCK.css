@@ -173,3 +173,9 @@ input.wpProQuiz_button2 {
     margin-top: 10px;
     border-radius: 5px;
 }
+
+/* OCULTAR 3 placeholder */
+
+span.quiz-percentage {
+    display: none;
+}

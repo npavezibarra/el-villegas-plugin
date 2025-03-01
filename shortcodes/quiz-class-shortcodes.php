@@ -217,7 +217,7 @@ function test_quiz_analytics_shortcode($atts) {
     $course_id = $atts['course_id']; // Use the course_id passed in the shortcode
 
     // Instantiate the class
-    $user_quiz_analytics = new LearnDashCourseAnalytics($user_id, $course_id);
+    $user_quiz_analytics = new QuizAnalytics($quiz_id, $user_id);
 
     // Get First Quiz Results
     $first_quiz_data = $user_quiz_analytics->get_first_quiz();

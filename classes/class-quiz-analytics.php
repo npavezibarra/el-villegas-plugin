@@ -1,245 +1,147 @@
 <?php
+class QuizAnalytics {
+    private $quiz_id;
+    private $course_id;
+    private $first_quiz_id;
+    private $is_final_quiz;
+    private $user_id;
 
-/**
- * Clase para obtener datos de quiz (primer quiz y quiz final) de un curso LearnDash.
- */
-class LearnDashCourseAnalytics {
-    protected $user_id;
-    protected $course_id;
-
-    public function __construct($user_id, $course_id) {
-        $this->user_id   = (int) $user_id;
-        $this->course_id = (int) $course_id;
-    }
-
-    /**
-     * Devuelve el título del curso.
-     */
-    public function get_course_title() {
-        return get_the_title($this->course_id);
-    }
-
-    /**
-     * Obtiene información del "primer quiz" definido en la meta _first_quiz_id.
-     * Retorna un array con 'score' y 'percentage' del último intento.
-     */
-    public function get_first_quiz() {
-        // 1) Verificar si el curso existe
-        $course_title = $this->get_course_title();
-        if (!$course_title) {
-            // Si no existe el curso, devolvemos algo por defecto
-            return array(
-                'score'      => 0,
-                'percentage' => 'N/A',
-                'attempts'   => 0,
-            );
-        }
-
-        // 2) Obtener el ID del primer quiz
-        $first_quiz_id = get_post_meta($this->course_id, '_first_quiz_id', true);
-        if (empty($first_quiz_id)) {
-            // Si no hay primer quiz definido
-            return array(
-                'score'      => 0,
-                'percentage' => 'N/A',
-                'attempts'   => 0,
-            );
-        }
-
-        // 3) Mirar en el user meta '_sfwd-quizzes' todos los intentos
-        $attempts_data = get_user_meta($this->user_id, '_sfwd-quizzes', true);
-        if (empty($attempts_data) || !is_array($attempts_data)) {
-            // Si el usuario no ha intentado nada
-            return array(
-                'score'      => 0,
-                'percentage' => 'N/A',
-                'attempts'   => 0,
-            );
-        }
-
-        $last_attempt_percentage = null;
-        $last_attempt_score      = null;
-        $attempt_count           = 0;
-
-        foreach ($attempts_data as $attempt) {
-            if (!is_array($attempt)) {
-                continue;
-            }
-            // ¿Este intento corresponde al primer quiz?
-            if (isset($attempt['quiz']) && (int) $attempt['quiz'] === (int) $first_quiz_id) {
-                $attempt_count++;
-
-                // Intentamos obtener el activity_id o statistic_ref_id
-                $activity_id = 0;
-                if (!empty($attempt['activity_id'])) {
-                    $activity_id = (int) $attempt['activity_id'];
-                } elseif (!empty($attempt['statistic_ref_id'])) {
-                    $activity_id = (int) $attempt['statistic_ref_id'];
-                }
-
-                // Buscamos el 'percentage' desde la tabla user_activity_meta
-                $percentage = null;
-                $score      = null;
-
-                // Si tenemos activity_id, consultamos
-                if ($activity_id) {
-                    global $wpdb;
-                    // Sacamos el percentage
-                    $percentage = $wpdb->get_var(
-                        $wpdb->prepare(
-                            "SELECT activity_meta_value
-                               FROM {$wpdb->prefix}learndash_user_activity_meta
-                              WHERE activity_id = %d
-                                AND activity_meta_key = 'percentage'",
-                            $activity_id
-                        )
-                    );
-                    // También podríamos sacar score si está guardado:
-                    $score = $wpdb->get_var(
-                        $wpdb->prepare(
-                            "SELECT activity_meta_value
-                               FROM {$wpdb->prefix}learndash_user_activity_meta
-                              WHERE activity_id = %d
-                                AND activity_meta_key = 'score'",
-                            $activity_id
-                        )
-                    );
-                }
-
-                // Si no se encuentra nada en DB, probamos fallback del array
-                if (($percentage === null || $percentage === '') && isset($attempt['percentage'])) {
-                    $percentage = $attempt['percentage'];
-                }
-                if (($score === null || $score === '') && isset($attempt['count'])) {
-                    // Ojo: a veces 'count' es el número de preguntas, no la puntuación.
-                    // Ajusta según necesites.
-                    $score = $attempt['count'];
-                }
-
-                // Guardamos este intento como "último" (si quieres el primero, no sobrescribas)
-                $last_attempt_percentage = ($percentage !== null && $percentage !== '') 
-                    ? $percentage 
-                    : $last_attempt_percentage;
-                $last_attempt_score      = ($score !== null && $score !== '') 
-                    ? $score 
-                    : $last_attempt_score;
-            }
-        }
-
-        // Si no hubo intentos, retornamos algo por defecto
-        if ($attempt_count === 0) {
-            return array(
-                'score'      => 0,
-                'percentage' => 'N/A',
-                'attempts'   => 0,
-            );
-        }
-
-        // Retornamos la info del último intento encontrado
-        return array(
-            'score'      => $last_attempt_score  ?: 0,
-            'percentage' => ($last_attempt_percentage !== null) ? $last_attempt_percentage : 'N/A',
-            'attempts'   => $attempt_count,
-        );
-    }
-
-    /**
-     * Obtiene información del "quiz final" (primer quiz encontrado en los pasos del curso).
-     * Retorna un array con 'score' y 'percentage' del último intento.
-     */
-    public function get_final_quiz() {
-        // 1) Verificar si el curso existe
-        $course_title = $this->get_course_title();
-        if (!$course_title) {
-            return array(
-                'score'      => 0,
-                'percentage' => 'N/A',
-                'attempts'   => 0,
-            );
-        }
-
-        // 2) Obtener steps del curso
-        $course_steps = get_post_meta($this->course_id, 'ld_course_steps', true);
-        if (!empty($course_steps) && !is_array($course_steps)) {
-            $course_steps = @unserialize($course_steps);
-        }
-
-        $final_quiz_id = null;
-        if (!empty($course_steps['steps']) && is_array($course_steps['steps'])) {
-            foreach ($course_steps['steps'] as $step) {
-                if (!empty($step['sfwd-quiz']) && is_array($step['sfwd-quiz'])) {
-                    foreach ($step['sfwd-quiz'] as $quiz_id => $quiz_data) {
-                        $final_quiz_id = $quiz_id;
-                        break 2;
-                    }
-                }
-            }
-        }
-
-        // Si no hay quiz final
-        if (!$final_quiz_id) {
-            return array(
-                'score'      => 0,
-                'percentage' => 'N/A',
-                'attempts'   => 0,
-            );
-        }
-
+    public function __construct($quiz_id, $user_id = null) {
         global $wpdb;
-        // 3) Conseguir todos los activity_ids para este quiz
-        $activity_ids = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT activity_id 
-                 FROM {$wpdb->prefix}learndash_user_activity
-                 WHERE user_id = %d
-                   AND course_id = %d
-                   AND post_id = %d
-                   AND activity_type = 'quiz'
-                 ORDER BY activity_id ASC",
-                $this->user_id,
-                $this->course_id,
-                $final_quiz_id
-            )
-        );
+        $this->quiz_id = intval($quiz_id);
+        $this->user_id = $user_id ? intval($user_id) : get_current_user_id();
 
-        $attempt_count = count($activity_ids);
-        if ($attempt_count === 0) {
-            return array(
-                'score'      => 0,
-                'percentage' => 'N/A',
-                'attempts'   => 0,
-            );
+        // Step 1: Find the Course ID this quiz is attached to
+        $this->course_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT post_id FROM {$wpdb->postmeta} 
+             WHERE meta_key = 'ld_course_steps' 
+             AND meta_value LIKE %s",
+            '%' . $this->quiz_id . '%'
+        ));
+
+        // Step 2: Find the First Quiz (if exists)
+        $this->first_quiz_id = $this->course_id ? $wpdb->get_var($wpdb->prepare(
+            "SELECT meta_value FROM {$wpdb->postmeta} 
+             WHERE post_id = %d AND meta_key = '_first_quiz_id'",
+            $this->course_id
+        )) : null;
+
+        // Step 3: Check if this quiz is the Final Quiz
+        $this->is_final_quiz = ($this->course_id !== null);
+    }
+
+    /**
+     * Returns the Course ID for this quiz
+     */
+    public function getCourse() {
+        return $this->course_id ? $this->course_id : "Doesn't have";
+    }
+
+    /**
+     * Returns the First Quiz ID for the course
+     */
+    public function getFirstQuiz() {
+        return $this->first_quiz_id ? $this->first_quiz_id : "Doesn't have";
+    }
+
+    /**
+     * Returns the Final Quiz ID (if this quiz is final)
+     */
+    public function getFinalQuiz() {
+        return $this->is_final_quiz ? $this->quiz_id : "Doesn't have";
+    }
+
+    /**
+     * Returns User Performance Data for the First Quiz
+     */
+    public function getFirstQuizPerformance() {
+        if (!$this->first_quiz_id) {
+            return array('score' => 0, 'percentage' => 'N/A', 'attempts' => 0);
         }
+        return $this->getUserQuizPerformance($this->first_quiz_id);
+    }
 
-        // 4) Tomar el ULTIMO activity_id (el de mayor índice en $activity_ids) como último intento
-        $last_activity_id = end($activity_ids);
+    /**
+     * Returns User Performance Data for the Final Quiz
+     */
+    public function getFinalQuizPerformance() {
+        if (!$this->is_final_quiz) {
+            return array('score' => 0, 'percentage' => 'N/A', 'attempts' => 0);
+        }
+        return $this->getUserQuizPerformance($this->quiz_id);
+    }
 
-        // Sacamos percentage
-        $last_percentage = $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT activity_meta_value
-                 FROM {$wpdb->prefix}learndash_user_activity_meta
-                 WHERE activity_id = %d
-                   AND activity_meta_key = 'percentage'",
-                $last_activity_id
-            )
-        );
-        // Sacamos score también
-        $last_score = $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT activity_meta_value
-                 FROM {$wpdb->prefix}learndash_user_activity_meta
-                 WHERE activity_id = %d
-                   AND activity_meta_key = 'score'",
-                $last_activity_id
-            )
-        );
-
-        // Devolvemos datos
+    /**
+     * Generic function to retrieve User Quiz Performance
+     */
+    private function getUserQuizPerformance($quiz_id) {
+        global $wpdb;
+    
+        $activity_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity
+             WHERE user_id = %d AND post_id = %d AND activity_type = 'quiz'
+             ORDER BY activity_completed DESC LIMIT 1",
+            $this->user_id,
+            $quiz_id
+        ));
+    
+        if (!$activity_id) {
+            return array('score' => 0, 'percentage' => 'N/A', 'attempts' => 0, 'date' => "No Attempts");
+        }
+    
+        $score = $wpdb->get_var($wpdb->prepare(
+            "SELECT activity_meta_value FROM {$wpdb->prefix}learndash_user_activity_meta
+             WHERE activity_id = %d AND activity_meta_key = 'score'",
+            $activity_id
+        ));
+    
+        $percentage = $wpdb->get_var($wpdb->prepare(
+            "SELECT activity_meta_value FROM {$wpdb->prefix}learndash_user_activity_meta
+             WHERE activity_id = %d AND activity_meta_key = 'percentage'",
+            $activity_id
+        ));
+    
+        // Get the latest attempt date
+        $latest_attempt_timestamp = $wpdb->get_var($wpdb->prepare(
+            "SELECT activity_completed FROM {$wpdb->prefix}learndash_user_activity
+             WHERE activity_id = %d",
+            $activity_id
+        ));
+    
+        // Convert timestamp to readable format
+        // In your getUserQuizPerformance() method, change:
+        $attempt_date = (!empty($latest_attempt_timestamp)) ? date('d F Y', $latest_attempt_timestamp) : "No Attempts";
+    
         return array(
-            'score'      => (!empty($last_score) || $last_score === '0') ? $last_score : 0,
-            'percentage' => (!empty($last_percentage) || $last_percentage === '0') ? $last_percentage : 'N/A',
-            'attempts'   => $attempt_count,
+            'score' => !empty($score) ? $score : 0,
+            'percentage' => !empty($percentage) ? $percentage : 'N/A',
+            'attempts' => 1, // Since we fetched only the last attempt
+            'date' => $attempt_date
         );
+    }
+    
+
+    /**
+     * Display results in HTML
+     */
+    public function displayResults() {
+        echo "<div style='background: #f4f4f4; padding: 10px; border-radius: 5px;'>";
+        echo "<p><strong>Quiz IDdddd:</strong> " . esc_html($this->quiz_id) . "</p>";
+        echo "<p><strong>Course ID:</strong> " . esc_html($this->getCourse()) . "</p>";
+        echo "<p><strong>First Quiz ID:</strong> " . esc_html($this->getFirstQuiz()) . "</p>";
+        echo "<p><strong>Final Quiz ID:</strong> " . esc_html($this->getFinalQuiz()) . "</p>";
+
+        // Show First Quiz Performance
+        $first_quiz_performance = $this->getFirstQuizPerformance();
+        echo "<p><strong>First Quiz Score:</strong> " . esc_html($first_quiz_performance['score']) . "</p>";
+        echo "<p><strong>First Quiz Percentage:</strong> " . esc_html($first_quiz_performance['percentage']) . "</p>";
+
+        // Show Final Quiz Performance
+        $final_quiz_performance = $this->getFinalQuizPerformance();
+        echo "<p><strong>Final Quiz Score:</strong> " . esc_html($final_quiz_performance['score']) . "</p>";
+        echo "<p><strong>Final Quiz Percentage:</strong> " . esc_html($final_quiz_performance['percentage']) . "</p>";
+
+        echo "</div>";
     }
 }
+

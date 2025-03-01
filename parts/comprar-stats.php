@@ -171,7 +171,7 @@ function mostrar_comprar_stats() {
                 <button onclick="window.location.href='<?php echo esc_url(get_permalink($product_id)); ?>'"
                         class="button buy-button" 
                         style="flex: 1; background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer; text-align: center;">
-                    Comprar Cursoss
+                    Comprar Curso
                 </button>
             </div>
         </div>
