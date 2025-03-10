@@ -95,27 +95,77 @@ if (!defined('ABSPATH')) {
             // (1) Always show the current quiz container
             ?>
             <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr style="height: 50px;">
-                        <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
-                            <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                                <?php echo esc_html(get_the_title()); ?>
-                            </div>
-                            <div style="color: #666; font-size: 14px;">
-                                <?php echo esc_html(date('F j')); ?>
-                            </div>
-                        </td>
-                        <td style="width: 40%; padding: 10px; vertical-align: middle;">
-                            <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                                <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-                            </div>
-                        </td>
-                        <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                            <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="height: 50px;">
+            <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
+                <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                    <?php echo esc_html(get_the_title()); ?>
+                </div>
+                <div style="color: #666; font-size: 14px;">
+                    <?php echo esc_html(date('F j')); ?>
+                </div>
+            </td>
+            <td style="width: 40%; padding: 10px; vertical-align: middle;">
+                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                    <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                </div>
+            </td>
+            <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
+                <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<?php
+// Obtener el ID del curso asociado al quiz actual
+$quiz_id = isset($post->ID) ? $post->ID : 0;
+$course_id = learndash_get_course_id($quiz_id); // Obtiene el Course ID del quiz
+
+// Obtener el Product ID asociado al curso
+$product_id = get_post_meta($course_id, '_linked_woocommerce_product', true);
+if (empty($product_id)) {
+    $args = array(
+        'post_type' => 'product',
+        'meta_query' => array(
+            array(
+                'key' => '_related_course',
+                'value' => $course_id,
+                'compare' => 'LIKE',
+            ),
+        ),
+        'posts_per_page' => 1,
+    );
+    $products = get_posts($args);
+    if (!empty($products)) {
+        $product_id = $products[0]->ID;
+    }
+}
+
+// Obtener la URL del producto en WooCommerce
+$product_url = get_permalink($product_id);
+
+// Verificar si el usuario ya tiene acceso al curso (si ha comprado el curso)
+$user_id = get_current_user_id();
+$has_access = sfwd_lms_has_access($course_id, $user_id);
+
+// Generar el texto y la URL del botón dependiendo de si el usuario ha comprado el curso
+if ($has_access) {
+    // Si el usuario tiene acceso al curso (lo ha comprado), mostramos el enlace "IR AL CURSO"
+    $button_text = 'IR AL CURSO';
+    $button_url = get_permalink($course_id); // URL del curso
+} else {
+    // Si el usuario no tiene acceso al curso, mostramos el enlace "COMPRAR"
+    $button_text = 'COMPRAR';
+    $button_url = $product_url; // URL del producto en WooCommerce
+}
+?>
+
+<!-- Botón "COMPRAR" o "IR AL CURSO" -->
+<button onclick="window.location.href='<?php echo esc_url($button_url); ?>'" 
+        style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">
+    <?php echo esc_html($button_text); ?>
+</button>
 
             <?php
             // (2) Show the first quiz container only if this is NOT the first quiz
