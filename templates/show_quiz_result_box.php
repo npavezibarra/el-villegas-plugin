@@ -11,6 +11,12 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
+<style>
+.table-quiz-name {
+    text-align: left !important;
+}
+</style>
+
 <!-- (A) LearnDash default sending container -->
 <div style="display: none;" class="wpProQuiz_sending">
     <h4 class="wpProQuiz_header"><?php esc_html_e('Results', 'learndash'); ?></h4>
@@ -91,7 +97,7 @@ if (!defined('ABSPATH')) {
             <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr style="height: 50px;">
-                        <td style="width: 20%; padding: 10px; vertical-align: middle;">
+                        <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
                             <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
                                 <?php echo esc_html(get_the_title()); ?>
                             </div>
@@ -99,7 +105,7 @@ if (!defined('ABSPATH')) {
                                 <?php echo esc_html(date('F j')); ?>
                             </div>
                         </td>
-                        <td style="width: 60%; padding: 10px; vertical-align: middle;">
+                        <td style="width: 40%; padding: 10px; vertical-align: middle;">
                             <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
                                 <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
                             </div>
@@ -131,7 +137,7 @@ if (!defined('ABSPATH')) {
                 <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr style="height: 50px;">
-                            <td style="width: 20%; padding: 10px; vertical-align: middle;">
+                            <td style="width: 20%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
                                 <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
                                     <?php echo esc_html($first_quiz_name); ?>
                                 </div>
