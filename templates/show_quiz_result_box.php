@@ -4,201 +4,181 @@
  *
  * @since 3.2.0
  * @version 4.17.0
- *
- * @var WpProQuiz_Model_Quiz     $quiz           WpProQuiz_Model_Quiz instance.
- * @var array                    $shortcode_atts Array of shortcode attributes to create the Quiz.
- * @var int                      $question_count Number of Questions to display.
- * @var array                    $result         Array of Quiz Result Messages.
- * @var WpProQuiz_View_FrontQuiz $quiz_view      WpProQuiz_View_FrontQuiz instance.
- *
- * @package LearnDash\Templates\Legacy\Quiz
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+if (!defined('ABSPATH')) {
+    exit;
 }
 ?>
 
+<!-- (A) LearnDash default sending container -->
 <div style="display: none;" class="wpProQuiz_sending">
-	<h4 class="wpProQuiz_header"><?php esc_html_e( 'Results', 'learndash' ); ?></h4>
-	<p>
-		<div>
-			<?php
-			// "Results are being recorded" message
-			echo wp_kses_post(
-				SFWD_LMS::get_template(
-					'learndash_quiz_messages',
-					array(
-						'quiz_post_id' => $quiz->getID(),
-						'context'      => 'quiz_complete_message',
-						// translators: placeholder: Quiz.
-						'message'      => sprintf( esc_html_x( '%s complete. Results are being recorded.', 'placeholder: Quiz', 'learndash' ), LearnDash_Custom_Label::get_label( 'quiz' ) ),
-					)
-				)
-			);
-			?>
-		</div>
-		<div>
-			<dd class="course_progress">
-				<div class="course_progress_blue sending_progress_bar" style="width: 0%;"></div>
-			</dd>
-		</div>
-	</p>
+    <h4 class="wpProQuiz_header"><?php esc_html_e('Results', 'learndash'); ?></h4>
+    <p>
+        <div>
+            <?php
+            echo wp_kses_post(
+                SFWD_LMS::get_template(
+                    'learndash_quiz_messages',
+                    array(
+                        'quiz_post_id' => $quiz->getID(),
+                        'context'      => 'quiz_complete_message',
+                        'message'      => sprintf(
+                            esc_html_x('%s complete. Results are being recorded.', 'placeholder: Quiz', 'learndash'),
+                            LearnDash_Custom_Label::get_label('quiz')
+                        ),
+                    )
+                )
+            );
+            ?>
+        </div>
+        <div>
+            <dd class="course_progress">
+                <div class="course_progress_blue sending_progress_bar" style="width: 0%;"></div>
+            </dd>
+        </div>
+    </p>
 </div>
 
+<!-- (B) LearnDash default results container -->
 <div style="display: none;" class="wpProQuiz_results">
-	<h4 class="wpProQuiz_header"><?php esc_html_e( 'Results', 'learndash' ); ?></h4>
+    <h4 class="wpProQuiz_header"><?php esc_html_e('Results', 'learndash'); ?></h4>
 
-	<?php
-if ( ! $quiz->isHideResultCorrectQuestion() ) :
-?>
+    <?php
+    if (!$quiz->isHideResultCorrectQuestion()) :
 
-<!-- (3) Default LearnDash results output -->
-<?php
-	if ( ! $quiz->isHideResultQuizTime() ) {
-		?>
-		<p class="wpProQuiz_quiz_time">
-			<?php
-			echo wp_kses_post(
-				SFWD_LMS::get_template(
-					'learndash_quiz_messages',
-					array(
-						'quiz_post_id' => $quiz->getID(),
-						'context'      => 'quiz_your_time_message',
-						// translators: placeholder: quiz time.
-						'message'      => sprintf( esc_html_x( 'Your time: %s', 'placeholder: quiz time.', 'learndash' ), '<span></span>' ),
-					)
-				)
-			);
-			?>
-		</p>
-		<?php
-	}
-	?>
-    <!-- Hidden default results that we'll use to get the data -->
-    <div style="display: none;">
-        <span class="wpProQuiz_correct_answer">0</span>
-        <span class="total-questions"><?php echo intval( $question_count ); ?></span>
-    </div>
+        if (!$quiz->isHideResultQuizTime()) {
+            ?>
+            <p class="wpProQuiz_quiz_time">
+                <?php
+                echo wp_kses_post(
+                    SFWD_LMS::get_template(
+                        'learndash_quiz_messages',
+                        array(
+                            'quiz_post_id' => $quiz->getID(),
+                            'context'      => 'quiz_your_time_message',
+                            'message'      => sprintf(
+                                esc_html_x('Your time: %s', 'placeholder: quiz time.', 'learndash'),
+                                '<span></span>'
+                            ),
+                        )
+                    )
+                );
+                ?>
+            </p>
+            <?php
+        }
+        ?>
+        <div style="display: none;">
+            <span class="wpProQuiz_correct_answer">0</span>
+            <span class="total-questions"><?php echo intval($question_count); ?></span>
+        </div>
 
-    <!-- Styled table for quiz results -->
-<div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-    <table style="width: 100%; border-collapse: collapse;">
-        <tr style="height: 50px;">
-            <td style="width: 20%; padding: 10px; vertical-align: middle;">
-                <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                    <?php echo esc_html(get_the_title()); ?>
+        <?php
+        global $post;
+        $quiz_id = isset($post->ID) ? $post->ID : 0;
+
+        if (!class_exists('QuizAnalytics')) {
+            require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
+        }
+
+        if (class_exists('QuizAnalytics')) {
+            $quiz_checker = new QuizAnalytics($quiz_id);
+            $is_first_quiz = $quiz_checker->isFirstQuiz();
+
+            // (1) Always show the current quiz container
+            ?>
+            <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="height: 50px;">
+                        <td style="width: 20%; padding: 10px; vertical-align: middle;">
+                            <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                                <?php echo esc_html(get_the_title()); ?>
+                            </div>
+                            <div style="color: #666; font-size: 14px;">
+                                <?php echo esc_html(date('F j')); ?>
+                            </div>
+                        </td>
+                        <td style="width: 60%; padding: 10px; vertical-align: middle;">
+                            <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                                <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                            </div>
+                        </td>
+                        <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
+                            <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <?php
+            // (2) Show the first quiz container only if this is NOT the first quiz
+            if (!$is_first_quiz) {
+                $first_quiz_id = $quiz_checker->getFirstQuiz();
+                $first_quiz_name = ($first_quiz_id !== "Doesn't have") 
+                    ? get_the_title($first_quiz_id) 
+                    : "Doesn't exist";
+
+                $perf = $quiz_checker->getFirstQuizPerformance();
+                $rawPct = $perf['percentage'];
+                $pctNumeric = (is_numeric($rawPct)) ? round(floatval($rawPct)) : 0; // Round to integer
+                $first_quiz_percentage = $pctNumeric . '%';
+
+                $first_quiz_date = (!empty($perf['date']) && strtotime($perf['date']) !== false)
+                    ? date('F j', strtotime($perf['date']))
+                    : "No Attempts";
+                ?>
+                <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="height: 50px;">
+                            <td style="width: 20%; padding: 10px; vertical-align: middle;">
+                                <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                                    <?php echo esc_html($first_quiz_name); ?>
+                                </div>
+                                <div style="color: #666; font-size: 14px;">
+                                    <?php echo esc_html($first_quiz_date); ?>
+                                </div>
+                            </td>
+                            <td style="width: 60%; padding: 10px; vertical-align: middle;">
+                                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                                    <div id="first-quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                                </div>
+                            </td>
+                            <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
+                                <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
+                                    <?php echo esc_html($first_quiz_percentage); ?>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-                <div style="color: #666; font-size: 14px;">
-					<?php echo date('F j'); ?>
-				</div>
-            </td>
-            <td style="width: 60%; padding: 10px; vertical-align: middle;">
-                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                    <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-                </div>
-            </td>
-            <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
-            </td>
-        </tr>
-    </table>
-</div>
 
-<?php
-global $post;
-$quiz_id = isset($post->ID) ? $post->ID : 'No Quiz Found';
-
-// Include the class if not already loaded
-if (!class_exists('QuizAnalytics')) {
-    require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
-}
-
-// Check again if the class exists after requiring it
-if (class_exists('QuizAnalytics')) {
-    $quiz_checker = new QuizAnalytics($quiz_id);
-    
-    // Get First Quiz Data
-    $first_quiz_id = $quiz_checker->getFirstQuiz();
-    $first_quiz_name = ($first_quiz_id !== "Doesn't have") ? get_the_title($first_quiz_id) : "Doesn't exist";
-    
-    // Retrieve First Quiz Performance Data
-    $first_quiz_performance = $quiz_checker->getFirstQuizPerformance();
-    
-    // Format the percentage correctly
-    $first_quiz_percentage = (isset($first_quiz_performance['percentage']) && is_numeric($first_quiz_performance['percentage']))
-        ? $first_quiz_performance['percentage'] . '%'
-        : "N/A";
-    
-    // Format the date correctly if available
-	if (!empty($first_quiz_performance['date']) && strtotime($first_quiz_performance['date']) !== false) {
-		$first_quiz_date = date('F j', strtotime($first_quiz_performance['date']));
-	} else {
-		$first_quiz_date = "No Attempts";
-	}
-
-} else {
-    $first_quiz_name = "Class Not Found";
-    $first_quiz_percentage = "N/A";
-    $first_quiz_date = "No Attempts";
-}
-?>
-
-<div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-    <table style="width: 100%; border-collapse: collapse;">
-        <tr style="height: 50px;">
-            <td style="width: 20%; padding: 10px; vertical-align: middle;">
-                <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                    <?php echo esc_html($first_quiz_name); ?>
-                </div>
-                <div style="color: #666; font-size: 14px;">
-                    <?php echo esc_html($first_quiz_date); ?>
-                </div>
-            </td>
-            <td style="width: 60%; padding: 10px; vertical-align: middle;">
-                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                    <div id="first-quiz-progress-bar" style="width: <?php echo esc_html(str_replace('%', '', $first_quiz_percentage)); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-                </div>
-            </td>
-            <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
-                    <?php echo esc_html($first_quiz_percentage); ?>
-                </span>
-            </td>
-        </tr>
-    </table>
-</div>
-
-<!-- JavaScript to Animate Progress Bar -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    var percentage = <?php echo json_encode($first_quiz_percentage); ?>;
-    document.getElementById("first-quiz-progress-bar").style.width = percentage + "%";
-});
-</script>
-
-<script>
-    jQuery(document).ready(function($) {
-        $(document).on('learndash-quiz-finished', function() {
-            var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
-            var totalQuestions = parseInt($('.total-questions').text(), 10);
-            
-            if (!isNaN(correctAnswers) && totalQuestions > 0) {
-                var percentage = Math.round((correctAnswers / totalQuestions) * 100);
-                
-                // Update percentage display
-                $('#quiz-percentage').text(percentage + '%');
-                
-                // Update progress bar width
-                $('#quiz-progress-bar').css('width', percentage + '%');
+                <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var pct = <?php echo json_encode(str_replace('%', '', $first_quiz_percentage)); ?>;
+                    document.getElementById("first-quiz-progress-bar").style.width = pct + "%";
+                });
+                </script>
+            <?php
             }
-        });
-    });
-</script>
+        }
+        ?>
 
-<?php
-endif;
-?>
+        <script>
+        jQuery(document).ready(function($) {
+            $(document).on('learndash-quiz-finished', function() {
+                var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
+                var totalQuestions = parseInt($('.total-questions').text(), 10);
+
+                if (!isNaN(correctAnswers) && totalQuestions > 0) {
+                    var percentage = Math.round((correctAnswers / totalQuestions) * 100);
+                    $('#quiz-percentage').text(percentage + '%');
+                    $('#quiz-progress-bar').css('width', percentage + '%');
+                }
+            });
+        });
+        </script>
+    <?php endif; ?>
 
 	
 	<p class="wpProQuiz_time_limit_expired" style="display: none;">

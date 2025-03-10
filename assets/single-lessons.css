@@ -10,6 +10,7 @@
     font-size: 14px;
     margin-top: 0px;
     color: #333;
+    margin-bottom: 2px;
 }
 
 li.course-section-header > h4 {
@@ -83,4 +84,9 @@ a.ld-button {
 
 input.wpProQuiz_button {
     background: black !important;
+}
+
+
+.learndash-wrapper .ld-content-actions {
+    border-top: 1px solid #c0bebe !important;
 }

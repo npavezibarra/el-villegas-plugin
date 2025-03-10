@@ -26,6 +26,9 @@ class QuizAnalytics {
             $this->course_id
         )) : null;
 
+        // Ensure first_quiz_id is an integer if valid, otherwise handle as not set
+        $this->first_quiz_id = $this->first_quiz_id ? intval($this->first_quiz_id) : 0;
+
         // Step 3: Check if this quiz is the Final Quiz
         $this->is_final_quiz = ($this->course_id !== null);
     }
@@ -55,8 +58,8 @@ class QuizAnalytics {
      * Returns User Performance Data for the First Quiz
      */
     public function getFirstQuizPerformance() {
-        if (!$this->first_quiz_id) {
-            return array('score' => 0, 'percentage' => 'N/A', 'attempts' => 0);
+        if (!$this->first_quiz_id || $this->first_quiz_id === 0) {
+            return array('score' => 0, 'percentage' => 'N/A', 'attempts' => 0, 'date' => "No Attempts");
         }
         return $this->getUserQuizPerformance($this->first_quiz_id);
     }
@@ -66,7 +69,7 @@ class QuizAnalytics {
      */
     public function getFinalQuizPerformance() {
         if (!$this->is_final_quiz) {
-            return array('score' => 0, 'percentage' => 'N/A', 'attempts' => 0);
+            return array('score' => 0, 'percentage' => 'N/A', 'attempts' => 0, 'date' => "No Attempts");
         }
         return $this->getUserQuizPerformance($this->quiz_id);
     }
@@ -109,7 +112,6 @@ class QuizAnalytics {
         ));
     
         // Convert timestamp to readable format
-        // In your getUserQuizPerformance() method, change:
         $attempt_date = (!empty($latest_attempt_timestamp)) ? date('d F Y', $latest_attempt_timestamp) : "No Attempts";
     
         return array(
@@ -119,14 +121,20 @@ class QuizAnalytics {
             'date' => $attempt_date
         );
     }
-    
+
+    public function isFirstQuiz() {
+        if (!$this->course_id || !$this->first_quiz_id || $this->first_quiz_id === 0) {
+            return true; // Assume this is the first quiz if no first quiz is defined
+        }
+        return ($this->quiz_id == $this->first_quiz_id);
+    }
 
     /**
      * Display results in HTML
      */
     public function displayResults() {
         echo "<div style='background: #f4f4f4; padding: 10px; border-radius: 5px;'>";
-        echo "<p><strong>Quiz IDdddd:</strong> " . esc_html($this->quiz_id) . "</p>";
+        echo "<p><strong>Quiz ID:</strong> " . esc_html($this->quiz_id) . "</p>";
         echo "<p><strong>Course ID:</strong> " . esc_html($this->getCourse()) . "</p>";
         echo "<p><strong>First Quiz ID:</strong> " . esc_html($this->getFirstQuiz()) . "</p>";
         echo "<p><strong>Final Quiz ID:</strong> " . esc_html($this->getFinalQuiz()) . "</p>";
@@ -144,4 +152,3 @@ class QuizAnalytics {
         echo "</div>";
     }
 }
-

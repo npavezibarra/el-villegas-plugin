@@ -198,6 +198,7 @@ ul {
 .lesson-item {
     display: flex;
     align-items: center;
+    padding: 10px;
 }
 
 /* Gray circle for not completed lessons */
@@ -213,6 +214,7 @@ ul {
 /* Add background for the current lesson */
 .lesson-item.current-lesson {
     background-color: #efefef; /* Light gray background for the current lesson */
+    padding: 10px;
 }
 
 /* Combine completed and current lesson */
@@ -251,4 +253,8 @@ ul {
 
 input.wpProQuiz_button {
     margin: auto !important;
+}
+
+.learndash-wrapper .ld-tabs {
+    margin: 9px !important;
 }
