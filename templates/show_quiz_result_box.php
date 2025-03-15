@@ -149,78 +149,103 @@ $product_url = get_permalink($product_id);
 $user_id = get_current_user_id();
 $has_access = sfwd_lms_has_access($course_id, $user_id);
 
-// Generar el texto y la URL del botón dependiendo de si el usuario ha comprado el curso
-if ($has_access) {
-    // Si el usuario tiene acceso al curso (lo ha comprado), mostramos el enlace "IR AL CURSO"
-    $button_text = 'IR AL CURSO';
-    $button_url = get_permalink($course_id); // URL del curso
-} else {
-    // Si el usuario no tiene acceso al curso, mostramos el enlace "COMPRAR"
-    $button_text = 'COMPRAR';
-    $button_url = $product_url; // URL del producto en WooCommerce
+// Verificar si es el "Primer Quiz"
+$quiz_checker = new QuizAnalytics($quiz_id);
+$is_first_quiz = $quiz_checker->isFirstQuiz();
+
+// Solo mostrar el botón y las métricas si es el "Final Quiz"
+if (!$is_first_quiz) {
+    // Obtener la información del First Quiz
+    $first_quiz_id = $quiz_checker->getFirstQuiz();
+    $first_quiz_name = ($first_quiz_id !== "Doesn't have") 
+        ? get_the_title($first_quiz_id) 
+        : "Doesn't exist";
+
+    $perf = $quiz_checker->getFirstQuizPerformance();
+    $first_quiz_percentage = (is_numeric($perf['percentage'])) ? round(floatval($perf['percentage'])) : 0; // First quiz percentage
+
+    // Obtener la fecha de finalización del First Quiz y Final Quiz
+    $first_quiz_date = (!empty($perf['date']) && strtotime($perf['date']) !== false)
+        ? strtotime($perf['date'])
+        : null;
+    
+    $final_quiz_date = (!empty($quiz->completed_date) && strtotime($quiz->completed_date) !== false)
+        ? strtotime($quiz->completed_date)
+        : null;
+
+    // Calcular variación porcentual entre First Quiz y Final Quiz
+    $final_quiz_percentage = $quiz_checker->getFinalQuizPerformance()['percentage']; // Obtener el porcentaje del Final Quiz
+    $percentage_variation = $final_quiz_percentage - $first_quiz_percentage;
+    $percentage_direction = $percentage_variation >= 0 ? 'up' : 'down'; // Si la variación es positiva o negativa
+
+    // Calcular la diferencia en puntos entre el First Quiz y el Final Quiz
+    $points_variation = $final_quiz_percentage - $first_quiz_percentage; // Diferencia en puntos
+
+    // Calcular los días entre el First Quiz y el Final Quiz
+    $days_diff = 0;
+    if ($first_quiz_date && $final_quiz_date) {
+        $days_diff = ceil(abs($final_quiz_date - $first_quiz_date) / (60 * 60 * 24)); // Convertir a días
+    }
+
+    // Si los días de diferencia son 0, asignamos 1 día
+    if ($days_diff == 0) {
+        $days_diff = 1;
+    }
+
+    // Mostrar los resultados en el contenedor quiz-metrics
+    ?>
+    <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="height: 50px;">
+                <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
+                    <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                        <?php echo esc_html($first_quiz_name); ?>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">
+                        <?php echo esc_html(date('F j', $first_quiz_date)); ?>
+                    </div>
+                </td>
+                <td style="width: 40%; padding: 10px; vertical-align: middle;">
+                    <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                        <div id="first-quiz-progress-bar" style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                    </div>
+                </td>
+                <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
+                    <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
+                        <?php echo esc_html($first_quiz_percentage); ?>%
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="quiz-metrics">
+        <!-- Diferencia en puntos -->
+        <div id="quiz-points" style="font-size: 20px; font-weight: bold; color: <?php echo $percentage_direction === 'up' ? 'green' : 'red'; ?>;">
+            <?php
+            echo $percentage_direction === 'up' ? '▲ ' : '▼ ';
+            echo abs($points_variation) . ' puntos';
+            ?>
+        </div>
+
+        <!-- Días entre First Quiz y Final Quiz -->
+        <div id="quiz-days" style="font-size: 20px; font-weight: bold;">
+            <?php echo $days_diff . ' día' . ($days_diff > 1 ? 's' : ''); ?>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var pct = <?php echo json_encode(str_replace('%', '', $first_quiz_percentage)); ?>;
+    document.getElementById("first-quiz-progress-bar").style.width = pct + "%";
+    });
+</script>
+<?php
+    }
 }
 ?>
 
-<!-- Botón "COMPRAR" o "IR AL CURSO" -->
-<button onclick="window.location.href='<?php echo esc_url($button_url); ?>'" 
-        style="background-color: #4c8bf5; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">
-    <?php echo esc_html($button_text); ?>
-</button>
-
-            <?php
-            // (2) Show the first quiz container only if this is NOT the first quiz
-            if (!$is_first_quiz) {
-                $first_quiz_id = $quiz_checker->getFirstQuiz();
-                $first_quiz_name = ($first_quiz_id !== "Doesn't have") 
-                    ? get_the_title($first_quiz_id) 
-                    : "Doesn't exist";
-
-                $perf = $quiz_checker->getFirstQuizPerformance();
-                $rawPct = $perf['percentage'];
-                $pctNumeric = (is_numeric($rawPct)) ? round(floatval($rawPct)) : 0; // Round to integer
-                $first_quiz_percentage = $pctNumeric . '%';
-
-                $first_quiz_date = (!empty($perf['date']) && strtotime($perf['date']) !== false)
-                    ? date('F j', strtotime($perf['date']))
-                    : "No Attempts";
-                ?>
-                <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <tr style="height: 50px;">
-                            <td style="width: 20%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
-                                <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                                    <?php echo esc_html($first_quiz_name); ?>
-                                </div>
-                                <div style="color: #666; font-size: 14px;">
-                                    <?php echo esc_html($first_quiz_date); ?>
-                                </div>
-                            </td>
-                            <td style="width: 60%; padding: 10px; vertical-align: middle;">
-                                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                                    <div id="first-quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-                                </div>
-                            </td>
-                            <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                                <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
-                                    <?php echo esc_html($first_quiz_percentage); ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    var pct = <?php echo json_encode(str_replace('%', '', $first_quiz_percentage)); ?>;
-                    document.getElementById("first-quiz-progress-bar").style.width = pct + "%";
-                });
-                </script>
-            <?php
-            }
-        }
-        ?>
-
-        <script>
+ <script>
         jQuery(document).ready(function($) {
             $(document).on('learndash-quiz-finished', function() {
                 var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
@@ -233,7 +258,7 @@ if ($has_access) {
                 }
             });
         });
-        </script>
+</script>
     <?php endif; ?>
 
 	
