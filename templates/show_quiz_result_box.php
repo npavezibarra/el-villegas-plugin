@@ -129,8 +129,8 @@ if (empty($product_id)) {
         'post_type' => 'product',
         'meta_query' => array(
             array(
-                'key' => '_related_course',
-                'value' => $course_id,
+                'key'     => '_related_course',
+                'value'   => $course_id,
                 'compare' => 'LIKE',
             ),
         ),
@@ -146,12 +146,46 @@ if (empty($product_id)) {
 $product_url = get_permalink($product_id);
 
 // Verificar si el usuario ya tiene acceso al curso (si ha comprado el curso)
-$user_id = get_current_user_id();
+$user_id    = get_current_user_id();
 $has_access = sfwd_lms_has_access($course_id, $user_id);
 
 // Verificar si es el "Primer Quiz"
-$quiz_checker = new QuizAnalytics($quiz_id);
+$quiz_checker  = new QuizAnalytics($quiz_id);
 $is_first_quiz = $quiz_checker->isFirstQuiz();
+
+/**
+ * ----------------------------------------------------------------------
+ *  FETCH AND SET THE FINAL QUIZ COMPLETION DATE, IF WE’RE ON THE FINAL QUIZ
+ * ----------------------------------------------------------------------
+ */
+global $wpdb;
+if (!$is_first_quiz) {
+    // Retrieve the most recent Final Quiz attempt for this user & quiz
+    $final_attempt = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT activity_completed
+               FROM {$wpdb->prefix}learndash_user_activity
+              WHERE user_id      = %d
+                AND post_id      = %d
+                AND activity_type = 'quiz'
+           ORDER BY activity_completed DESC
+              LIMIT 1",
+            $user_id,
+            $quiz_id
+        )
+    );
+
+    // If we got a completion time, store it in $quiz->completed_date
+    // so your existing code can use strtotime($quiz->completed_date)
+    if (!empty($final_attempt)) {
+        // If you have an actual $quiz object, ensure it's defined. 
+        // If $quiz is not defined anywhere else, just create a small stdClass for it:
+        if (!isset($quiz)) {
+            $quiz = new stdClass();
+        }
+        $quiz->completed_date = date('Y-m-d H:i:s', (int) $final_attempt->activity_completed);
+    }
+}
 
 // Solo mostrar el botón y las métricas si es el "Final Quiz"
 if (!$is_first_quiz) {
@@ -162,38 +196,40 @@ if (!$is_first_quiz) {
         : "Doesn't exist";
 
     $perf = $quiz_checker->getFirstQuizPerformance();
-    $first_quiz_percentage = (is_numeric($perf['percentage'])) ? round(floatval($perf['percentage'])) : 0; // First quiz percentage
+    $first_quiz_percentage = (is_numeric($perf['percentage']))
+        ? round(floatval($perf['percentage']))
+        : 0; // First quiz percentage
 
     // Obtener la fecha de finalización del First Quiz y Final Quiz
     $first_quiz_date = (!empty($perf['date']) && strtotime($perf['date']) !== false)
         ? strtotime($perf['date'])
         : null;
-    
+
+    // Here is the final quiz date from the newly set $quiz->completed_date
     $final_quiz_date = (!empty($quiz->completed_date) && strtotime($quiz->completed_date) !== false)
         ? strtotime($quiz->completed_date)
         : null;
 
     // Calcular variación porcentual entre First Quiz y Final Quiz
-    $final_quiz_percentage = $quiz_checker->getFinalQuizPerformance()['percentage']; // Obtener el porcentaje del Final Quiz
-    $percentage_variation = $final_quiz_percentage - $first_quiz_percentage;
-    $percentage_direction = $percentage_variation >= 0 ? 'up' : 'down'; // Si la variación es positiva o negativa
+    $final_quiz_performance = $quiz_checker->getFinalQuizPerformance();
+    $final_quiz_percentage  = $final_quiz_performance['percentage'];
+    $percentage_variation   = $final_quiz_percentage - $first_quiz_percentage;
+    $percentage_direction   = $percentage_variation >= 0 ? 'up' : 'down';
 
     // Calcular la diferencia en puntos entre el First Quiz y el Final Quiz
-    $points_variation = $final_quiz_percentage - $first_quiz_percentage; // Diferencia en puntos
+    $points_variation = $final_quiz_percentage - $first_quiz_percentage;
 
     // Calcular los días entre el First Quiz y el Final Quiz
     $days_diff = 0;
     if ($first_quiz_date && $final_quiz_date) {
-        $days_diff = ceil(abs($final_quiz_date - $first_quiz_date) / (60 * 60 * 24)); // Convertir a días
+        $days_diff = floor(($final_quiz_date - $first_quiz_date) / (60 * 60 * 24));
     }
-
-    // Si los días de diferencia son 0, asignamos 1 día
     if ($days_diff == 0) {
         $days_diff = 1;
     }
-
-    // Mostrar los resultados en el contenedor quiz-metrics
     ?>
+
+    <!-- Mostrar los resultados en el contenedor quiz-metrics -->
     <div class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
         <table style="width: 100%; border-collapse: collapse;">
             <tr style="height: 50px;">
@@ -202,12 +238,21 @@ if (!$is_first_quiz) {
                         <?php echo esc_html($first_quiz_name); ?>
                     </div>
                     <div style="color: #666; font-size: 14px;">
-                        <?php echo esc_html(date('F j', $first_quiz_date)); ?>
+                        <?php
+                        // Only display a date if we have one
+                        echo $first_quiz_date
+                            ? esc_html(date('F j', $first_quiz_date))
+                            : 'N/A';
+                        ?>
                     </div>
                 </td>
                 <td style="width: 40%; padding: 10px; vertical-align: middle;">
                     <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                        <div id="first-quiz-progress-bar" style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                        <div id="first-quiz-progress-bar"
+                             style="width: <?php echo esc_attr($first_quiz_percentage); ?>%;
+                                    height: 100%;
+                                    background: #ffc0cb;
+                                    transition: width 0.5s ease;"></div>
                     </div>
                 </td>
                 <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
@@ -221,9 +266,10 @@ if (!$is_first_quiz) {
 
     <div id="quiz-metrics">
         <!-- Diferencia en puntos -->
-        <div id="quiz-points" style="font-size: 20px; font-weight: bold; color: <?php echo $percentage_direction === 'up' ? 'green' : 'red'; ?>;">
+        <div id="quiz-points"
+             style="font-size: 20px; font-weight: bold; color: <?php echo ($percentage_direction === 'up') ? 'green' : 'red'; ?>;">
             <?php
-            echo $percentage_direction === 'up' ? '▲ ' : '▼ ';
+            echo ($percentage_direction === 'up' ? '▲ ' : '▼ ');
             echo abs($points_variation) . ' puntos';
             ?>
         </div>
