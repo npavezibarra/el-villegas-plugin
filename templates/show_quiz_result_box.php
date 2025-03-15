@@ -77,84 +77,154 @@ if (!defined('ABSPATH')) {
         </div>
 
         <?php
-        global $post;
-        $quiz_id = isset($post->ID) ? $post->ID : 0;
+global $post;
+$quiz_id = isset($post->ID) ? $post->ID : 0;
 
-        if (!class_exists('QuizAnalytics')) {
-            require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
+if (!class_exists('QuizAnalytics')) {
+    require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
+}
+
+if (class_exists('QuizAnalytics')) {
+
+    $quiz_checker = new QuizAnalytics($quiz_id);
+    $is_first_quiz = $quiz_checker->isFirstQuiz();
+
+    // This container ID helps differentiate between First Quiz and Final Quiz
+    $current_container_id = $is_first_quiz ? "quiz-results-container" : "final-quiz-results-container";
+    ?>
+    <!-- Current Quiz Results Container -->
+    <div id="<?php echo esc_attr($current_container_id); ?>" class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="height: 50px;">
+                <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
+                    <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                        <?php echo esc_html(get_the_title()); ?>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">
+                        <!-- Display the date for the CURRENT quiz (human-readable) -->
+                        <?php echo esc_html(date('F j')); ?>
+                    </div>
+                </td>
+                <td style="width: 40%; padding: 10px; vertical-align: middle;">
+                    <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                        <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                    </div>
+                </td>
+                <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
+                    <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <?php
+    // If current quiz is Final Quiz, we also show the First Quiz container + extra stats
+    if (!$is_first_quiz) {
+
+        // 1) Get info about the FIRST quiz
+        $first_quiz_id   = $quiz_checker->getFirstQuiz();
+        $first_quiz_name = ($first_quiz_id !== "Doesn't have") ? get_the_title($first_quiz_id) : "Doesn't exist";
+
+        // Get performance data for the First Quiz
+        $perf = $quiz_checker->getFirstQuizPerformance();
+        $first_quiz_percentage = (is_numeric($perf['percentage'])) ? round(floatval($perf['percentage'])) : 0;
+
+        // Convert the stored date to a timestamp
+        $first_quiz_date_ts = null;
+        if (!empty($perf['date']) && strtotime($perf['date']) !== false) {
+            $first_quiz_date_ts = strtotime($perf['date']);
         }
 
-        if (class_exists('QuizAnalytics')) {
-            $quiz_checker = new QuizAnalytics($quiz_id);
-            $is_first_quiz = $quiz_checker->isFirstQuiz();
+        // 2) Get info about the FINAL quiz from user_activity
+        global $wpdb;
+        $user_id = get_current_user_id();
 
-            // Determine the container ID for the current quiz
-            $current_container_id = $is_first_quiz ? "quiz-results-container" : "final-quiz-results-container";
-            ?>
-            <!-- Current Quiz Results Container -->
-            <div id="<?php echo esc_attr($current_container_id); ?>" class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr style="height: 50px;">
-                        <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
-                            <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                                <?php echo esc_html(get_the_title()); ?>
+        // Grab the most recent attempt for the current user & quiz
+        $final_attempt = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT activity_completed
+                   FROM {$wpdb->prefix}learndash_user_activity
+                  WHERE user_id      = %d
+                    AND post_id      = %d
+                    AND activity_type = 'quiz'
+               ORDER BY activity_completed DESC
+                  LIMIT 1",
+                $user_id,
+                $quiz_id
+            )
+        );
+
+        // Convert final quiz completion to timestamp
+        $final_quiz_date_ts = null;
+        if (!empty($final_attempt->activity_completed)) {
+            $final_quiz_date_ts = (int) $final_attempt->activity_completed;
+        }
+
+        // 3) Calculate the difference in days
+        $days_diff = 0;
+        if ($first_quiz_date_ts && $final_quiz_date_ts) {
+            // difference in seconds, then convert to days
+            $diff_seconds = $final_quiz_date_ts - $first_quiz_date_ts;
+            $days_diff = floor($diff_seconds / (60 * 60 * 24));
+            // minimum 1 day if difference is under 24h
+            if ($days_diff < 1) {
+                $days_diff = 1;
+            }
+        }
+        ?>
+
+        <!-- First Quiz Results Container -->
+        <div id="first-quiz-results-container" class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="height: 50px;">
+                    <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
+                        <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                            <?php echo esc_html($first_quiz_name); ?>
+                        </div>
+                        <div style="color: #666; font-size: 14px;">
+                            <!-- Display date of FIRST quiz or 'N/A' -->
+                            <?php echo $first_quiz_date_ts ? esc_html(date('F j', $first_quiz_date_ts)) : 'N/A'; ?>
+                        </div>
+                    </td>
+                    <td style="width: 40%; padding: 10px; vertical-align: middle;">
+                        <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                            <div id="first-quiz-progress-bar"
+                                 style="width: <?php echo esc_attr($first_quiz_percentage); ?>%;
+                                        height: 100%;
+                                        background: #ffc0cb;
+                                        transition: width 0.5s ease;">
                             </div>
-                            <div style="color: #666; font-size: 14px;">
-                                <?php echo esc_html(date('F j')); ?>
-                            </div>
-                        </td>
-                        <td style="width: 40%; padding: 10px; vertical-align: middle;">
-                            <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                                <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-                            </div>
-                        </td>
-                        <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                            <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+                        </div>
+                    </td>
+                    <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
+                        <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
+                            <?php echo esc_html($first_quiz_percentage); ?>%
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-            <?php
-            // Get additional data only if current quiz is Final Quiz.
-            if (!$is_first_quiz) {
-                // Retrieve First Quiz info
-                $first_quiz_id   = $quiz_checker->getFirstQuiz();
-                $first_quiz_name = ($first_quiz_id !== "Doesn't have") ? get_the_title($first_quiz_id) : "Doesn't exist";
-
-                // Get performance data for First Quiz
-                $perf = $quiz_checker->getFirstQuizPerformance();
-                $first_quiz_percentage = (is_numeric($perf['percentage'])) ? round(floatval($perf['percentage'])) : 0;
-                $first_quiz_date = (!empty($perf['date']) && strtotime($perf['date']) !== false)
-                    ? strtotime($perf['date'])
-                    : null;
-                ?>
-
-                <!-- First Quiz Results Container (shown only on Final Quiz page) -->
-                <div id="first-quiz-results-container" class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <tr style="height: 50px;">
-                            <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
-                                <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                                    <?php echo esc_html($first_quiz_name); ?>
-                                </div>
-                                <div style="color: #666; font-size: 14px;">
-                                    <?php echo $first_quiz_date ? esc_html(date('F j', $first_quiz_date)) : 'N/A'; ?>
-                                </div>
-                            </td>
-                            <td style="width: 40%; padding: 10px; vertical-align: middle;">
-                                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                                    <div id="first-quiz-progress-bar" style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-                                </div>
-                            </td>
-                            <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                                <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
-                                    <?php echo esc_html($first_quiz_percentage); ?>%
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
+        <!-- Extra stats block below the first-quiz-results-container -->
+        <div class="extra-stats-container" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-evenly; align-items: center;">
+                <!-- Left Column: Knowledge Increase (placeholder) -->
+                <div style="text-align: center;">
+                    <div style="font-size: 16px; color: #666;">Incrementaste tus conocimientos en un</div>
+                    <div style="font-size: 36px; color: green; font-weight: bold;">
+                        180% <span style="font-size: 28px;">▲</span>
+                    </div>
                 </div>
+
+                <!-- Right Column: Days to Complete -->
+                <div style="text-align: center;">
+                    <div style="font-size: 16px; color: #666;">Completaste el curso en</div>
+                    <div style="font-size: 36px; color: #333; font-weight: bold;">
+                        <?php echo intval($days_diff); ?> días
+                    </div>
+                </div>
+            </div>
+        </div>
 
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
