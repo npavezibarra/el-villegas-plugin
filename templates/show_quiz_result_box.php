@@ -124,10 +124,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php
 global $wpdb, $post;
 
-// Assume $quiz_id is defined from the current post.
+// 1) Assume $quiz_id is defined from the current post.
 $quiz_id = isset( $post->ID ) ? (int) $post->ID : 0;
 
-// 1) Retrieve the Course ID for a First Quiz using the _first_quiz_id meta.
+// 2) Get the Course ID for a First Quiz using the _first_quiz_id meta.
 $course_id = $wpdb->get_var(
     $wpdb->prepare(
         "SELECT post_id
@@ -139,11 +139,10 @@ $course_id = $wpdb->get_var(
     )
 );
 
-// 2) Retrieve the Product ID associated with the Course.
-// First, attempt to get it from the '_linked_woocommerce_product' meta.
+// 3) Retrieve the Product ID associated with the Course.
 $product_id = get_post_meta( $course_id, '_linked_woocommerce_product', true );
 if ( empty( $product_id ) ) {
-    // Fallback: search for a product with _related_course meta containing the Course ID.
+    // If not found, search for a product with _related_course matching the Course ID.
     $args = array(
         'post_type'      => 'product',
         'meta_query'     => array(
@@ -161,51 +160,32 @@ if ( empty( $product_id ) ) {
     }
 }
 
-// Generate URLs for the course and product.
+// 4) Generate URLs for the course and product.
 $course_url  = $course_id  ? get_permalink( $course_id )  : '#';
 $product_url = $product_id ? get_permalink( $product_id ) : '#';
 
-// Check if the current user has access to the course.
+// 5) Check if the current user has access to the course.
 $current_user = wp_get_current_user();
-$user_id = $current_user->ID;
-$has_access = sfwd_lms_has_access( $course_id, $user_id );
-$access_text = $has_access ? 'Access Granted' : 'Access Denied';
+$user_id      = $current_user->ID;
+$has_access   = sfwd_lms_has_access( $course_id, $user_id );
+
+// 6) Print only one button based on access.
 ?>
-
-<div id="testing-button">
-    <!-- Table with IDs and Access Status -->
-    <table border="1" cellpadding="5" cellspacing="0" style="text-align: center;">
-        <tr>
-            <th>Quiz ID</th>
-            <th>Course ID</th>
-            <th>Product ID</th>
-            <th>Access Status</th>
-        </tr>
-        <tr>
-            <td><?php echo esc_html( $quiz_id ); ?></td>
-            <td><?php echo esc_html( $course_id ); ?></td>
-            <td><?php echo esc_html( $product_id ); ?></td>
-            <td><?php echo esc_html( $access_text ); ?></td>
-        </tr>
-    </table>
-
-    <!-- Buttons linking to Course page and Product page -->
-    <div style="margin-top: 10px;">
-        <button onclick="window.location.href='<?php echo esc_url( $course_url ); ?>'" 
-                style="padding: 8px 16px; font-size: 14px; cursor: pointer; margin-right: 10px;">
-            Go to Course
-        </button>
-
-        <button onclick="window.location.href='<?php echo esc_url( $product_url ); ?>'" 
+<div id="testing-button" style="margin-top: 20px;">
+    <?php if ( $has_access ) : ?>
+        <!-- User already has access to the course -->
+        <button onclick="window.location.href='<?php echo esc_url( $course_url ); ?>'"
                 style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
-            Go to Product
+            IR AL CURSO
         </button>
-    </div>
+    <?php else : ?>
+        <!-- User does not have access yet -->
+        <button onclick="window.location.href='<?php echo esc_url( $product_url ); ?>'"
+                style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
+            COMPRAR CURSO
+        </button>
+    <?php endif; ?>
 </div>
-
-
-
-
 
 
         <?php
