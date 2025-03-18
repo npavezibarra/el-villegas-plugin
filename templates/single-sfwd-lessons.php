@@ -39,7 +39,7 @@
             height: 10px;
             margin-right: 10px;
             border-radius: 50%;
-            background-color: #ddd;
+            background-color: #ff9800;
         }
 
         .lesson-item.completed .lesson-circle {
@@ -175,9 +175,8 @@ echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName"
     <p id="pertecene-curso">
         <?php 
         // Check if a valid course ID is returned
-        if ($course_id) {
-            // Get the course title and display it
-            echo 'Curso: ' . esc_html(get_the_title($course_id));
+        if ( $course_id ) {
+            echo 'Curso: <a href="' . esc_url( get_permalink( $course_id ) ) . '">' . esc_html( get_the_title( $course_id ) ) . '</a>';
         } else {
             // If no course is associated, display a fallback message
             echo 'Esta lección no tiene un curso asociado.';

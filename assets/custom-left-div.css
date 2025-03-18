@@ -1,4 +1,17 @@
 /* General Styles */
+
+#lesson-navigation>h3 {
+ margin-left: 10px;
+}
+
+.ld-course-step-back {
+    display:none !important;
+}
+
+#pertecene-curso>a {
+    color:#2890e8;
+}
+
 .single-sfwd-lessons main > *:nth-child(1) {
     border-bottom: 1px solid black !important;
     margin-bottom: 0 !important;
@@ -127,10 +140,31 @@ ul {
 
 /* Small screens */
 @media (max-width: 970px) {
+
+    #lesson-wrapper {
+        flex-direction: column;
+    }
+
+    #lesson-navigation {
+        width: 100% !important;
+    }
+
+    #lesson-navigation>h3 {
+        text-align: center !important;
+    }
     main#wp--skip-link--target {
         display: flex;
         flex-direction: column;
     }
+
+    #lesson-content {
+        width: 100% !important;
+        padding: 20px;
+    }
+
+    #lesson-navigation>h3 {
+        margin-left: 0px;
+       }
 
     .single-sfwd-lessons .entry-content.alignfull.wp-block-post-content {
         margin-left: 0 !important;

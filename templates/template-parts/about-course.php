@@ -42,7 +42,7 @@
                         $circle_color_class = $is_completed ? 'completed' : 'not-completed';
 
                         echo '<li class="lesson-item ' . esc_attr($circle_color_class) . '" style="display: flex; align-items: center; margin-bottom: 10px;">';
-                        echo '<span class="lesson-circle" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 10px; background-color: ' . ($is_completed ? '#4c8bf5' : '#ccc') . ';"></span>';
+                        echo '<span class="lesson-circle" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 10px; background-color: ' . ($is_completed ? '#ff9800' : '#ccc') . ';"></span>';
                         echo '<a href="' . esc_url(get_permalink($lesson_id)) . '">' . esc_html(get_the_title($lesson_id)) . '</a>';
                         echo '</li>';
                         $lesson_index++;

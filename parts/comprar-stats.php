@@ -183,7 +183,7 @@ function mostrar_comprar_stats() {
         <div class="progress-widget" style="display: flex; align-items: center; background-color: #eeeeee; padding: 20px 20px; border-radius: 10px; width: 100%;">
             <div class="progress-bar" style="flex: 1; width: 50%; margin-right: 20px;">
                 <div style="background-color: #e0e0e0; height: 10px; border-radius: 5px; position: relative;">
-                    <div style="width: <?php echo esc_attr($percentage_complete); ?>%; background-color: #4c8bf5; height: 100%; border-radius: 5px;"></div>
+                    <div style="width: <?php echo esc_attr($percentage_complete); ?>%; background-color: #ff9800; height: 100%; border-radius: 5px;"></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 12px; color: #333;">
                     <span><?php echo esc_html(round($percentage_complete)); ?>%</span>

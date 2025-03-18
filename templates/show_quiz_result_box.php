@@ -13,6 +13,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 .table-quiz-name {
     text-align: left !important;
 }
+
+.quiz-results-container {
+	border: 1px solid #d5d5d5;
+	margin-bottom: 20px;
+}
+
+.extra-stats-container {
+    border: 1px solid #d5d5d5;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+
 </style>
 
 <!-- (A) LearnDash default sending container -->
@@ -122,70 +135,88 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
 
 		<?php
-global $wpdb, $post;
-
-// 1) Assume $quiz_id is defined from the current post.
-$quiz_id = isset( $post->ID ) ? (int) $post->ID : 0;
-
-// 2) Get the Course ID for a First Quiz using the _first_quiz_id meta.
-$course_id = $wpdb->get_var(
-    $wpdb->prepare(
-        "SELECT post_id
-         FROM {$wpdb->postmeta}
-         WHERE meta_key = '_first_quiz_id'
-           AND meta_value = %d
-         LIMIT 1",
-        $quiz_id
-    )
-);
-
-// 3) Retrieve the Product ID associated with the Course.
-$product_id = get_post_meta( $course_id, '_linked_woocommerce_product', true );
-if ( empty( $product_id ) ) {
-    // If not found, search for a product with _related_course matching the Course ID.
-    $args = array(
-        'post_type'      => 'product',
-        'meta_query'     => array(
-            array(
-                'key'     => '_related_course',
-                'value'   => $course_id,
-                'compare' => 'LIKE',
-            ),
-        ),
-        'posts_per_page' => 1,
-    );
-    $products = get_posts( $args );
-    if ( ! empty( $products ) ) {
-        $product_id = $products[0]->ID;
-    }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-// 4) Generate URLs for the course and product.
-$course_url  = $course_id  ? get_permalink( $course_id )  : '#';
-$product_url = $product_id ? get_permalink( $product_id ) : '#';
+global $wpdb, $post;
+$quiz_id = isset( $post->ID ) ? (int) $post->ID : 0;
 
-// 5) Check if the current user has access to the course.
-$current_user = wp_get_current_user();
-$user_id      = $current_user->ID;
-$has_access   = sfwd_lms_has_access( $course_id, $user_id );
+if ( ! class_exists( 'QuizAnalytics' ) ) {
+	require_once plugin_dir_path( __FILE__ ) . 'classes/class-quiz-analytics.php';
+}
 
-// 6) Print only one button based on access.
+if ( class_exists( 'QuizAnalytics' ) ) {
+	$quiz_checker = new QuizAnalytics( $quiz_id );
+	$is_first_quiz = $quiz_checker->isFirstQuiz(); // Determines if the current quiz is a First Quiz.
+} else {
+	$is_first_quiz = false;
+}
+
+// Only process the button if the quiz is a First Quiz.
+if ( $is_first_quiz ) {
+	// Retrieve the Course ID from the meta where _first_quiz_id equals the quiz ID.
+	$course_id = $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT post_id
+			 FROM {$wpdb->postmeta}
+			 WHERE meta_key = '_first_quiz_id'
+			   AND meta_value = %d
+			 LIMIT 1",
+			$quiz_id
+		)
+	);
+
+	// Retrieve the Product ID associated with the Course.
+	// First, try to get it from the '_linked_woocommerce_product' meta.
+	$product_id = get_post_meta( $course_id, '_linked_woocommerce_product', true );
+	if ( empty( $product_id ) ) {
+		// If not found, search for a product with _related_course matching the Course ID.
+		$args = array(
+			'post_type'      => 'product',
+			'meta_query'     => array(
+				array(
+					'key'     => '_related_course',
+					'value'   => $course_id,
+					'compare' => 'LIKE',
+				),
+			),
+			'posts_per_page' => 1,
+		);
+		$products = get_posts( $args );
+		if ( ! empty( $products ) ) {
+			$product_id = $products[0]->ID;
+		}
+	}
+
+	// Generate URLs.
+	$course_url  = $course_id  ? get_permalink( $course_id )  : '#';
+	$product_url = $product_id ? get_permalink( $product_id ) : '#';
+
+	// Check if the current user has access to the course.
+	$current_user = wp_get_current_user();
+	$user_id = $current_user->ID;
+	$has_access = sfwd_lms_has_access( $course_id, $user_id );
+
+	// Set button text and URL based on access.
+	if ( $has_access ) {
+		$button_text = 'IR AL CURSO';
+		$button_url  = $course_url;
+	} else {
+		$button_text = 'COMPRAR CURSO';
+		$button_url  = $product_url;
+	}
+	?>
+	<div id="testing-button" style="margin-top: 20px;">
+		<button onclick="window.location.href='<?php echo esc_url( $button_url ); ?>'"
+		        style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
+			<?php echo esc_html( $button_text ); ?>
+		</button>
+	</div>
+	<?php
+}
 ?>
-<div id="testing-button" style="margin-top: 20px;">
-    <?php if ( $has_access ) : ?>
-        <!-- User already has access to the course -->
-        <button onclick="window.location.href='<?php echo esc_url( $course_url ); ?>'"
-                style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
-            IR AL CURSO
-        </button>
-    <?php else : ?>
-        <!-- User does not have access yet -->
-        <button onclick="window.location.href='<?php echo esc_url( $product_url ); ?>'"
-                style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
-            COMPRAR CURSO
-        </button>
-    <?php endif; ?>
-</div>
+
 
 
         <?php
@@ -259,13 +290,13 @@ $has_access   = sfwd_lms_has_access( $course_id, $user_id );
             <!-- Extra stats block (variación de conocimiento y días para completar) -->
             <div class="extra-stats-container" style="margin-top: 20px;">
                 <div style="display: flex; justify-content: space-evenly; align-items: center;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 16px; color: #666;">Incrementaste tus conocimientos en un</div>
+					<div style="flex: 1; text-align: center;">
+                        <div style="font-size: 16px; color: #666;">Variación conocimientos</div>
                         <div id="knowledge-variation" style="font-size: 36px; color: green; font-weight: bold;">
                             0% <span style="font-size: 28px;">▲</span>
                         </div>
                     </div>
-                    <div style="text-align: center;">
+                    <div style="flex: 1; text-align: center;">
                         <div style="font-size: 16px; color: #666;">Completaste el curso en</div>
                         <div style="font-size: 36px; color: #333; font-weight: bold;">
                             <?php echo intval( $days_diff ); ?> días
