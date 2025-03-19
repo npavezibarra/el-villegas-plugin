@@ -158,8 +158,12 @@ ul {
     }
 
     #lesson-content {
-        width: 100% !important;
+        width: 94% !important;
         padding: 20px;
+    }
+
+    div#lesson-content {
+        border-top: 1px solid #c0bebe;
     }
 
     #lesson-navigation>h3 {
@@ -192,6 +196,15 @@ ul {
 
 /* Extra small screens */
 @media (max-width: 530px) {
+
+    .ld-content-actions {
+        flex-direction: row !important;
+    }
+
+    .ld-content-action {
+        padding: 0px !important;
+    }
+
     .dropdown-header {
         max-width: 350px;
         margin: auto;
@@ -200,6 +213,20 @@ ul {
     .custom-left-div {
         max-width: 400px;
         margin-top: 30px !important;
+    }
+
+    .learndash-wrapper .ld-content-actions div:nth-child(2) {
+        display:none;
+    }
+
+    .ld-content-actions .ld-content-action:nth-child(3) a.ld-button {
+        display: flex !important;
+        justify-content: flex-end !important;
+    }
+    
+    #lesson-content {
+        width: 92% !important;
+        padding: 20px;
     }
 }
 

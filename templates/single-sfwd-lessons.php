@@ -39,7 +39,7 @@
             height: 10px;
             margin-right: 10px;
             border-radius: 50%;
-            background-color: #ff9800;
+            background-color: #ddd;
         }
 
         .lesson-item.completed .lesson-circle {
