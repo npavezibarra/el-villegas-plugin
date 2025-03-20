@@ -139,8 +139,6 @@ echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName"
                 <?php endwhile; ?>
             </div>
 
-
-
             <?php the_posts_navigation(); ?>
         <?php else : ?>
             <p class="no-courses">No hay cursos disponibles en este momento.</p>
@@ -154,7 +152,50 @@ echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName"
 // Load the default Twenty Twenty-Four footer template part
 echo do_blocks('<!-- wp:template-part {"slug":"footer","area":"footer","tagName":"footer"} /-->');
 
-wp_footer(); 
+// Add custom JavaScript for hamburger menu
 ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all hamburger menu buttons
+    const menuButtons = document.querySelectorAll('.wp-block-navigation__responsive-container-open');
+    
+    // Initialize click handlers for each button
+    menuButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Find the target menu container
+            const targetId = button.getAttribute('aria-controls');
+            const menuContainer = targetId ? document.getElementById(targetId) : 
+                                 document.querySelector('.wp-block-navigation__responsive-container');
+            
+            if (menuContainer) {
+                // Toggle the is-menu-open class
+                menuContainer.classList.add('is-menu-open');
+                menuContainer.setAttribute('aria-hidden', 'false');
+                
+                // Find and setup the close button in the opened menu
+                const closeButton = menuContainer.querySelector('.wp-block-navigation__responsive-container-close');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function() {
+                        menuContainer.classList.remove('is-menu-open');
+                        menuContainer.setAttribute('aria-hidden', 'true');
+                    });
+                }
+            }
+        });
+        
+        // Add keyboard event handlers
+        button.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                button.click();
+            }
+        });
+    });
+});
+</script>
+
+<?php wp_footer(); ?>
 </body>
 </html>

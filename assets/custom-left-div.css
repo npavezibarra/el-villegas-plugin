@@ -1,5 +1,14 @@
 /* General Styles */
 
+#lesson-content .ld-tabs.ld-tab-count-1 {
+    margin: 10px 0px !important;
+}
+
+.ld-content-actions .ld-content-action:nth-child(3) a.ld-button {
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
 #lesson-navigation>h3 {
  margin-left: 10px;
 }
@@ -136,6 +145,10 @@ ul {
     .single-sfwd-lessons .entry-content.alignfull.wp-block-post-content {
         margin-left: 300px !important;
     }
+    .ld-content-actions .ld-content-action:nth-child(3) a.ld-button {
+        display: flex !important;
+        justify-content: flex-end !important;
+    }
 } 
 
 /* Small screens */
@@ -191,6 +204,16 @@ ul {
         padding: 20px;
         border: 1px solid #c0bebe;
         border-radius: 6px;
+    }
+
+    .ld-content-actions .ld-content-action:nth-child(3) a.ld-button {
+        display: flex !important;
+        justify-content: flex-end !important;
+    }
+
+    .learndash-wrapper .ld-content-actions {
+        align-items: flex-start;
+        justify-content: end !important;
     }
 }
 
