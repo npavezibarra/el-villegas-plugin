@@ -187,3 +187,5 @@ function el_villegas_override_single_sfwd_quiz($template) {
     }
     return $template; // Fallback to the default template
 }
+
+

@@ -215,6 +215,7 @@ if ( $is_first_quiz ) {
 	</div>
 	<?php
 }
+
 ?>
 
 
@@ -356,6 +357,38 @@ if ( $is_first_quiz ) {
         }
         ?>
 
+<!-- TESTEANDO EMAILS DE FIRST QUIZ: Sacar codigo si no está completamente termiando -->
+<?php
+if ( $is_first_quiz ) {
+    $user_id = get_current_user_id();
+    $user    = get_userdata( $user_id );
+    if ( $user ) {
+        $user_email = $user->user_email;
+
+        // Ruta al archivo de correo
+        $email_file = plugin_dir_path(__FILE__) . '../emails/first-quiz-email.php';
+        if ( file_exists( $email_file ) ) {
+            $email_content = file_get_contents( $email_file );
+        } else {
+            $email_content = '<p>Has finalizado el First Quiz.</p>';
+        }
+
+        // Reemplazar marcadores
+        $user_name  = $user->display_name;
+        $quiz_title = get_the_title( $quiz_id );
+        $email_content = str_replace('{{user_name}}', $user_name, $email_content);
+        $email_content = str_replace('{{quiz_name}}', $quiz_title, $email_content);
+
+        $subject = 'Has finalizado el First Quiz';
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        wp_mail( $user_email, $subject, $email_content, $headers );
+    }
+}
+
+
+?>
+<!-- UP TESTEANDO EMAILS DE FIRST QUIZ: Sacar codigo si no está completamente termiando -->
         <script>
             jQuery(document).ready(function($) {
                 $(document).on('learndash-quiz-finished', function() {
