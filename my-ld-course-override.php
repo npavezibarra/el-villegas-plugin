@@ -279,7 +279,33 @@ function handle_enviar_correo_final_quiz() {
     );
     $completion_date = $completed_ts ? date_i18n('j \d\e F \d\e Y', (int) $completed_ts) : '';
 
-    // Cargar contenido del correo
+    // Obtener datos del First Quiz usando QuizAnalytics
+    if ( ! class_exists( 'QuizAnalytics' ) ) {
+        require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
+    }
+
+    $quiz_checker = new QuizAnalytics($quiz_id);
+    $first_quiz_id = $quiz_checker->getFirstQuiz();
+    $first_quiz_title = get_the_title($first_quiz_id);
+    $perf = $quiz_checker->getFirstQuizPerformance();
+
+    $first_quiz_percentage = isset($perf['percentage']) ? (int) round($perf['percentage']) : 0;
+    $first_quiz_date = isset($perf['date']) && strtotime($perf['date']) !== false
+        ? date_i18n('F j', strtotime($perf['date']))
+        : 'N/A';
+
+    // Calcular variación y días para completar
+    $knowledge_variation = $quiz_percentage - $first_quiz_percentage;
+    $variation_arrow = $knowledge_variation >= 0 ? '▲' : '▼';
+    $days_to_complete = 0;
+
+    if (isset($perf['date']) && strtotime($perf['date']) !== false && $completed_ts) {
+        $first_ts = strtotime($perf['date']);
+        $diff = $completed_ts - $first_ts;
+        $days_to_complete = max(1, floor($diff / (60 * 60 * 24)));
+    }
+
+    // Cargar contenido del correo con variables disponibles
     ob_start();
     include plugin_dir_path(__FILE__) . 'emails/final-quiz-email.php';
     $message = ob_get_clean();
