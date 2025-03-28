@@ -242,4 +242,60 @@ function enviar_correo_first_quiz_handler() {
     wp_die();
 }
 
+/* FINAL QUIZ EMAIL */
+
+add_action('wp_ajax_enviar_correo_final_quiz', 'handle_enviar_correo_final_quiz');
+add_action('wp_ajax_nopriv_enviar_correo_final_quiz', 'handle_enviar_correo_final_quiz');
+
+function handle_enviar_correo_final_quiz() {
+    $quiz_id         = isset($_POST['quiz_id']) ? intval($_POST['quiz_id']) : 0;
+    $user_id         = isset($_POST['user_id']) ? intval($_POST['user_id']) : get_current_user_id();
+    $quiz_percentage = isset($_POST['quiz_percentage']) ? intval($_POST['quiz_percentage']) : 0;
+
+    if ( $quiz_id === 0 || $user_id === 0 ) {
+        wp_send_json_error('Datos incompletos');
+    }
+
+    // Obtener info del usuario y del quiz
+    $user        = get_userdata($user_id);
+    $quiz_title  = get_the_title($quiz_id);
+    $user_email  = $user->user_email;
+    $user_name   = $user->display_name;
+
+    // Obtener fecha de finalización del quiz
+    global $wpdb;
+    $completed_ts = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT activity_completed
+             FROM {$wpdb->prefix}learndash_user_activity
+             WHERE user_id = %d
+               AND post_id = %d
+               AND activity_type = 'quiz'
+             ORDER BY activity_completed DESC
+             LIMIT 1",
+            $user_id,
+            $quiz_id
+        )
+    );
+    $completion_date = $completed_ts ? date_i18n('j \d\e F \d\e Y', (int) $completed_ts) : '';
+
+    // Cargar contenido del correo
+    ob_start();
+    include plugin_dir_path(__FILE__) . 'emails/final-quiz-email.php';
+    $message = ob_get_clean();
+
+    $to      = $user_email;
+    $subject = '¡Has completado el Final Quiz!';
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+
+    $sent = wp_mail($to, $subject, $message, $headers);
+
+    if ($sent) {
+        wp_send_json_success('Correo enviado');
+    } else {
+        wp_send_json_error('Error al enviar el correo');
+    }
+}
+
+
 

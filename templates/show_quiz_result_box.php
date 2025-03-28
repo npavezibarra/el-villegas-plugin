@@ -272,7 +272,7 @@ if ( $is_first_quiz ) {
 
 
 
-        <?php
+<?php
         // Si el quiz actual es un Final Quiz, mostrar información adicional.
         if ( ! $is_first_quiz ) {
 
@@ -417,6 +417,7 @@ jQuery(document).ready(function($) {
     $(document).on('learndash-quiz-finished', function() {
         var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
         var totalQuestions = parseInt($('.total-questions').text(), 10);
+
         if (!isNaN(correctAnswers) && totalQuestions > 0) {
             var percentage = Math.round((correctAnswers / totalQuestions) * 100);
             $('#quiz-percentage').text(percentage + '%');
@@ -431,10 +432,20 @@ jQuery(document).ready(function($) {
                 }, function(response) {
                     console.log('Correo enviado (First Quiz):', response);
                 });
+            } else {
+                $.post(ajaxurl, {
+                    action: 'enviar_correo_final_quiz',
+                    quiz_percentage: percentage,
+                    quiz_id: <?php echo (int)$quiz_id; ?>,
+                    user_id: <?php echo get_current_user_id(); ?>
+                }, function(response) {
+                    console.log('Correo enviado (Final Quiz):', response);
+                });
             }
         }
     });
 });
+
 </script>
 
     <?php endif; ?>
