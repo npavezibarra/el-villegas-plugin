@@ -188,4 +188,58 @@ function el_villegas_override_single_sfwd_quiz($template) {
     return $template; // Fallback to the default template
 }
 
+/* EMAIL FIRST QUIZ */
+
+// Registrar el endpoint AJAX para usuarios logueados y no logueados
+add_action('wp_ajax_enviar_correo_first_quiz', 'enviar_correo_first_quiz_handler');
+add_action('wp_ajax_nopriv_enviar_correo_first_quiz', 'enviar_correo_first_quiz_handler');
+
+function enviar_correo_first_quiz_handler() {
+    // Recibir y sanitizar los datos enviados vía AJAX
+    $quiz_percentage = isset($_POST['quiz_percentage']) ? intval($_POST['quiz_percentage']) : 0;
+    $quiz_id = isset($_POST['quiz_id']) ? intval($_POST['quiz_id']) : 0;
+    $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+
+    if ( !$user_id || !$quiz_id ) {
+        wp_send_json_error('Datos faltantes');
+        wp_die();
+    }
+
+    // Obtener datos del usuario
+    $user = get_userdata($user_id);
+    if ( !$user ) {
+        wp_send_json_error('Usuario no encontrado');
+        wp_die();
+    }
+    $user_email = $user->user_email;
+    $user_name  = $user->display_name;
+    $quiz_title = get_the_title($quiz_id);
+
+    // Cargar el contenido del correo desde el archivo de plantilla
+    // Ajusta la ruta según la estructura de tu plugin.
+    $email_file = plugin_dir_path(__FILE__) . 'emails/first-quiz-email.php';
+    if ( file_exists($email_file) ) {
+        $email_content = file_get_contents($email_file);
+    } else {
+        $email_content = '<p>Has finalizado el First Quiz.</p>';
+    }
+
+    // Reemplazar los marcadores con los valores reales
+    $email_content = str_replace('{{user_name}}', $user_name, $email_content);
+    $email_content = str_replace('{{quiz_name}}', $quiz_title, $email_content);
+    $email_content = str_replace('{{quiz_percentage}}', $quiz_percentage, $email_content);
+
+    $subject = 'Has finalizado el First Quiz';
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+
+    // Enviar el correo
+    $sent = wp_mail($user_email, $subject, $email_content, $headers);
+    if ( $sent ) {
+        wp_send_json_success('Correo enviado');
+    } else {
+        wp_send_json_error('Error al enviar el correo');
+    }
+    wp_die();
+}
+
 

@@ -364,8 +364,50 @@ if ( $is_first_quiz ) {
     $user    = get_userdata( $user_id );
     if ( $user ) {
         $user_email = $user->user_email;
+        $user_name  = $user->display_name;
+        $quiz_title = get_the_title( $quiz_id );
 
-        // Ruta al archivo de correo
+        // --- (A) Calcular el porcentaje del quiz ---
+        global $wpdb;
+        $quiz_percentage = 0;
+
+        $activity = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT activity_id
+                 FROM {$wpdb->prefix}learndash_user_activity
+                 WHERE user_id = %d
+                   AND post_id = %d
+                   AND activity_type = 'quiz'
+                 ORDER BY activity_completed DESC
+                 LIMIT 1",
+                $user_id,
+                $quiz_id
+            )
+        );
+
+        if ( $activity ) {
+            $activity_id = (int) $activity->activity_id;
+            $activity_meta_row = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT activity_meta
+                     FROM {$wpdb->prefix}learndash_user_activity_meta
+                     WHERE activity_id = %d
+                     LIMIT 1",
+                    $activity_id
+                )
+            );
+            if ( $activity_meta_row ) {
+                $activity_meta = maybe_unserialize( $activity_meta_row->activity_meta );
+                $score = isset($activity_meta['score']) ? (int) $activity_meta['score'] : 0;
+                $count = isset($activity_meta['count']) ? (int) $activity_meta['count'] : 0;
+                if ( $count > 0 ) {
+                    $quiz_percentage = round( ( $score / $count ) * 100 );
+                }
+            }
+        }
+        // --- Fin de (A) ---
+
+        // --- (B) Cargar y personalizar el contenido del correo ---
         $email_file = plugin_dir_path(__FILE__) . '../emails/first-quiz-email.php';
         if ( file_exists( $email_file ) ) {
             $email_content = file_get_contents( $email_file );
@@ -374,11 +416,11 @@ if ( $is_first_quiz ) {
         }
 
         // Reemplazar marcadores
-        $user_name  = $user->display_name;
-        $quiz_title = get_the_title( $quiz_id );
         $email_content = str_replace('{{user_name}}', $user_name, $email_content);
         $email_content = str_replace('{{quiz_name}}', $quiz_title, $email_content);
+        $email_content = str_replace('{{quiz_percentage}}', $quiz_percentage, $email_content);
 
+        // --- (C) Enviar el correo ---
         $subject = 'Has finalizado el First Quiz';
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
@@ -389,19 +431,34 @@ if ( $is_first_quiz ) {
 
 ?>
 <!-- UP TESTEANDO EMAILS DE FIRST QUIZ: Sacar codigo si no está completamente termiando -->
-        <script>
-            jQuery(document).ready(function($) {
-                $(document).on('learndash-quiz-finished', function() {
-                    var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
-                    var totalQuestions = parseInt($('.total-questions').text(), 10);
-                    if (!isNaN(correctAnswers) && totalQuestions > 0) {
-                        var percentage = Math.round((correctAnswers / totalQuestions) * 100);
-                        $('#quiz-percentage').text(percentage + '%');
-                        $('#quiz-progress-bar').css('width', percentage + '%');
-                    }
-                });
+<script>
+// Definir ajaxurl para el front-end
+var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+
+jQuery(document).ready(function($) {
+    $(document).on('learndash-quiz-finished', function() {
+        // Obtener el número de respuestas correctas y el total de preguntas
+        var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
+        var totalQuestions = parseInt($('.total-questions').text(), 10);
+        if (!isNaN(correctAnswers) && totalQuestions > 0) {
+            var percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            $('#quiz-percentage').text(percentage + '%');
+            $('#quiz-progress-bar').css('width', percentage + '%');
+
+            // Enviar el porcentaje, junto con quiz_id y user_id, vía AJAX
+            $.post(ajaxurl, {
+                action: 'enviar_correo_first_quiz',
+                quiz_percentage: percentage,
+                quiz_id: <?php echo (int)$quiz_id; ?>,
+                user_id: <?php echo get_current_user_id(); ?>
+            }, function(response) {
+                console.log('Respuesta del servidor:', response);
             });
-        </script>
+        }
+    });
+});
+</script>
+
     <?php endif; ?>
 
     <p class="wpProQuiz_time_limit_expired" style="display: none;">
