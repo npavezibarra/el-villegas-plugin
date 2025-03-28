@@ -111,28 +111,80 @@ if ( ! defined( 'ABSPATH' ) ) {
         $current_container_id = $is_first_quiz ? "quiz-results-container" : "final-quiz-results-container";
         ?>
         <!-- Current Quiz Results Container -->
-        <div id="<?php echo esc_attr( $current_container_id ); ?>" class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr style="height: 50px;">
-                    <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
-                        <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                            <?php echo esc_html( get_the_title() ); ?>
-                        </div>
-                        <div style="color: #666; font-size: 14px;">
-                            <?php echo esc_html( date( 'F j' ) ); ?>
-                        </div>
-                    </td>
-                    <td style="width: 40%; padding: 10px; vertical-align: middle;">
-                        <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                            <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-                        </div>
-                    </td>
-                    <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                        <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
-                    </td>
-                </tr>
-            </table>
+<!-- Current Quiz Results Container -->
+<div id="<?php echo esc_attr( $current_container_id ); ?>" class="quiz-results-container responsive-quiz-box">
+    <div class="quiz-flex-item quiz-info">
+        <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+            <?php echo esc_html( get_the_title() ); ?>
         </div>
+        <div style="color: #666; font-size: 14px;">
+            <?php echo esc_html( date( 'F j' ) ); ?>
+        </div>
+    </div>
+
+    <div class="quiz-flex-item quiz-bar">
+        <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+            <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+        </div>
+    </div>
+
+    <div class="quiz-flex-item quiz-percentage">
+        <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
+    </div>
+</div>
+
+<style>
+.responsive-quiz-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    gap: 0;
+}
+
+.quiz-flex-item.quiz-info {
+    flex: 0 0 40%;
+    padding: 10px;
+    text-align: left;
+}
+
+.quiz-flex-item.quiz-bar {
+    flex: 0 0 40%;
+    padding: 10px;
+}
+
+.quiz-flex-item.quiz-percentage {
+    flex: 0 0 20%;
+    padding: 10px;
+    text-align: right;
+}
+
+/* Responsive: cambia a columna */
+@media (max-width: 767px) {
+    .responsive-quiz-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quiz-flex-item {
+        flex: 1 1 100%;
+        text-align: center !important;
+    }
+
+    .quiz-bar {
+        width: 100%;
+    }
+
+    .quiz-info {
+    text-align: center;
+    }
+}
+</style>
+
+
 
 		<?php
 if ( ! defined( 'ABSPATH' ) ) {
@@ -261,32 +313,31 @@ if ( $is_first_quiz ) {
             ?>
 
             <!-- First Quiz Results Container -->
-            <div id="first-quiz-results-container" class="quiz-results-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr style="height: 50px;">
-                        <td style="width: 40%; padding: 10px; vertical-align: middle;" class="table-quiz-name">
-                            <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-                                <?php echo esc_html( $first_quiz_name ); ?>
-                            </div>
-                            <div style="color: #666; font-size: 14px;">
-                                <?php echo $first_quiz_date_ts ? esc_html( date( 'F j', $first_quiz_date_ts ) ) : 'N/A'; ?>
-                            </div>
-                        </td>
-                        <td style="width: 40%; padding: 10px; vertical-align: middle;">
-                            <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                                <div id="first-quiz-progress-bar"
-                                     style="width: <?php echo esc_attr( $first_quiz_percentage ); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;">
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 20%; padding: 10px; text-align: right; vertical-align: middle;">
-                            <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
-                                <?php echo esc_html( $first_quiz_percentage ); ?>%
-                            </span>
-                        </td>
-                    </tr>
-                </table>
+<div id="first-quiz-results-container" class="quiz-results-container responsive-quiz-box" style="margin-top: 20px;">
+    <div class="quiz-flex-item quiz-info">
+        <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+            <?php echo esc_html( $first_quiz_name ); ?>
+        </div>
+        <div style="color: #666; font-size: 14px;">
+            <?php echo $first_quiz_date_ts ? esc_html( date( 'F j', $first_quiz_date_ts ) ) : 'N/A'; ?>
+        </div>
+    </div>
+
+    <div class="quiz-flex-item quiz-bar">
+        <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+            <div id="first-quiz-progress-bar"
+                 style="width: <?php echo esc_attr( $first_quiz_percentage ); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;">
             </div>
+        </div>
+    </div>
+
+    <div class="quiz-flex-item quiz-percentage">
+        <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
+            <?php echo esc_html( $first_quiz_percentage ); ?>%
+        </span>
+    </div>
+</div>
+
 
             <!-- Extra stats block (variación de conocimiento y días para completar) -->
             <div class="extra-stats-container" style="margin-top: 20px;">
@@ -357,87 +408,13 @@ if ( $is_first_quiz ) {
         }
         ?>
 
-<!-- TESTEANDO EMAILS DE FIRST QUIZ: Sacar codigo si no está completamente termiando -->
-<?php
-if ( $is_first_quiz ) {
-    $user_id = get_current_user_id();
-    $user    = get_userdata( $user_id );
-    if ( $user ) {
-        $user_email = $user->user_email;
-        $user_name  = $user->display_name;
-        $quiz_title = get_the_title( $quiz_id );
-
-        // --- (A) Calcular el porcentaje del quiz ---
-        global $wpdb;
-        $quiz_percentage = 0;
-
-        $activity = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT activity_id
-                 FROM {$wpdb->prefix}learndash_user_activity
-                 WHERE user_id = %d
-                   AND post_id = %d
-                   AND activity_type = 'quiz'
-                 ORDER BY activity_completed DESC
-                 LIMIT 1",
-                $user_id,
-                $quiz_id
-            )
-        );
-
-        if ( $activity ) {
-            $activity_id = (int) $activity->activity_id;
-            $activity_meta_row = $wpdb->get_row(
-                $wpdb->prepare(
-                    "SELECT activity_meta
-                     FROM {$wpdb->prefix}learndash_user_activity_meta
-                     WHERE activity_id = %d
-                     LIMIT 1",
-                    $activity_id
-                )
-            );
-            if ( $activity_meta_row ) {
-                $activity_meta = maybe_unserialize( $activity_meta_row->activity_meta );
-                $score = isset($activity_meta['score']) ? (int) $activity_meta['score'] : 0;
-                $count = isset($activity_meta['count']) ? (int) $activity_meta['count'] : 0;
-                if ( $count > 0 ) {
-                    $quiz_percentage = round( ( $score / $count ) * 100 );
-                }
-            }
-        }
-        // --- Fin de (A) ---
-
-        // --- (B) Cargar y personalizar el contenido del correo ---
-        $email_file = plugin_dir_path(__FILE__) . '../emails/first-quiz-email.php';
-        if ( file_exists( $email_file ) ) {
-            $email_content = file_get_contents( $email_file );
-        } else {
-            $email_content = '<p>Has finalizado el First Quiz.</p>';
-        }
-
-        // Reemplazar marcadores
-        $email_content = str_replace('{{user_name}}', $user_name, $email_content);
-        $email_content = str_replace('{{quiz_name}}', $quiz_title, $email_content);
-        $email_content = str_replace('{{quiz_percentage}}', $quiz_percentage, $email_content);
-
-        // --- (C) Enviar el correo ---
-        $subject = 'Has finalizado el First Quiz';
-        $headers = array('Content-Type: text/html; charset=UTF-8');
-
-        wp_mail( $user_email, $subject, $email_content, $headers );
-    }
-}
-
-
-?>
-<!-- UP TESTEANDO EMAILS DE FIRST QUIZ: Sacar codigo si no está completamente termiando -->
 <script>
-// Definir ajaxurl para el front-end
+// Definir ajaxurl y si es First Quiz
 var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+var isFirstQuiz = <?php echo $is_first_quiz ? 'true' : 'false'; ?>;
 
 jQuery(document).ready(function($) {
     $(document).on('learndash-quiz-finished', function() {
-        // Obtener el número de respuestas correctas y el total de preguntas
         var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
         var totalQuestions = parseInt($('.total-questions').text(), 10);
         if (!isNaN(correctAnswers) && totalQuestions > 0) {
@@ -445,15 +422,16 @@ jQuery(document).ready(function($) {
             $('#quiz-percentage').text(percentage + '%');
             $('#quiz-progress-bar').css('width', percentage + '%');
 
-            // Enviar el porcentaje, junto con quiz_id y user_id, vía AJAX
-            $.post(ajaxurl, {
-                action: 'enviar_correo_first_quiz',
-                quiz_percentage: percentage,
-                quiz_id: <?php echo (int)$quiz_id; ?>,
-                user_id: <?php echo get_current_user_id(); ?>
-            }, function(response) {
-                console.log('Respuesta del servidor:', response);
-            });
+            if (isFirstQuiz) {
+                $.post(ajaxurl, {
+                    action: 'enviar_correo_first_quiz',
+                    quiz_percentage: percentage,
+                    quiz_id: <?php echo (int)$quiz_id; ?>,
+                    user_id: <?php echo get_current_user_id(); ?>
+                }, function(response) {
+                    console.log('Correo enviado (First Quiz):', response);
+                });
+            }
         }
     });
 });
@@ -676,16 +654,3 @@ jQuery(document).ready(function($) {
     </div>
 </div>
 
-<script>
-jQuery(document).ready(function($) {
-    $(document).on('learndash-quiz-finished', function() {
-        var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
-        var totalQuestions = parseInt($('.total-questions').text(), 10);
-        if (!isNaN(correctAnswers) && totalQuestions > 0) {
-            var percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            $('#quiz-percentage').text(percentage + '%');
-            $('#quiz-progress-bar').css('width', percentage + '%');
-        }
-    });
-});
-</script>
