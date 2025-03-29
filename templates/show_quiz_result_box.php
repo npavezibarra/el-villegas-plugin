@@ -364,7 +364,10 @@ if ( $is_first_quiz ) {
                     <div style="flex: 1; text-align: center;">
                         <div style="font-size: 16px; color: #666;">Completaste el curso en</div>
                         <div style="font-size: 36px; color: #333; font-weight: bold;">
-                            <?php echo intval( $days_diff ); ?> días
+                            <?php
+                            $dias = intval($days_diff);
+                            echo $dias . ' ' . ($dias === 1 ? 'día' : 'días');
+                            ?>
                         </div>
                     </div>
                 </div>

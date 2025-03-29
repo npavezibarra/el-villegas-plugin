@@ -43,8 +43,11 @@
                             </td>
                             <td style="width: 50%; padding: 10px; display: inline-block;">
                                 <div style="font-size: 16px; color: #666;">Completaste el curso en</div>
-                                <div style="font-size: 28px; font-weight: bold;">
-                                    <?php echo intval($days_to_complete); ?> días
+                                <div style="font-size: 36px; color: #333; font-weight: bold;">
+                                    <?php
+                                    $dias = max(1, intval($days_diff)); // Nunca menos de 1
+                                    echo $dias . ' ' . ($dias === 1 ? 'día' : 'días');
+                                    ?>
                                 </div>
                             </td>
                         </tr>
