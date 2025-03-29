@@ -381,11 +381,15 @@ if ( $is_first_quiz ) {
                             jQuery('#quiz-percentage').text(finalPct + '%');
                             jQuery('#quiz-progress-bar').css('width', finalPct + '%');
 
-                            // Obtener el porcentaje del First Quiz inyectado por PHP.
+                            // Obtener el porcentaje del First Quiz
                             var firstQuizPct = <?php echo json_encode( $first_quiz_percentage ); ?>;
                             var variation = finalPct - firstQuizPct;
                             var arrow = variation >= 0 ? '▲' : '▼';
-                            jQuery('#knowledge-variation').html(Math.abs(variation) + '% ' + arrow);
+                            var color = variation >= 0 ? 'green' : 'red';
+
+                            jQuery('#knowledge-variation')
+                                .css('color', color)
+                                .html(Math.abs(variation) + '% <span style="font-size: 28px;">' + arrow + '</span>');
                         }
                     });
                     // Ajustar el ancho inicial de la barra del First Quiz.

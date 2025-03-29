@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Resultados del Final Quiz</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color: white; padding: 20px;">
+<body style="font-family: Arial, sans-serif; background-color: white;">
 
     <div style="max-width: 600px; margin: 0 auto; background-color: #f4f4f4; padding: 40px; border-radius: 8px;">
         <h2 style="color: #333; text-align: center; font-size: 22px;">¡Hola <?php echo esc_html($user_name); ?>!</h2>
@@ -53,7 +53,7 @@
             </tr>
         </table>
 
-        <p style="margin-top: 30px; color: #555;">¡Felicitaciones por tu progreso!</p>
+        <p style="margin-top: 30px; color: #555; text-align: center;">¡Felicitaciones por tu progreso!</p>
     </div>
 
 </body>
