@@ -10,6 +10,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <style>
+
+.learndash-wrapper .wpProQuiz_quiz_time {
+    color: #728188;
+    font-size: .8em;
+    font-weight: 700;
+    background: white;
+    border: 1px solid #d5d5d5;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
 .table-quiz-name {
     text-align: left !important;
 }
@@ -23,6 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     border: 1px solid #d5d5d5;
     padding: 20px;
     border-radius: 8px;
+    background: white;
 }
 
 
@@ -139,7 +152,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: #f8f9fa;
+    background: white;
     padding: 20px;
     border-radius: 8px;
     gap: 0;
