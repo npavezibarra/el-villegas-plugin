@@ -322,6 +322,3 @@ function handle_enviar_correo_final_quiz() {
         wp_send_json_error('Error al enviar el correo');
     }
 }
-
-
-
