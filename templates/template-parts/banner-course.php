@@ -37,7 +37,8 @@ $author_name = trim( esc_html( $first_name . ' ' . $last_name ) );
                              background-position: center; 
                              background-repeat: no-repeat; 
                              padding: 40px 20px; 
-                             margin-bottom: 20px;">
+                             margin-bottom: 20px;
+                             z-index: -9999999;">
     <div id="datos-generales-curso">
         <h1><?php echo esc_html( $title ); ?></h1>
         <?php if ( ! empty( $author_name ) ) : ?>

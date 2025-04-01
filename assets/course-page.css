@@ -131,7 +131,7 @@ div#buy-button-stats {
     max-width: 750px;
     height: 70px;
     margin: auto;
-    margin-top: 30px;
+    margin-top: -40px;
     margin-bottom: 60px;
     border-radius: 8px;
 }

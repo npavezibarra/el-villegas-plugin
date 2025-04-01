@@ -99,7 +99,7 @@ function mostrar_comprar_stats() {
     $percentage_complete = ($total_lessons > 0) ? min(100, ($completed_lessons / $total_lessons) * 100) : 0;
 
     // Common styles
-    $widget_style = "display: flex; align-items: center; background-color: #eeeeee; padding: 20px; border-radius: 10px; width: 100%;";
+    $widget_style = "display: flex; align-items: center; background-color: white; padding: 20px; border-radius: 0px; border: 1px solid #e2e2e2; width: 100%;";
     $progress_bar_style = "flex: 1; width: 50%; margin-right: 20px;";
     $bar_style = "background-color: #e0e0e0; height: 10px; border-radius: 5px; position: relative;";
     $labels_style = "display: flex; justify-content: space-between; font-size: 12px; color: #333;";
