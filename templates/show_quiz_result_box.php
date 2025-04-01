@@ -5,12 +5,11 @@
  * @since 3.2.0
  * @version 4.17.0
  */
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit;
 }
 ?>
 <style>
-
 .learndash-wrapper .wpProQuiz_quiz_time {
     color: #728188;
     font-size: .8em;
@@ -27,8 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 .quiz-results-container {
-	border: 1px solid #d5d5d5;
-	margin-bottom: 20px;
+    border: 1px solid #d5d5d5;
+    margin-bottom: 20px;
 }
 
 .extra-stats-container {
@@ -37,13 +36,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     border-radius: 8px;
     background: white;
 }
-
-
 </style>
 
 <!-- (A) LearnDash default sending container -->
 <div style="display: none;" class="wpProQuiz_sending">
-    <h4 class="wpProQuiz_header"><?php esc_html_e( 'Results', 'learndash' ); ?></h4>
+    <h4 class="wpProQuiz_header"><?php esc_html_e('Results', 'learndash'); ?></h4>
     <p>
         <div>
             <?php
@@ -54,8 +51,8 @@ if ( ! defined( 'ABSPATH' ) ) {
                         'quiz_post_id' => $quiz->getID(),
                         'context'      => 'quiz_complete_message',
                         'message'      => sprintf(
-                            esc_html_x( '%s complete. Results are being recorded.', 'placeholder: Quiz', 'learndash' ),
-                            LearnDash_Custom_Label::get_label( 'quiz' )
+                            esc_html_x('%s complete. Results are being recorded.', 'placeholder: Quiz', 'learndash'),
+                            LearnDash_Custom_Label::get_label('quiz')
                         ),
                     )
                 )
@@ -72,12 +69,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <!-- (B) LearnDash default results container -->
 <div style="display: none;" class="wpProQuiz_results">
-    <h4 class="wpProQuiz_header"><?php esc_html_e( 'Results', 'learndash' ); ?></h4>
+    <h4 class="wpProQuiz_header"><?php esc_html_e('Results', 'learndash'); ?></h4>
 
-    <?php if ( ! $quiz->isHideResultCorrectQuestion() ) :
+    <?php if (!$quiz->isHideResultCorrectQuestion()) :
 
         // Show quiz time if not hidden.
-        if ( ! $quiz->isHideResultQuizTime() ) { ?>
+        if (!$quiz->isHideResultQuizTime()) { ?>
             <p class="wpProQuiz_quiz_time">
                 <?php
                 echo wp_kses_post(
@@ -87,7 +84,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                             'quiz_post_id' => $quiz->getID(),
                             'context'      => 'quiz_your_time_message',
                             'message'      => sprintf(
-                                esc_html_x( 'Your time: %s', 'placeholder: quiz time.', 'learndash' ),
+                                esc_html_x('Your time: %s', 'placeholder: quiz time.', 'learndash'),
                                 '<span></span>'
                             ),
                         )
@@ -99,206 +96,199 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         <div style="display: none;">
             <span class="wpProQuiz_correct_answer">0</span>
-            <span class="total-questions"><?php echo intval( $question_count ); ?></span>
+            <span class="total-questions"><?php echo intval($question_count); ?></span>
         </div>
 
         <?php
         global $post;
-        $quiz_id = isset( $post->ID ) ? $post->ID : 0;
+        $quiz_id = isset($post->ID) ? $post->ID : 0;
 
-        if ( ! class_exists( 'QuizAnalytics' ) ) {
-            require_once plugin_dir_path( __FILE__ ) . 'classes/class-quiz-analytics.php';
+        if (!class_exists('QuizAnalytics')) {
+            require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
         }
 
-        if ( class_exists( 'QuizAnalytics' ) ) {
-            $quiz_checker = new QuizAnalytics( $quiz_id );
+        if (class_exists('QuizAnalytics')) {
+            $quiz_checker = new QuizAnalytics($quiz_id);
             $is_first_quiz = $quiz_checker->isFirstQuiz(); // Método que determina si es First Quiz
         } else {
             $is_first_quiz = false;
         }
 
         // Usamos la función nativa de LearnDash para obtener el Course ID a partir del quiz.
-        $course_id = learndash_get_course_id( $quiz_id );
+        $course_id = learndash_get_course_id($quiz_id);
 
         // Determine the container ID for the current quiz.
         $current_container_id = $is_first_quiz ? "quiz-results-container" : "final-quiz-results-container";
         ?>
         <!-- Current Quiz Results Container -->
-<!-- Current Quiz Results Container -->
-<div id="<?php echo esc_attr( $current_container_id ); ?>" class="quiz-results-container responsive-quiz-box">
-    <div class="quiz-flex-item quiz-info">
-        <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-            <?php echo esc_html( get_the_title() ); ?>
+        <div id="<?php echo esc_attr($current_container_id); ?>" class="quiz-results-container responsive-quiz-box">
+            <div class="quiz-flex-item quiz-info">
+                <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                    <?php echo esc_html(get_the_title()); ?>
+                </div>
+                <div style="color: #666; font-size: 14px;">
+                    <?php echo esc_html(date('F j')); ?>
+                </div>
+            </div>
+
+            <div class="quiz-flex-item quiz-bar">
+                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                    <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                </div>
+            </div>
+
+            <div class="quiz-flex-item quiz-percentage">
+                <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
+            </div>
         </div>
-        <div style="color: #666; font-size: 14px;">
-            <?php echo esc_html( date( 'F j' ) ); ?>
-        </div>
-    </div>
 
-    <div class="quiz-flex-item quiz-bar">
-        <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-            <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
-        </div>
-    </div>
+        <style>
+        .responsive-quiz-box {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            gap: 0;
+        }
 
-    <div class="quiz-flex-item quiz-percentage">
-        <span id="quiz-percentage" style="font-size: 24px; font-weight: bold;">0%</span>
-    </div>
-</div>
+        .quiz-flex-item.quiz-info {
+            flex: 0 0 40%;
+            padding: 10px;
+            text-align: left;
+        }
 
-<style>
-.responsive-quiz-box {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    gap: 0;
-}
+        .quiz-flex-item.quiz-bar {
+            flex: 0 0 40%;
+            padding: 10px;
+        }
 
-.quiz-flex-item.quiz-info {
-    flex: 0 0 40%;
-    padding: 10px;
-    text-align: left;
-}
+        .quiz-flex-item.quiz-percentage {
+            flex: 0 0 20%;
+            padding: 10px;
+            text-align: right;
+        }
 
-.quiz-flex-item.quiz-bar {
-    flex: 0 0 40%;
-    padding: 10px;
-}
+        /* Responsive: cambia a columna */
+        @media (max-width: 767px) {
+            .responsive-quiz-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-.quiz-flex-item.quiz-percentage {
-    flex: 0 0 20%;
-    padding: 10px;
-    text-align: right;
-}
+            .quiz-flex-item {
+                flex: 1 1 100%;
+                text-align: center !important;
+            }
 
-/* Responsive: cambia a columna */
-@media (max-width: 767px) {
-    .responsive-quiz-box {
-        flex-direction: column;
-        align-items: stretch;
-    }
+            .quiz-bar {
+                width: 100%;
+            }
 
-    .quiz-flex-item {
-        flex: 1 1 100%;
-        text-align: center !important;
-    }
+            .quiz-info {
+                text-align: center;
+            }
+        }
+        </style>
 
-    .quiz-bar {
-        width: 100%;
-    }
+        <?php
+        if (!defined('ABSPATH')) {
+            exit;
+        }
 
-    .quiz-info {
-    text-align: center;
-    }
-}
-</style>
+        global $wpdb, $post;
+        $quiz_id = isset($post->ID) ? (int) $post->ID : 0;
 
+        if (!class_exists('QuizAnalytics')) {
+            require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
+        }
 
+        if (class_exists('QuizAnalytics')) {
+            $quiz_checker = new QuizAnalytics($quiz_id);
+            $is_first_quiz = $quiz_checker->isFirstQuiz(); // Determines if the current quiz is a First Quiz.
+        } else {
+            $is_first_quiz = false;
+        }
 
-		<?php
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+        // Only process the button if the quiz is a First Quiz.
+        if ($is_first_quiz) {
+            // Retrieve the Course ID from the meta where _first_quiz_id equals the quiz ID.
+            $course_id = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT post_id
+                     FROM {$wpdb->postmeta}
+                     WHERE meta_key = '_first_quiz_id'
+                       AND meta_value = %d
+                     LIMIT 1",
+                    $quiz_id
+                )
+            );
 
-global $wpdb, $post;
-$quiz_id = isset( $post->ID ) ? (int) $post->ID : 0;
+            // Retrieve the Product ID associated with the Course.
+            // First, try to get it from the '_linked_woocommerce_product' meta.
+            $product_id = get_post_meta($course_id, '_linked_woocommerce_product', true);
+            if (empty($product_id)) {
+                // If not found, search for a product with _related_course matching the Course ID.
+                $args = array(
+                    'post_type'      => 'product',
+                    'meta_query'     => array(
+                        array(
+                            'key'     => '_related_course',
+                            'value'   => $course_id,
+                            'compare' => 'LIKE',
+                        ),
+                    ),
+                    'posts_per_page' => 1,
+                );
+                $products = get_posts($args);
+                if (!empty($products)) {
+                    $product_id = $products[0]->ID;
+                }
+            }
 
-if ( ! class_exists( 'QuizAnalytics' ) ) {
-	require_once plugin_dir_path( __FILE__ ) . 'classes/class-quiz-analytics.php';
-}
+            // Generate URLs.
+            $course_url  = $course_id  ? get_permalink($course_id)  : '#';
+            $product_url = $product_id ? get_permalink($product_id) : '#';
 
-if ( class_exists( 'QuizAnalytics' ) ) {
-	$quiz_checker = new QuizAnalytics( $quiz_id );
-	$is_first_quiz = $quiz_checker->isFirstQuiz(); // Determines if the current quiz is a First Quiz.
-} else {
-	$is_first_quiz = false;
-}
+            // Check if the current user has access to the course.
+            $current_user = wp_get_current_user();
+            $user_id = $current_user->ID;
+            $has_access = sfwd_lms_has_access($course_id, $user_id);
 
-// Only process the button if the quiz is a First Quiz.
-if ( $is_first_quiz ) {
-	// Retrieve the Course ID from the meta where _first_quiz_id equals the quiz ID.
-	$course_id = $wpdb->get_var(
-		$wpdb->prepare(
-			"SELECT post_id
-			 FROM {$wpdb->postmeta}
-			 WHERE meta_key = '_first_quiz_id'
-			   AND meta_value = %d
-			 LIMIT 1",
-			$quiz_id
-		)
-	);
+            // Set button text and URL based on access.
+            if ($has_access) {
+                $button_text = 'IR AL CURSO';
+                $button_url  = $course_url;
+            } else {
+                $button_text = 'COMPRAR CURSO';
+                $button_url  = $product_url;
+            }
+            ?>
+            <div id="testing-button" style="margin-top: 20px;">
+                <button onclick="window.location.href='<?php echo esc_url($button_url); ?>'"
+                        style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
+                    <?php echo esc_html($button_text); ?>
+                </button>
+            </div>
+            <?php
+        }
+        ?>
 
-	// Retrieve the Product ID associated with the Course.
-	// First, try to get it from the '_linked_woocommerce_product' meta.
-	$product_id = get_post_meta( $course_id, '_linked_woocommerce_product', true );
-	if ( empty( $product_id ) ) {
-		// If not found, search for a product with _related_course matching the Course ID.
-		$args = array(
-			'post_type'      => 'product',
-			'meta_query'     => array(
-				array(
-					'key'     => '_related_course',
-					'value'   => $course_id,
-					'compare' => 'LIKE',
-				),
-			),
-			'posts_per_page' => 1,
-		);
-		$products = get_posts( $args );
-		if ( ! empty( $products ) ) {
-			$product_id = $products[0]->ID;
-		}
-	}
-
-	// Generate URLs.
-	$course_url  = $course_id  ? get_permalink( $course_id )  : '#';
-	$product_url = $product_id ? get_permalink( $product_id ) : '#';
-
-	// Check if the current user has access to the course.
-	$current_user = wp_get_current_user();
-	$user_id = $current_user->ID;
-	$has_access = sfwd_lms_has_access( $course_id, $user_id );
-
-	// Set button text and URL based on access.
-	if ( $has_access ) {
-		$button_text = 'IR AL CURSO';
-		$button_url  = $course_url;
-	} else {
-		$button_text = 'COMPRAR CURSO';
-		$button_url  = $product_url;
-	}
-	?>
-	<div id="testing-button" style="margin-top: 20px;">
-		<button onclick="window.location.href='<?php echo esc_url( $button_url ); ?>'"
-		        style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
-			<?php echo esc_html( $button_text ); ?>
-		</button>
-	</div>
-	<?php
-}
-
-?>
-
-
-
-<?php
+        <?php
         // Si el quiz actual es un Final Quiz, mostrar información adicional.
-        if ( ! $is_first_quiz ) {
-
+        if (!$is_first_quiz) {
             // 1) Obtener información del First Quiz.
-            $first_quiz_id   = $quiz_checker->getFirstQuiz();
-            $first_quiz_name = ( $first_quiz_id !== "Doesn't have" ) ? get_the_title( $first_quiz_id ) : "Doesn't exist";
-            $perf            = $quiz_checker->getFirstQuizPerformance();
-            $first_quiz_percentage = ( is_numeric( $perf['percentage'] ) ) ? round( floatval( $perf['percentage'] ) ) : 0;
-            $first_quiz_date_ts    = ( ! empty( $perf['date'] ) && strtotime( $perf['date'] ) !== false ) ? strtotime( $perf['date'] ) : null;
+            $first_quiz_id = $quiz_checker->getFirstQuiz();
+            $first_quiz_name = ($first_quiz_id !== "Doesn't have") ? get_the_title($first_quiz_id) : "Doesn't exist";
+            $perf = $quiz_checker->getFirstQuizPerformance();
+            $first_quiz_percentage = (is_numeric($perf['percentage'])) ? round(floatval($perf['percentage'])) : 0;
+            $first_quiz_date_ts = (!empty($perf['date']) && strtotime($perf['date']) !== false) ? strtotime($perf['date']) : null;
 
             // 2) Obtener información del Final Quiz desde la tabla user_activity.
             global $wpdb;
-            $user_id      = get_current_user_id();
+            $user_id = get_current_user_id();
             $final_attempt = $wpdb->get_row(
                 $wpdb->prepare(
                     "SELECT activity_completed
@@ -312,50 +302,46 @@ if ( $is_first_quiz ) {
                     $quiz_id
                 )
             );
-            $final_quiz_date_ts = ( ! empty( $final_attempt->activity_completed ) ) ? (int) $final_attempt->activity_completed : null;
+            $final_quiz_date_ts = (!empty($final_attempt->activity_completed)) ? (int) $final_attempt->activity_completed : null;
 
             // 3) Calcular la diferencia en días.
             $days_diff = 0;
-            if ( $first_quiz_date_ts && $final_quiz_date_ts ) {
+            if ($first_quiz_date_ts && $final_quiz_date_ts) {
                 $diff_seconds = $final_quiz_date_ts - $first_quiz_date_ts;
-                $days_diff    = floor( $diff_seconds / ( 60 * 60 * 24 ) );
-                if ( $days_diff < 1 ) {
-                    $days_diff = 1;
-                }
+                $days_diff = floor($diff_seconds / (60 * 60 * 24));
             }
             ?>
 
             <!-- First Quiz Results Container -->
-<div id="first-quiz-results-container" class="quiz-results-container responsive-quiz-box" style="margin-top: 20px;">
-    <div class="quiz-flex-item quiz-info">
-        <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
-            <?php echo esc_html( $first_quiz_name ); ?>
-        </div>
-        <div style="color: #666; font-size: 14px;">
-            <?php echo $first_quiz_date_ts ? esc_html( date( 'F j', $first_quiz_date_ts ) ) : 'N/A'; ?>
-        </div>
-    </div>
+            <div id="first-quiz-results-container" class="quiz-results-container responsive-quiz-box" style="margin-top: 20px;">
+                <div class="quiz-flex-item quiz-info">
+                    <div class="quiz-name" style="font-weight: bold; font-size: 16px;">
+                        <?php echo esc_html($first_quiz_name); ?>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">
+                        <?php echo $first_quiz_date_ts ? esc_html(date('F j', $first_quiz_date_ts)) : 'N/A'; ?>
+                    </div>
+                </div>
 
-    <div class="quiz-flex-item quiz-bar">
-        <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-            <div id="first-quiz-progress-bar"
-                 style="width: <?php echo esc_attr( $first_quiz_percentage ); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;">
+                <div class="quiz-flex-item quiz-bar">
+                    <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                        <div id="first-quiz-progress-bar"
+                             style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-flex-item quiz-percentage">
+                    <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
+                        <?php echo esc_html($first_quiz_percentage); ?>%
+                    </span>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div class="quiz-flex-item quiz-percentage">
-        <span id="first-quiz-percentage" style="font-size: 24px; font-weight: bold;">
-            <?php echo esc_html( $first_quiz_percentage ); ?>%
-        </span>
-    </div>
-</div>
-
 
             <!-- Extra stats block (variación de conocimiento y días para completar) -->
             <div class="extra-stats-container" style="margin-top: 20px;">
                 <div style="display: flex; justify-content: space-evenly; align-items: center;">
-					<div style="flex: 1; text-align: center;">
+                    <div style="flex: 1; text-align: center;">
                         <div style="font-size: 16px; color: #666;">Variación conocimientos</div>
                         <div id="knowledge-variation" style="font-size: 36px; color: green; font-weight: bold;">
                             0% <span style="font-size: 28px;">▲</span>
@@ -366,7 +352,12 @@ if ( $is_first_quiz ) {
                         <div style="font-size: 36px; color: #333; font-weight: bold;">
                             <?php
                             $dias = intval($days_diff);
-                            echo $dias . ' ' . ($dias === 1 ? 'día' : 'días');
+                            // Display "1 día" only if started and finished on the same day (days_diff = 0)
+                            if ($dias === 0 && $first_quiz_date_ts && $final_quiz_date_ts) {
+                                echo '1 día';
+                            } else {
+                                echo $dias . ' ' . ($dias === 1 ? 'día' : 'días');
+                            }
                             ?>
                         </div>
                     </div>
@@ -385,7 +376,7 @@ if ( $is_first_quiz ) {
                             jQuery('#quiz-progress-bar').css('width', finalPct + '%');
 
                             // Obtener el porcentaje del First Quiz
-                            var firstQuizPct = <?php echo json_encode( $first_quiz_percentage ); ?>;
+                            var firstQuizPct = <?php echo json_encode($first_quiz_percentage); ?>;
                             var variation = finalPct - firstQuizPct;
                             var arrow = variation >= 0 ? '▲' : '▼';
                             var color = variation >= 0 ? 'green' : 'red';
@@ -396,16 +387,17 @@ if ( $is_first_quiz ) {
                         }
                     });
                     // Ajustar el ancho inicial de la barra del First Quiz.
-                    var pct = <?php echo json_encode( str_replace( '%', '', $first_quiz_percentage ) ); ?>;
+                    var pct = <?php echo json_encode(str_replace('%', '', $first_quiz_percentage)); ?>;
                     document.getElementById("first-quiz-progress-bar").style.width = pct + "%";
                 });
             </script>
-        <?php }
+        <?php
+        }
 
         // Opcional: configurar la fecha de finalización del Final Quiz.
         global $wpdb;
         $user_id = get_current_user_id();
-        if ( ! $is_first_quiz ) {
+        if (!$is_first_quiz) {
             $final_attempt = $wpdb->get_row(
                 $wpdb->prepare(
                     "SELECT activity_completed
@@ -419,54 +411,53 @@ if ( $is_first_quiz ) {
                     $quiz_id
                 )
             );
-            if ( ! empty( $final_attempt ) ) {
-                if ( ! isset( $quiz ) ) {
+            if (!empty($final_attempt)) {
+                if (!isset($quiz)) {
                     $quiz = new stdClass();
                 }
-                $quiz->completed_date = date( 'Y-m-d H:i:s', (int) $final_attempt->activity_completed );
+                $quiz->completed_date = date('Y-m-d H:i:s', (int) $final_attempt->activity_completed);
             }
         }
         ?>
 
-<script>
-// Definir ajaxurl y si es First Quiz
-var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
-var isFirstQuiz = <?php echo $is_first_quiz ? 'true' : 'false'; ?>;
+        <script>
+        // Definir ajaxurl y si es First Quiz
+        var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+        var isFirstQuiz = <?php echo $is_first_quiz ? 'true' : 'false'; ?>;
 
-jQuery(document).ready(function($) {
-    $(document).on('learndash-quiz-finished', function() {
-        var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
-        var totalQuestions = parseInt($('.total-questions').text(), 10);
+        jQuery(document).ready(function($) {
+            $(document).on('learndash-quiz-finished', function() {
+                var correctAnswers = parseInt($('.wpProQuiz_correct_answer').text(), 10);
+                var totalQuestions = parseInt($('.total-questions').text(), 10);
 
-        if (!isNaN(correctAnswers) && totalQuestions > 0) {
-            var percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            $('#quiz-percentage').text(percentage + '%');
-            $('#quiz-progress-bar').css('width', percentage + '%');
+                if (!isNaN(correctAnswers) && totalQuestions > 0) {
+                    var percentage = Math.round((correctAnswers / totalQuestions) * 100);
+                    $('#quiz-percentage').text(percentage + '%');
+                    $('#quiz-progress-bar').css('width', percentage + '%');
 
-            if (isFirstQuiz) {
-                $.post(ajaxurl, {
-                    action: 'enviar_correo_first_quiz',
-                    quiz_percentage: percentage,
-                    quiz_id: <?php echo (int)$quiz_id; ?>,
-                    user_id: <?php echo get_current_user_id(); ?>
-                }, function(response) {
-                    console.log('Correo enviado (First Quiz):', response);
-                });
-            } else {
-                $.post(ajaxurl, {
-                    action: 'enviar_correo_final_quiz',
-                    quiz_percentage: percentage,
-                    quiz_id: <?php echo (int)$quiz_id; ?>,
-                    user_id: <?php echo get_current_user_id(); ?>
-                }, function(response) {
-                    console.log('Correo enviado (Final Quiz):', response);
-                });
-            }
-        }
-    });
-});
-
-</script>
+                    if (isFirstQuiz) {
+                        $.post(ajaxurl, {
+                            action: 'enviar_correo_first_quiz',
+                            quiz_percentage: percentage,
+                            quiz_id: <?php echo (int)$quiz_id; ?>,
+                            user_id: <?php echo get_current_user_id(); ?>
+                        }, function(response) {
+                            console.log('Correo enviado (First Quiz):', response);
+                        });
+                    } else {
+                        $.post(ajaxurl, {
+                            action: 'enviar_correo_final_quiz',
+                            quiz_percentage: percentage,
+                            quiz_id: <?php echo (int)$quiz_id; ?>,
+                            user_id: <?php echo get_current_user_id(); ?>
+                        }, function(response) {
+                            console.log('Correo enviado (Final Quiz):', response);
+                        });
+                    }
+                }
+            });
+        });
+        </script>
 
     <?php endif; ?>
 
@@ -478,7 +469,7 @@ jQuery(document).ready(function($) {
                 array(
                     'quiz_post_id' => $quiz->getID(),
                     'context'      => 'quiz_time_has_elapsed_message',
-                    'message'      => esc_html__( 'Time has elapsed', 'learndash' ),
+                    'message'      => esc_html__('Time has elapsed', 'learndash'),
                 )
             )
         );
@@ -487,7 +478,7 @@ jQuery(document).ready(function($) {
 
     <?php
     // Bloque de resultados basados en puntos.
-    if ( ! $quiz->isHideResultPoints() ) { ?>
+    if (!$quiz->isHideResultPoints()) { ?>
         <p class="wpProQuiz_graded_points" style="display: none;">
             <?php
             echo wp_kses_post(
@@ -497,12 +488,12 @@ jQuery(document).ready(function($) {
                         'quiz_post_id' => $quiz->getID(),
                         'context'      => 'quiz_earned_points_message',
                         'message'      => sprintf(
-                            esc_html_x( 'Earned Point(s): %1$s of %2$s, (%3$s)', 'placeholder: points earned, points total, points percentage', 'learndash' ),
+                            esc_html_x('Earned Point(s): %1$s of %2$s, (%3$s)', 'placeholder: points earned, points total, points percentage', 'learndash'),
                             '<span>0</span>',
                             '<span>0</span>',
                             '<span>0</span>'
                         ),
-                        'placeholders' => array( '0', '0', '0' ),
+                        'placeholders' => array('0', '0', '0'),
                     )
                 )
             );
@@ -510,12 +501,12 @@ jQuery(document).ready(function($) {
         </p>
     <?php }
 
-    if ( is_user_logged_in() ) { ?>
-        <p class="wpProQuiz_certificate" style="display: none;"><?php echo LD_QuizPro::certificate_link( '', $quiz ); ?></p>
-        <?php echo LD_QuizPro::certificate_details( $quiz ); ?>
+    if (is_user_logged_in()) { ?>
+        <p class="wpProQuiz_certificate" style="display: none;"><?php echo LD_QuizPro::certificate_link('', $quiz); ?></p>
+        <?php echo LD_QuizPro::certificate_details($quiz); ?>
     <?php }
 
-    if ( $quiz->isShowAverageResult() ) { ?>
+    if ($quiz->isShowAverageResult()) { ?>
         <div class="wpProQuiz_resultTable">
             <table>
                 <tbody>
@@ -528,7 +519,7 @@ jQuery(document).ready(function($) {
                                     array(
                                         'quiz_post_id' => $quiz->getID(),
                                         'context'      => 'quiz_average_score_message',
-                                        'message'      => esc_html__( 'Average score', 'learndash' ),
+                                        'message'      => esc_html__('Average score', 'learndash'),
                                     )
                                 )
                             );
@@ -548,7 +539,7 @@ jQuery(document).ready(function($) {
                                     array(
                                         'quiz_post_id' => $quiz->getID(),
                                         'context'      => 'quiz_your_score_message',
-                                        'message'      => esc_html__( 'Your score', 'learndash' ),
+                                        'message'      => esc_html__('Your score', 'learndash'),
                                     )
                                 )
                             );
@@ -564,7 +555,7 @@ jQuery(document).ready(function($) {
         </div>
     <?php } ?>
 
-    <div class="wpProQuiz_catOverview" <?php $quiz_view->isDisplayNone( $quiz->isShowCategoryScore() ); ?>>
+    <div class="wpProQuiz_catOverview" <?php $quiz_view->isDisplayNone($quiz->isShowCategoryScore()); ?>>
         <h4>
             <?php
             echo wp_kses_post(
@@ -573,7 +564,7 @@ jQuery(document).ready(function($) {
                     array(
                         'quiz_post_id' => $quiz->getID(),
                         'context'      => 'learndash_categories_header',
-                        'message'      => esc_html__( 'Categories', 'learndash' ),
+                        'message'      => esc_html__('Categories', 'learndash'),
                     )
                 )
             );
@@ -582,8 +573,8 @@ jQuery(document).ready(function($) {
         <div style="margin-top: 10px;">
             <ol>
                 <?php
-                foreach ( $quiz_view->category as $cat ) {
-                    if ( ! $cat->getCategoryId() ) {
+                foreach ($quiz_view->category as $cat) {
+                    if (!$cat->getCategoryId()) {
                         $cat->setCategoryName(
                             wp_kses_post(
                                 SFWD_LMS::get_template(
@@ -591,15 +582,15 @@ jQuery(document).ready(function($) {
                                     array(
                                         'quiz_post_id' => $quiz->getID(),
                                         'context'      => 'learndash_not_categorized_messages',
-                                        'message'      => esc_html__( 'Not categorized', 'learndash' ),
+                                        'message'      => esc_html__('Not categorized', 'learndash'),
                                     )
                                 )
                             )
                         );
                     }
                     ?>
-                    <li data-category_id="<?php echo esc_attr( $cat->getCategoryId() ); ?>">
-                        <span class="wpProQuiz_catName"><?php echo esc_attr( $cat->getCategoryName() ); ?></span>
+                    <li data-category_id="<?php echo esc_attr($cat->getCategoryId()); ?>">
+                        <span class="wpProQuiz_catName"><?php echo esc_attr($cat->getCategoryName()); ?></span>
                         <span class="wpProQuiz_catPercent">0%</span>
                     </li>
                     <?php
@@ -611,12 +602,12 @@ jQuery(document).ready(function($) {
     <div>
         <ul class="wpProQuiz_resultsList">
             <?php
-            foreach ( $result['text'] as $resultText ) { ?>
+            foreach ($result['text'] as $resultText) { ?>
                 <li style="display: none;">
                     <div>
                         <?php
-                        if ( $quiz->is_result_message_enabled() ) {
-                            echo do_shortcode( apply_filters( 'comment_text', $resultText, null, null ) );
+                        if ($quiz->is_result_message_enabled()) {
+                            echo do_shortcode(apply_filters('comment_text', $resultText, null, null));
                         }
                         ?>
                     </div>
@@ -625,19 +616,19 @@ jQuery(document).ready(function($) {
         </ul>
     </div>
     <?php
-    if ( $quiz->isToplistActivated() ) {
-        if ( $quiz->getToplistDataShowIn() == WpProQuiz_Model_Quiz::QUIZ_TOPLIST_SHOW_IN_NORMAL ) {
-            echo do_shortcode( '[LDAdvQuiz_toplist ' . $quiz->getId() . ' q="true"]' );
+    if ($quiz->isToplistActivated()) {
+        if ($quiz->getToplistDataShowIn() == WpProQuiz_Model_Quiz::QUIZ_TOPLIST_SHOW_IN_NORMAL) {
+            echo do_shortcode('[LDAdvQuiz_toplist ' . $quiz->getId() . ' q="true"]');
         }
         $quiz_view->showAddToplist();
     }
     ?>
     <div class="ld-quiz-actions" style="margin: 10px 0px;">
         <?php
-        $show_quiz_continue_buttom_on_fail = apply_filters( 'show_quiz_continue_buttom_on_fail', false, learndash_get_quiz_id_by_pro_quiz_id( $quiz->getId() ) );
+        $show_quiz_continue_buttom_on_fail = apply_filters('show_quiz_continue_buttom_on_fail', false, learndash_get_quiz_id_by_pro_quiz_id($quiz->getId()));
         ?>
-        <div class='quiz_continue_link <?php if ( true === $show_quiz_continue_buttom_on_fail ) { echo ' show_quiz_continue_buttom_on_fail'; } ?>'></div>
-        <?php if ( ! $quiz->isBtnRestartQuizHidden() ) { ?>
+        <div class='quiz_continue_link <?php if (true === $show_quiz_continue_buttom_on_fail) { echo ' show_quiz_continue_buttom_on_fail'; } ?>'></div>
+        <?php if (!$quiz->isBtnRestartQuizHidden()) { ?>
             <input class="wpProQuiz_button wpProQuiz_button_restartQuiz" type="button" name="restartQuiz"
                    value="<?php echo wp_kses_post(
                        SFWD_LMS::get_template(
@@ -646,14 +637,14 @@ jQuery(document).ready(function($) {
                                'quiz_post_id' => $quiz->getID(),
                                'context'      => 'quiz_restart_button_label',
                                'message'      => sprintf(
-                                   esc_html_x( 'Restart %s', 'Restart Quiz Button Label', 'learndash' ),
-                                   LearnDash_Custom_Label::get_label( 'quiz' )
+                                   esc_html_x('Restart %s', 'Restart Quiz Button Label', 'learndash'),
+                                   LearnDash_Custom_Label::get_label('quiz')
                                ),
                            )
                        )
                    ); ?>"/>
         <?php } ?>
-        <?php if ( ! $quiz->isBtnViewQuestionHidden() ) { ?>
+        <?php if (!$quiz->isBtnViewQuestionHidden()) { ?>
             <input class="wpProQuiz_button wpProQuiz_button_reShowQuestion" type="button" name="reShowQuestion"
                    value="<?php echo wp_kses_post(
                        SFWD_LMS::get_template(
@@ -662,14 +653,14 @@ jQuery(document).ready(function($) {
                                'quiz_post_id' => $quiz->getID(),
                                'context'      => 'quiz_view_questions_button_label',
                                'message'      => sprintf(
-                                   esc_html_x( 'View %s', 'View Questions Button Label', 'learndash' ),
-                                   LearnDash_Custom_Label::get_label( 'questions' )
+                                   esc_html_x('View %s', 'View Questions Button Label', 'learndash'),
+                                   LearnDash_Custom_Label::get_label('questions')
                                ),
                            )
                        )
                    ); ?>"/>
         <?php } ?>
-        <?php if ( $quiz->isToplistActivated() && $quiz->getToplistDataShowIn() == WpProQuiz_Model_Quiz::QUIZ_TOPLIST_SHOW_IN_BUTTON ) { ?>
+        <?php if ($quiz->isToplistActivated() && $quiz->getToplistDataShowIn() == WpProQuiz_Model_Quiz::QUIZ_TOPLIST_SHOW_IN_BUTTON) { ?>
             <input class="wpProQuiz_button" type="button" name="showToplist"
                    value="<?php echo wp_kses_post(
                        SFWD_LMS::get_template(
@@ -677,11 +668,10 @@ jQuery(document).ready(function($) {
                            array(
                                'quiz_post_id' => $quiz->getID(),
                                'context'      => 'quiz_show_leaderboard_button_label',
-                               'message'      => esc_html__( 'Show leaderboard', 'learndash' ),
+                               'message'      => esc_html__('Show leaderboard', 'learndash'),
                            )
                        )
                    ); ?>"/>
         <?php } ?>
     </div>
 </div>
-
