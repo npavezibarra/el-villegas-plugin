@@ -114,7 +114,11 @@ echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName"
                             <div class="course-post-evaluations">
                                 <!-- Prueba Inicial -->
                                 <div class="evaluation-row">
-                                    <span class="evaluation-title">Prueba Inicial</span>
+                                    <?php if (!is_user_logged_in()) : ?>
+                                        <a class="evaluation-title" href="/mi-cuenta/?redirect_to=<?php echo urlencode(get_permalink($first_quiz_id)); ?>">Prueba Inicial</a>
+                                    <?php else : ?>
+                                        <a class="evaluation-title" href="<?php echo get_permalink($first_quiz_id); ?>">Prueba Inicial</a>
+                                    <?php endif; ?>
                                     <div class="progress-bar" id="progress-first">
                                         <div class="progress" style="width: <?php echo $first_quiz_score; ?>%;"></div>
                                     </div>
@@ -123,7 +127,20 @@ echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName"
 
                                 <!-- Prueba Final -->
                                 <div class="evaluation-row">
-                                    <span class="evaluation-title">Prueba Final</span>
+                                    <?php if (!is_user_logged_in()) : ?>
+                                        <a class="evaluation-title" href="/mi-cuenta/?redirect_to=<?php echo urlencode(get_permalink($final_quiz_id)); ?>">Prueba Final</a>
+                                    <?php elseif ($first_quiz_score === 0) : ?>
+                                        <span class="evaluation-title" style="opacity: 0.5; cursor: not-allowed;">Prueba Final</span>
+                                    <?php else : ?>
+                                        <?php
+                                            // Verificar si el usuario completó el curso
+                                            $completed = function_exists('learndash_is_user_complete') 
+                                                ? learndash_is_user_complete($user_id, $course_id) 
+                                                : false;
+                                            $final_link = $completed ? get_permalink($final_quiz_id) : get_permalink($course_id);
+                                        ?>
+                                        <a class="evaluation-title" href="<?php echo esc_url($final_link); ?>">Prueba Final</a>
+                                    <?php endif; ?>
                                     <div class="progress-bar" id="progress-final">
                                         <div class="progress" style="width: <?php echo $final_quiz_score; ?>%;"></div>
                                     </div>
