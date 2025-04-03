@@ -153,7 +153,7 @@ function mostrar_comprar_stats() {
                     <?php
                     list($has_completed_quiz, $percentage_correct) = get_latest_quiz_percentage($user_id, $first_quiz_id);
                     if ($has_completed_quiz): ?>
-                        <div class="quiz-result" style="background-color: #e0e0e0; border-radius: 5px; text-align: center;">
+                        <div class="quiz-result" style="background-color: white; border: 1px solid #e2e2e2; text-align: center;">
                             <strong><?php echo $percentage_correct; ?>%</strong>
                             <p id="primer-test-legend">Prueba Inicial</p>
                         </div>
@@ -194,13 +194,13 @@ function mostrar_comprar_stats() {
                             Examen Final
                         </button>
                     <?php elseif ($has_completed_final_quiz): ?>
-                        <div class="quiz-result" style="background-color: #e0e0e0; border-radius: 5px; text-align: center; padding: 10px;">
+                        <div class="quiz-result" style="background-color: white; border: 1px solid #e2e2e2; text-align: center; padding: 10px;">
                             <strong><?php echo esc_html($final_quiz_score); ?>%</strong>
                             <p style="font-size: 9px;">Prueba Final</p>
                         </div>
                     <?php else: ?>
                         <button id="final-evaluation-button"
-                                style="width: 100%; background-color: #ccc; color: #333; border: none; padding: 10px 0; border-radius: 5px; font-size: 14px; cursor: not-allowed;">
+                                style="width: 100%; background-color: white; color: #333; border: none; padding: 10px 0; border-radius: 5px; font-size: 14px; cursor: not-allowed;">
                             Prueba Final
                         </button>
                     <?php endif; ?>

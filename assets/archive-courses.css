@@ -102,3 +102,27 @@ main#main-course-grid {
 footer.entry-footer {
     padding: 20px;
 }
+
+@media screen and (max-width: 900px) {
+    .evaluation-row {
+        flex-direction: column;
+        padding: 20px 0;
+    }
+
+    .evaluation-title {
+        width: 100%;
+        text-align: center;
+    }
+
+    .evaluation-percentage {
+        width: 100%;
+        text-align: center;
+    }
+
+    .progress-bar {
+        width: 100%;
+    }
+    #progress-first, #progress-final {
+        margin-bottom: 0px !important;
+    }
+}

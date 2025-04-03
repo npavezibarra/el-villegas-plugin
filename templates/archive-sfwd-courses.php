@@ -112,25 +112,24 @@ echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName"
 
                             <!-- Evaluaciones -->
                             <div class="course-post-evaluations">
-                                <!-- Primera Evaluación -->
+                                <!-- Prueba Inicial -->
                                 <div class="evaluation-row">
-                                    <span class="evaluation-title">Primera Evaluación</span>
+                                    <span class="evaluation-title">Prueba Inicial</span>
                                     <div class="progress-bar" id="progress-first">
                                         <div class="progress" style="width: <?php echo $first_quiz_score; ?>%;"></div>
                                     </div>
                                     <span class="evaluation-percentage"><?php echo $first_quiz_score; ?>%</span>
                                 </div>
 
-                                <!-- Evaluación Final -->
+                                <!-- Prueba Final -->
                                 <div class="evaluation-row">
-                                    <span class="evaluation-title">Evaluación Final</span>
+                                    <span class="evaluation-title">Prueba Final</span>
                                     <div class="progress-bar" id="progress-final">
                                         <div class="progress" style="width: <?php echo $final_quiz_score; ?>%;"></div>
                                     </div>
                                     <span class="evaluation-percentage"><?php echo $final_quiz_score; ?>%</span>
                                 </div>
                             </div>
-
                             <footer class="entry-footer">
                                 <a href="<?php the_permalink(); ?>" class="btn">Ver Curso</a>
                             </footer>

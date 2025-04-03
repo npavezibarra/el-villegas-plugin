@@ -28,7 +28,7 @@
 
                     if (!empty($current_section)) {
                         $current_section = reset($current_section);
-                        echo '<li class="course-section-header" style="margin-bottom: 10px; padding: 20px;">';
+                        echo '<li class="course-section-header" style="margin-bottom: 10px; padding: 10px 0px;">';
                         echo '<h4>' . esc_html($current_section['post_title']) . '</h4>';
                         echo '</li>';
                         continue;
