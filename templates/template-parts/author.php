@@ -23,7 +23,12 @@
                 echo esc_html($first_name . ' ' . $last_name);
                 ?>
             </div>
-            <div class="autor-title">Director Academia Villegas</div>
+            <div class="autor-title">
+                <?php 
+                $titulo_personal = get_user_meta($author_id, 'titulo_personal', true);
+                echo esc_html($titulo_personal);
+                ?>
+            </div>
         </div>
     </div>
         <div class="autor-column autor-bio">

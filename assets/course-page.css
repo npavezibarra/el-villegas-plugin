@@ -4,7 +4,6 @@ a {
     font-weight: 500;
     color: black;
     text-decoration: none;
-    font-size: 1.2em;
 }
 
 /* Main Menu */
@@ -412,7 +411,7 @@ div#primer-test-score > a {
     max-width: 830px;
     margin: 40px auto;
     padding: 80px;
-    background-color: #f5f5f5;
+    background-color: white;
     border: 1px solid #d5d5d5;
     display: flex;
     flex-direction: column;
