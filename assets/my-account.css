@@ -4,6 +4,10 @@
     color: black !important;
 }
 
+.woocommerce-MyAccount-content label {
+    margin-bottom: 0px !important;
+}
+
 .card__progress > p {
     margin-top: 0px;
 }
@@ -132,3 +136,10 @@ span#account_display_name_description {
     font-size: 14px;
   }
   
+  @media (min-width: 1124px) {
+form.woocommerce-EditAccountForm.edit-account {
+    max-width: 600px !important;
+    padding: 40px !important;
+    margin: auto !important;
+}
+  }
