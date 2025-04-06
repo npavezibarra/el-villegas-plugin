@@ -33,19 +33,34 @@ function villegas_guardar_titulo_personal_usuario($user_id) {
 add_action('personal_options_update', 'villegas_guardar_titulo_personal_usuario');
 add_action('edit_user_profile_update', 'villegas_guardar_titulo_personal_usuario');
 
-// Agregar campo en Mi Cuenta (WooCommerce)
+// === CAMPO EN MI CUENTA (WooCommerce) === //
 add_action('woocommerce_edit_account_form', function () {
     $user_id = get_current_user_id();
     $titulo = get_user_meta($user_id, 'titulo_personal', true);
     ?>
-    <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-        <label for="titulo_personal">Título Personal</label>
-        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text"
-               name="titulo_personal" id="titulo_personal" maxlength="150"
-               value="<?php echo esc_attr($titulo); ?>" />
-    </p>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const showNameField = document.querySelector('#account_display_name');
+        if (showNameField) {
+            const tituloHTML = `
+                <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                    <label for="titulo_personal">Título Personal</label>
+                    <input type="text"
+                           class="woocommerce-Input woocommerce-Input--text input-text"
+                           name="titulo_personal"
+                           id="titulo_personal"
+                           value="<?php echo esc_attr($titulo); ?>"
+                           maxlength="150"
+                           placeholder="Tu profesión o actividad" />
+                </p>
+            `;
+            showNameField.closest('.form-row').insertAdjacentHTML('afterend', tituloHTML);
+        }
+    });
+    </script>
     <?php
 });
+
 
 // Guardar campo al actualizar Mi Cuenta
 add_action('woocommerce_save_account_details', function ($user_id) {

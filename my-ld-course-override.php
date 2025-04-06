@@ -57,6 +57,20 @@ function my_custom_ld_course_styles() {
 }
 add_action('wp_enqueue_scripts', 'my_custom_ld_course_styles');
 
+add_action('wp_enqueue_scripts', 'villegas_enqueue_profile_picture_script');
+function villegas_enqueue_profile_picture_script() {
+    if (is_account_page()) {
+        wp_enqueue_script(
+            'villegas-profile-picture',
+            plugin_dir_url(__FILE__) . 'assets/js/profile-picture.js',
+            [],
+            '1.0',
+            true
+        );
+    }
+}
+
+
 
 // Incluir metabox personalizado y otros archivos necesarios
 include_once 'learndash-course-metabox.php';
@@ -78,8 +92,8 @@ require_once plugin_dir_path(__FILE__) . 'shortcodes/quiz-class-shortcodes.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
 /* USUARIO OPTIONES */
 require_once plugin_dir_path(__FILE__) . 'opciones-usuario.php';
-
-
+/* PROFILE PHOTO */
+require_once plugin_dir_path(__FILE__) . 'profile/profile-picture.php';
 
 
 // Customize LearnDash quiz result template by replacing the original with a custom one.

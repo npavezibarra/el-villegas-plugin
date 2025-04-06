@@ -1,5 +1,4 @@
 <div id="autor-box" class="autor-box">
-    
     <div class="autor-body">
     <div class="autor-header">
         <div class="user-photo-circle">
@@ -32,10 +31,8 @@
         </div>
     </div>
         <div class="autor-column autor-bio">
-    <p style="font-size: 24px; font-weight: 300;"><strong>Sobre el autor</strong></p>
-    <p><?php echo esc_html(get_the_author_meta('description', $author_id)); ?></p>
-</div>
-
+            <p style="font-size: 24px; font-weight: 300;"><strong>Sobre el autor</strong></p>
+            <p><?php echo esc_html(get_the_author_meta('description', $author_id)); ?></p>
         </div>
     </div>
 </div>
