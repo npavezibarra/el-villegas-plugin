@@ -73,3 +73,62 @@ span#account_display_name_description {
         text-align: center !important;
     }
 }
+
+/* PROFILE PHOTO */
+
+.villegas-profile-upload-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .villegas-profile-avatar {
+    position: relative;
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #ccc;
+    transition: border-color 0.3s ease;
+    overflow: visible;
+  }
+  
+  .villegas-profile-avatar:hover {
+    border-color: #ff6600;
+  }
+  
+  .villegas-profile-avatar > img {
+    height: 120px !important;
+    width: 120px !important;
+    border-radius: 50%;
+}
+  
+  .villegas-profile-avatar .upload-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #ff6600;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    line-height: 30px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: 2px solid white;
+    transition: transform 0.2s ease;
+  }
+  
+  .villegas-profile-avatar:hover .upload-icon {
+    transform: scale(1.1);
+  }
+  
+  .remove-checkbox {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
