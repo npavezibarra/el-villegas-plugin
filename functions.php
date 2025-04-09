@@ -77,3 +77,47 @@ function non_ajax_redirect_to_checkout($url) {
 add_filter('woocommerce_add_to_cart_redirect', 'non_ajax_redirect_to_checkout');
 
 
+/* FUNCION RESULTADOS CURSO QUIZ */
+
+function villegas_show_resultados_button($course_id, $user_id) {
+    global $wpdb;
+
+    if (!$course_id || !$user_id) return;
+
+    // Obtener IDs de quizzes
+    $first_quiz_id = get_post_meta($course_id, '_first_quiz_id', true);
+    $final_quiz_id = 0;
+    $quiz_steps = learndash_course_get_steps_by_type($course_id, 'sfwd-quiz');
+    if (!empty($quiz_steps)) {
+        $final_quiz_id = end($quiz_steps);
+    }
+
+    if (!$first_quiz_id || !$final_quiz_id) return;
+
+    // Revisar si el usuario completó el First Quiz
+    $first_attempt = $wpdb->get_var($wpdb->prepare(
+        "SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity 
+         WHERE user_id = %d AND post_id = %d AND activity_type = 'quiz' 
+         AND activity_completed IS NOT NULL 
+         ORDER BY activity_completed DESC LIMIT 1",
+        $user_id,
+        $first_quiz_id
+    ));
+
+    // Revisar si el usuario completó el Final Quiz
+    $final_attempt = $wpdb->get_var($wpdb->prepare(
+        "SELECT activity_id FROM {$wpdb->prefix}learndash_user_activity 
+         WHERE user_id = %d AND post_id = %d AND activity_type = 'quiz' 
+         AND activity_completed IS NOT NULL 
+         ORDER BY activity_completed DESC LIMIT 1",
+        $user_id,
+        $final_quiz_id
+    ));
+
+    // Si ambos existen, mostrar el botón RESULTADOS
+    if ($first_attempt && $final_attempt) {
+        // URL a la página de resultados
+        $resultados_url = home_url('/resultados/?course_id=' . $course_id);
+        echo '<a id="ver-resultados" href="' . esc_url($resultados_url) . '" class="btn-ver-resultados">RESULTADOS</a>';
+    }
+}

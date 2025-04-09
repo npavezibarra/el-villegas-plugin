@@ -57,11 +57,40 @@ foreach ( $user_courses as $course_id ) {
     echo '<div class="card__progress">';
     echo '<progress max="100" value="' . esc_attr( $percentage_complete ) . '"></progress>';
     echo '<p>' . esc_html( round($percentage_complete) ) . '% completado</p>';
+    villegas_show_resultados_button($course_id, $user_id);
     echo '</div>';
 
     echo '</div>'; // .curso-info
     echo '</div>'; // .curso-item
+
 }
 
 echo '</div>'; // .cursos-usuario
 ?>
+
+<div id="bloque-resultados" style="display: none; width: 400px; height: 400px; background-color: white; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; box-shadow: 0px 0px 20px rgba(0,0,0,0.3); padding: 20px;">
+    <h3>Resultados del Curso</h3>
+    <p>Aquí aparecerán los datos comparativos...</p>
+    <button id="cerrar-resultados">Cerrar</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('ver-resultados');
+    const modal = document.getElementById('bloque-resultados');
+    const close = document.getElementById('cerrar-resultados');
+
+    if (btn && modal) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            modal.style.display = 'block';
+        });
+    }
+
+    if (close && modal) {
+        close.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+});
+</script>

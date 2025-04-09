@@ -143,3 +143,14 @@ form.woocommerce-EditAccountForm.edit-account {
     margin: auto !important;
 }
   }
+
+#ver-resultados {
+    display:inline-block; 
+    margin-top:10px; 
+    color:#d01e1e; 
+    padding:3px 7px; 
+    border-radius:5px; 
+    text-decoration:none;
+    border: 1px solid red;
+    font-size:10px;
+}
