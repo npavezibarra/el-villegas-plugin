@@ -118,6 +118,13 @@ function villegas_show_resultados_button($course_id, $user_id) {
     if ($first_attempt && $final_attempt) {
         // URL a la página de resultados
         $resultados_url = home_url('/resultados/?course_id=' . $course_id);
-        echo '<a id="ver-resultados" href="' . esc_url($resultados_url) . '" class="btn-ver-resultados">RESULTADOS</a>';
+        echo '<a class="ver-resultados-btn" data-course-id="' . esc_attr($course_id) . '" href="#">RESULTADOS</a>';
     }
 }
+
+add_action('wp_enqueue_scripts', function() {
+    wp_localize_script('custom-quiz-message', 'ajax_object', array(
+        'ajaxurl' => admin_url('admin-ajax.php')
+    ));
+});
+

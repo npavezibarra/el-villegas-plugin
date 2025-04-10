@@ -68,7 +68,7 @@ foreach ( $user_courses as $course_id ) {
 echo '</div>'; // .cursos-usuario
 ?>
 
-<div id="bloque-resultados" style="display: none; width: 400px; height: 400px; background-color: white; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; box-shadow: 0px 0px 20px rgba(0,0,0,0.3); padding: 20px;">
+<div id="bloque-resultados" style="display: none; width: 600px; height: auto; background-color: white; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; box-shadow: 0px 0px 20px rgba(0,0,0,0.3); padding: 20px;">
     <h3>Resultados del Curso</h3>
     <p>Aquí aparecerán los datos comparativos...</p>
     <button id="cerrar-resultados">Cerrar</button>
@@ -76,21 +76,31 @@ echo '</div>'; // .cursos-usuario
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const btn = document.getElementById('ver-resultados');
     const modal = document.getElementById('bloque-resultados');
-    const close = document.getElementById('cerrar-resultados');
 
-    if (btn && modal) {
-        btn.addEventListener('click', function(e) {
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('ver-resultados-btn')) {
             e.preventDefault();
-            modal.style.display = 'block';
-        });
-    }
+            const cursoId = e.target.dataset.courseId;
 
-    if (close && modal) {
-        close.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-    }
+            fetch(ajax_object.ajaxurl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=mostrar_resultados_curso&course_id=' + encodeURIComponent(cursoId)
+            })
+            .then(response => response.text())
+            .then(html => {
+                modal.innerHTML = `
+    <button id="cerrar-resultados" style="position: absolute; top: 10px; right: 10px; background-color: #ccc; border: none; border-radius: 50%; width: 32px; height: 32px; font-weight: bold; font-size: 16px; cursor: pointer; line-height: 30px;">×</button>
+    ` + html;
+                modal.style.display = 'block';
+
+                document.getElementById('cerrar-resultados')?.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+            });
+        }
+    });
 });
 </script>
+

@@ -70,7 +70,29 @@ function villegas_enqueue_profile_picture_script() {
     }
 }
 
+/* AJAX PARA RESULTADOS QUIZ */
+add_action('wp_ajax_mostrar_resultados_curso', 'villegas_ajax_resultados_curso');
+function villegas_ajax_resultados_curso() {
+    include plugin_dir_path(__FILE__) . 'partials/ajax-results-box.php';
+    wp_die(); // importante
+}
 
+function enqueue_my_account_script() {
+    if (is_account_page()) {
+        wp_enqueue_script(
+            'my-account-script',
+            plugin_dir_url(__FILE__) . 'assets/js/my-account.js',
+            ['jquery'],
+            '1.0',
+            true
+        );
+
+        wp_localize_script('my-account-script', 'ajax_object', [
+            'ajaxurl' => admin_url('admin-ajax.php')
+        ]);
+    }
+}
+add_action('wp_enqueue_scripts', 'enqueue_my_account_script');
 
 // Incluir metabox personalizado y otros archivos necesarios
 include_once 'learndash-course-metabox.php';
