@@ -118,7 +118,7 @@ function villegas_show_resultados_button($course_id, $user_id) {
     if ($first_attempt && $final_attempt) {
         // URL a la página de resultados
         $resultados_url = home_url('/resultados/?course_id=' . $course_id);
-        echo '<a class="ver-resultados-btn" data-course-id="' . esc_attr($course_id) . '" href="#">RESULTADOS</a>';
+        echo '<a class="ver-resultados-btn" data-course-id="' . esc_attr($course_id) . '" href="#">VER RESULTADOS</a>';
     }
 }
 

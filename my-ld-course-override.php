@@ -42,6 +42,7 @@ function my_custom_ld_course_styles() {
     wp_enqueue_style('single-lessons-css', plugin_dir_url(__FILE__) . 'assets/single-lessons.css', [], '1.0', 'all');
     wp_enqueue_style('login-form-styles', plugin_dir_url(__FILE__) . 'login/login-form-styles.css', [], '1.0', 'all');
     wp_enqueue_style('quiz-styles', plugin_dir_url(__FILE__) . 'assets/quiz-styles.css', [], '1.0', 'all');
+    wp_enqueue_style('cursos-finalizados', plugin_dir_url(__FILE__) . 'assets/cursos-finalizados.css', [], '1.0', 'all');
 
     // Encolar estilo solo en la página de cursos
     if (is_post_type_archive('sfwd-courses')) {
@@ -116,6 +117,8 @@ require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
 require_once plugin_dir_path(__FILE__) . 'opciones-usuario.php';
 /* PROFILE PHOTO */
 require_once plugin_dir_path(__FILE__) . 'profile/profile-picture.php';
+/* SHORTCODES */
+require_once plugin_dir_path(__FILE__) . 'shortcodes/shortcode-cursos-finalizados.php';
 
 
 // Customize LearnDash quiz result template by replacing the original with a custom one.

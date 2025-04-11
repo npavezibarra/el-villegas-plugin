@@ -10,6 +10,7 @@
 
 .card__progress > p {
     margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 .woocommerce-account > div > header {
@@ -144,13 +145,56 @@ form.woocommerce-EditAccountForm.edit-account {
 }
   }
 
-#ver-resultados {
-    display:inline-block; 
-    margin-top:10px; 
-    color:#d01e1e; 
-    padding:3px 7px; 
-    border-radius:5px; 
-    text-decoration:none;
-    border: 1px solid red;
-    font-size:10px;
+  a.ver-resultados-btn {
+    font-size: 12px;
+    border: 1px solid #d40000;
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: #d40000;
 }
+
+/* ANIMACIÓN RESULTADOS */
+div#bloque-resultados {
+    background: #eaeaea;
+}
+/* Fondo con animación de opacidad */
+#fondo-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.75);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  
+  #fondo-modal.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Modal con fade + scale */
+  #bloque-resultados {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 600px;
+    height: auto;
+    background-color: white;
+    z-index: 9999;
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease 0.3s, transform 0.3s ease 0.3s;
+  }
+  
+  #bloque-resultados.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+  }

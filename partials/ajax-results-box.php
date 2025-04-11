@@ -95,7 +95,8 @@ $days_diff = max(1, $days_diff); // nunca mostrar "0 días"
     text-align: right;
 }
 </style>
-<h3 style="text-align: center;"><?php echo esc_html($course_title); ?></h3>
+<p style="font-size: 10px; text-align: center; margin-bottom: 10px; letter-spacing: 10px;">CURSO</p>
+<h3 style="text-align: center; margin-top: 0px;"><?php echo esc_html($course_title); ?></h3>
 <div class="quiz-results-container">
     
 
@@ -124,7 +125,7 @@ $days_diff = max(1, $days_diff); // nunca mostrar "0 días"
     </div>
 </div>
 
-<div class="extra-stats-container">
+<div class="extra-stats-container" style="margin-bottom: 0px;">
     <div class="quiz-flex">
         <div style="flex: 1; text-align: center;">
             <div style="font-size: 16px; color: #666;">Variación conocimientos</div>
