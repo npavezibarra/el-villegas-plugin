@@ -191,7 +191,7 @@ function mostrar_comprar_stats() {
                     if ((int)$percentage_complete >= 100 && !empty($final_quiz_url) && !$has_completed_final_quiz): ?>
                         <button onclick="window.location.href='<?php echo esc_url($final_quiz_url); ?>'"
                                 style="<?php echo sprintf($button_style, '#4c8bf5'); ?> width: 100%; padding: 10px 0; font-size: 12px;">
-                            Examen Final
+                            Prueba Final
                         </button>
                     <?php elseif ($has_completed_final_quiz): ?>
                         <div class="quiz-result" style="background-color: white; border: 1px solid #e2e2e2; text-align: center; padding: 10px;">

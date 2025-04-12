@@ -11,9 +11,11 @@
     font-size: 28px;
     margin-bottom: 15px;
     text-align: left;
+    font-family: 'Cardo';
+    font-weight: 800;
   }
   
-  .quiz-row {
+  .quiz-row-inicial, .quiz-row-final {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -51,8 +53,26 @@
   .quiz-percentage {
     font-weight: bold;
     font-size: 16px;
-    margin-left: 10px;
+    text-align: center;
   }
+
+  .progress-bar-container.empty-bar {
+    height: 24px;
+    background-color: #eee;
+    border-radius: 12px;
+    position: relative;
+    margin-top: 5px;
+  }
+  
+  .quiz-percentage.no-quiz {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: bold;
+    color: #444;
+  }
+  
   
   .tooltip-info {
     cursor: help;
@@ -85,4 +105,15 @@
   .quiz-days {
     font-size: 15px;
   }
-  
+
+  #progreso-porentaje {
+    font-size: 10px;
+    margin-top: 0px;
+  }
+
+  .quiz-status-locked {
+    font-weight: bold;
+    text-align: center;
+    opacity: 0.5;
+    pointer-events: none;
+}
