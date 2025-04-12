@@ -304,12 +304,14 @@ if (!defined('ABSPATH')) {
             );
             $final_quiz_date_ts = (!empty($final_attempt->activity_completed)) ? (int) $final_attempt->activity_completed : null;
 
-            // 3) Calcular la diferencia en días.
-            $days_diff = 0;
-            if ($first_quiz_date_ts && $final_quiz_date_ts) {
-                $diff_seconds = $final_quiz_date_ts - $first_quiz_date_ts;
-                $days_diff = floor($diff_seconds / (60 * 60 * 24));
-            }
+// 3) Calcular la diferencia en días (mínimo 1 día si ambas fechas existen).
+$days_diff = 1; // Valor por defecto si ambas fechas existen
+if ($first_quiz_date_ts && $final_quiz_date_ts) {
+    $diff_seconds = $final_quiz_date_ts - $first_quiz_date_ts;
+    $calculated_days = floor($diff_seconds / (60 * 60 * 24));
+    $days_diff = max(1, $calculated_days); // Siempre al menos 1
+}
+
             ?>
 
             <!-- First Quiz Results Container -->
