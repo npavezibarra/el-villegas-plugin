@@ -129,7 +129,7 @@ $days_diff = max(1, $days_diff); // nunca mostrar "0 días"
     <div class="quiz-flex">
         <div style="flex: 1; text-align: center;">
             <div style="font-size: 16px; color: #666;">Variación conocimientos</div>
-            <div style="font-size: 36px; font-weight: bold; color: <?php echo $variation >= 0 ? 'green' : 'red'; ?>">
+            <div style="font-size: 36px; font-weight: bold; color: <?php echo $variation >= 0 ? '#9fd99f' : 'red'; ?>">
                 <?php echo abs($variation); ?>% <span><?php echo $variation >= 0 ? '▲' : '▼'; ?></span>
             </div>
         </div>

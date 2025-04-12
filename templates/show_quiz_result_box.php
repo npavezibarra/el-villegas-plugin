@@ -345,7 +345,7 @@ if ($first_quiz_date_ts && $final_quiz_date_ts) {
                 <div style="display: flex; justify-content: space-evenly; align-items: center;">
                     <div style="flex: 1; text-align: center;">
                         <div style="font-size: 16px; color: #666;">Variación conocimientos</div>
-                        <div id="knowledge-variation" style="font-size: 36px; color: green; font-weight: bold;">
+                        <div id="knowledge-variation" style="font-size: 36px; color: #9fd99f; font-weight: bold;">
                             0% <span style="font-size: 28px;">▲</span>
                         </div>
                     </div>
@@ -381,7 +381,7 @@ if ($first_quiz_date_ts && $final_quiz_date_ts) {
                             var firstQuizPct = <?php echo json_encode($first_quiz_percentage); ?>;
                             var variation = finalPct - firstQuizPct;
                             var arrow = variation >= 0 ? '▲' : '▼';
-                            var color = variation >= 0 ? 'green' : 'red';
+                            var color = variation >= 0 ? '#9fd99f' : 'red';
 
                             jQuery('#knowledge-variation')
                                 .css('color', color)

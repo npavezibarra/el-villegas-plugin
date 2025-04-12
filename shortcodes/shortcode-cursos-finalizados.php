@@ -24,7 +24,7 @@ function villegas_shortcode_cursos_finalizados() {
         if (get_post_status($course_id) !== 'publish') continue;
 
         echo '<div class="curso-finalizado-box">';
-        echo '<h2><a href="' . esc_url(get_permalink($course_id)) . '">' . esc_html(get_the_title($course_id)) . '</a></h2>';
+        echo "<h2><a href='" . esc_url(get_permalink($course_id)) . "' style='font-family: \"Cardo\";'>" . esc_html(get_the_title($course_id)) . "</a></h2>";
 
         if (has_post_thumbnail($course_id)) {
             $image_url = get_the_post_thumbnail_url($course_id, 'full');
@@ -107,7 +107,7 @@ if (
 
     $diff = $final_data['score'] - $first_data['score'];
     $diff_sign = ($diff >= 0) ? '+' : '';
-    $color = ($diff >= 0) ? 'green' : 'red';
+    $color = ($diff >= 0) ? '#50c150' : 'red';
     $days = max(1, floor(($final_data['timestamp'] - $first_data['timestamp']) / DAY_IN_SECONDS));
     echo '<div class="quiz-row-stats" style="display: flex; justify-content: flex-end; flex-direction: column; align-items: flex-end; gap: 4px; padding-top: 15px;">';
     echo '<div class="quiz-variation" style="color:' . esc_attr($color) . '; font-size: 13px;">Variación: ' . $diff_sign . $diff . '%</div>';

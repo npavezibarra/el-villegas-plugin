@@ -41,7 +41,7 @@
                             <!-- Variación conocimientos -->
                             <td width="50%" align="center" valign="top" style="padding: 10px;">
                                 <div style="font-size: 16px; color: #666;">Variación conocimientos</div>
-                                <div style="font-size: 28px; font-weight: bold; color: <?php echo $knowledge_variation >= 0 ? 'green' : 'red'; ?>;">
+                                <div style="font-size: 28px; font-weight: bold; color: <?php echo $knowledge_variation >= 0 ? '#9fd99f' : 'red'; ?>;">
                                     <?php echo abs($knowledge_variation); ?>% <?php echo $variation_arrow; ?>
                                 </div>
                             </td>

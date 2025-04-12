@@ -55,7 +55,6 @@ foreach ( $user_courses as $course_id ) {
     echo '</a>';
 
     echo '<div class="card__progress">';
-    echo '<progress max="100" value="' . esc_attr( $percentage_complete ) . '"></progress>';
     echo '<p>' . esc_html( round($percentage_complete) ) . '% completado</p>';
     villegas_show_resultados_button($course_id, $user_id);
     echo '</div>';
