@@ -96,10 +96,30 @@ function villegas_shortcode_cursos_finalizados() {
 
             echo '</div>';
             echo '<hr style="margin-bottom: 0px;">';
+            // === ESTADÍSTICAS ADICIONALES ===
+if (
+    $first_quiz_id && $final_quiz_id &&
+    villegas_is_quiz_completed($first_quiz_id, $user_id) &&
+    villegas_is_quiz_completed($final_quiz_id, $user_id)
+) {
+    $first_data = villegas_get_quiz_data($first_quiz_id, $user_id);
+    $final_data = villegas_get_quiz_data($final_quiz_id, $user_id);
+
+    $diff = $final_data['score'] - $first_data['score'];
+    $diff_sign = ($diff >= 0) ? '+' : '';
+    $color = ($diff >= 0) ? 'green' : 'red';
+    $days = max(1, floor(($final_data['timestamp'] - $first_data['timestamp']) / DAY_IN_SECONDS));
+    echo '<div class="quiz-row-stats" style="display: flex; justify-content: flex-end; flex-direction: column; align-items: flex-end; gap: 4px; padding-top: 15px;">';
+    echo '<div class="quiz-variation" style="color:' . esc_attr($color) . '; font-size: 13px;">Variación: ' . $diff_sign . $diff . '%</div>';
+    echo '<div class="quiz-days" style="font-size: 13px;">Lo completaste en: ' . $days . ' ' . ($days === 1 ? 'día' : 'días') . '</div>';
+    echo '</div>';
+}
+
         }
 
         echo '</div>'; // .curso-finalizado-box
     }
+    
     
 
     echo '</div>'; // .cursos-finalizados-grid
