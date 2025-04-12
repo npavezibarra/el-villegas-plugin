@@ -16,8 +16,8 @@
         <div style="margin-top: 30px; padding: 20px; background-color: white; border-radius: 8px; border: 1px solid #d5d5d5;">
             <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;"><?php echo esc_html($quiz_title); ?></div>
             <div style="color: #888; font-size: 14px; margin-bottom: 10px;"><?php echo esc_html($completion_date); ?></div>
-            <div style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                <div style="width: <?php echo esc_attr($quiz_percentage); ?>%; height: 100%; background: #ffc0cb;"></div>
+            <div style="background: #e9ecef; border-radius: 15px; height: 20px; overflow: hidden;">
+                <div style="width: <?php echo esc_attr($quiz_percentage); ?>%; height: 100%; background: #ff9800;"></div>
             </div>
             <div style="text-align: right; font-size: 20px; font-weight: bold; margin-top: 10px;"><?php echo esc_html($quiz_percentage); ?>%</div>
         </div>
@@ -26,8 +26,8 @@
         <div style="margin-top: 20px; padding: 20px; background-color: white; border-radius: 8px; border: 1px solid #d5d5d5;">
             <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;"><?php echo esc_html($first_quiz_title); ?></div>
             <div style="color: #888; font-size: 14px; margin-bottom: 10px;"><?php echo esc_html($first_quiz_date); ?></div>
-            <div style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                <div style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ffc0cb;"></div>
+            <div style="background: #e9ecef; border-radius: 15px; height: 20px; overflow: hidden;">
+                <div style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ff9800;"></div>
             </div>
             <div style="text-align: right; font-size: 20px; font-weight: bold; margin-top: 10px;"><?php echo esc_html($first_quiz_percentage); ?>%</div>
         </div>

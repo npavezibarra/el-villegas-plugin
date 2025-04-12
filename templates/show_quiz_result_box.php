@@ -132,8 +132,8 @@ if (!defined('ABSPATH')) {
             </div>
 
             <div class="quiz-flex-item quiz-bar">
-                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-                    <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;"></div>
+                <div class="progress-bar-container" style="background: #e9ecef; border-radius: 15px; height: 20px; overflow: hidden;">
+                    <div id="quiz-progress-bar" style="width: 0%; height: 100%; background: #ff9800; transition: width 0.5s ease;"></div>
                 </div>
             </div>
 
@@ -326,9 +326,9 @@ if ($first_quiz_date_ts && $final_quiz_date_ts) {
                 </div>
 
                 <div class="quiz-flex-item quiz-bar">
-                    <div class="progress-bar-container" style="background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
+                    <div class="progress-bar-container" style="background: #e9ecef; border-radius: 15px; height: 20px; overflow: hidden;">
                         <div id="first-quiz-progress-bar"
-                             style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ffc0cb; transition: width 0.5s ease;">
+                             style="width: <?php echo esc_attr($first_quiz_percentage); ?>%; height: 100%; background: #ff9800; transition: width 0.5s ease;">
                         </div>
                     </div>
                 </div>

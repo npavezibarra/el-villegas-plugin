@@ -108,7 +108,7 @@ function mostrar_comprar_stats() {
     // Render widget
     ?>
     <div class="progress-widget" style="<?php echo $widget_style; ?>">
-        <div class="progress-bar" style="<?php echo $progress_bar_style; ?>">
+        <div class="progress-bar-stats" style="<?php echo $progress_bar_style; ?>">
             <div style="<?php echo $bar_style; ?>">
                 <div style="width: <?php echo esc_attr($is_enrolled || !is_user_logged_in() ? $percentage_complete : 0); ?>%; background-color: <?php echo $is_enrolled ? '#ff9800' : (!is_user_logged_in() ? '#4c8bf5' : '#ccc'); ?>; height: 100%; border-radius: 5px;"></div>
             </div>
@@ -200,11 +200,11 @@ function mostrar_comprar_stats() {
                         </div>
                     <?php else: ?>
                         <button id="final-evaluation-button"
-                                style="width: 100%; background-color: white; color: #333; border: none; padding: 10px 0; border-radius: 5px; font-size: 14px; cursor: not-allowed;">
+                                style="border: 2px solid #2196f3 !important; padding: 8px !important; color: #2196f3 !important; border-radius: 5px; font-size: 14px; cursor: not-allowed; width: 100%; background: white;">
                             Prueba Final
                         </button>
                     <?php endif; ?>
-                    <span class="tooltiptext">Completa todas las lecciones de este curso para tomar el Examen Final</span>
+                    <span class="tooltiptext">Completa todas las lecciones de este curso para tomar la Prueba Final</span>
                 </div>
             </div>
         <?php endif; ?>

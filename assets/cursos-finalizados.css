@@ -45,7 +45,7 @@
   
   .progress-bar {
     height: 100%;
-    background-color: #f99;
+    background-color: #ff9800;
     width: 0%;
     transition: width 0.5s ease;
   }
@@ -116,4 +116,19 @@
     text-align: center;
     opacity: 0.5;
     pointer-events: none;
+}
+
+.villegas-progress-container {
+  background-color: #e0e0e0;
+  height: 12px;
+  border-radius: 5px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.villegas-progress-bar {
+  height: 100%;
+  background-color: #ff9800;
+  border-radius: 5px;
+  transition: width 0.4s ease;
 }

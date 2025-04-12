@@ -105,8 +105,8 @@ $days_diff = max(1, $days_diff); // nunca mostrar "0 días"
             <div class="quiz-name">Prueba Inicial</div>
             <div style="color: #666;"><?php echo date('F j', $first_data['date']); ?></div>
         </div>
-        <div style="width: 50%; background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-            <div style="width: <?php echo $first_data['pct']; ?>%; height: 100%; background: #ffc0cb;"></div>
+        <div style="width: 50%; background: #e9ecef; border-radius: 15px; height: 20px; overflow: hidden;">
+            <div style="width: <?php echo $first_data['pct']; ?>%; height: 100%; background: #ff9800;"></div>
         </div>
         <div class="quiz-percentage"><?php echo $first_data['pct']; ?>%</div>
     </div>
@@ -118,8 +118,8 @@ $days_diff = max(1, $days_diff); // nunca mostrar "0 días"
             <div class="quiz-name">Prueba Final</div>
             <div style="color: #666;"><?php echo date('F j', $final_data['date']); ?></div>
         </div>
-        <div style="width: 50%; background: #e9ecef; border-radius: 4px; height: 24px; overflow: hidden;">
-            <div style="width: <?php echo $final_data['pct']; ?>%; height: 100%; background: #ffc0cb;"></div>
+        <div style="width: 50%; background: #e9ecef; border-radius: 15px; height: 20px; overflow: hidden;">
+            <div style="width: <?php echo $final_data['pct']; ?>%; height: 100%; background: #ff9800;"></div>
         </div>
         <div class="quiz-percentage"><?php echo $final_data['pct']; ?>%</div>
     </div>

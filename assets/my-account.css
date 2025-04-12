@@ -147,10 +147,10 @@ form.woocommerce-EditAccountForm.edit-account {
 
   a.ver-resultados-btn {
     font-size: 12px;
-    border: 1px solid #d40000;
+    border: 2px solid #ff9800;
     padding: 2px 5px;
     border-radius: 3px;
-    color: #d40000;
+    color: #ff9800;
 }
 
 /* ANIMACIÓN RESULTADOS */
