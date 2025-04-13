@@ -169,6 +169,18 @@ function enqueue_quiz_resources() {
 }
 add_action('wp_enqueue_scripts', 'enqueue_quiz_resources');
 
+function villegas_enqueue_quiz_float_fix() {
+    wp_enqueue_script(
+        'quiz-float-fix',
+        plugin_dir_url(__FILE__) . 'assets/js/quiz-float-fix.js',
+        [],
+        '1.0',
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'villegas_enqueue_quiz_float_fix');
+
+
 /**
  * Require the course outline functionality from an external file.
  */

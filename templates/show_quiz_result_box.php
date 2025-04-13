@@ -259,19 +259,20 @@ if (!defined('ABSPATH')) {
 
             // Set button text and URL based on access.
             if ($has_access) {
-                $button_text = 'IR AL CURSO';
+                $button_text = 'Ir al curso';
                 $button_url  = $course_url;
             } else {
-                $button_text = 'COMPRAR CURSO';
+                $button_text = 'Comprar curso';
                 $button_url  = $product_url;
             }
             ?>
             <div id="testing-button" style="margin-top: 20px;">
-                <button onclick="window.location.href='<?php echo esc_url($button_url); ?>'"
-                        style="padding: 8px 16px; font-size: 14px; cursor: pointer;">
+                <a href="<?php echo esc_url($button_url); ?>"
+                style="background-color: black; color: white; font-weight: 600; padding: 10px 15px; font-size: 14px; text-decoration: none; border-radius: 4px; display: inline-block;">
                     <?php echo esc_html($button_text); ?>
-                </button>
+                </a>
             </div>
+
             <?php
         }
         ?>

@@ -180,3 +180,40 @@ span.quiz-percentage {
     display: none;
 }
 
+#testing-button>button {
+    background-color: black !important;
+    color: white !important;
+}
+
+#quiz-card {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 50px;
+}
+
+@media screen and (max-width: 500px) {
+    #quiz-card {
+        padding: 20px;
+        max-width: 100%;
+    }
+}
+
+input.wpProQuiz_button.wpProQuiz_QuestionButton {
+    text-align: center !important;
+}
+
+@media (max-width: 640px) {
+    .wpProQuiz_QuestionButton[name="back"] {
+        float: left !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .wpProQuiz_QuestionButton[name="next"],
+    .wpProQuiz_QuestionButton[name="check"] {
+        float: right !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}

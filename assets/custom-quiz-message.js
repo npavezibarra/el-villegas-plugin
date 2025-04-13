@@ -16,3 +16,32 @@ document.addEventListener("DOMContentLoaded", function() {
         startQuizButton.parentNode.insertBefore(messageDiv, startQuizButton);
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    function ajustarFlotadoBotonesQuiz() {
+        const botones = document.querySelectorAll('.wpProQuiz_QuestionButton');
+
+        botones.forEach(btn => {
+            const nombre = btn.getAttribute('name');
+            if (nombre === 'back') {
+                btn.style.float = 'left';
+                btn.style.marginLeft = '0';
+                btn.style.marginRight = '10px';
+            } else if (nombre === 'next' || nombre === 'check') {
+                btn.style.float = 'right';
+                btn.style.marginRight = '0';
+                btn.style.marginLeft = '10px';
+            }
+        });
+    }
+
+    // Ejecutar al cargar
+    ajustarFlotadoBotonesQuiz();
+
+    // Observar si aparecen nuevos botones
+    const observer = new MutationObserver(() => {
+        ajustarFlotadoBotonesQuiz();
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+});

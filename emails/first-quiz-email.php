@@ -14,9 +14,9 @@
 
     .email-container {
       max-width: 500px;
-      margin: 40px auto;
+      margin: 0px auto;
       background: #ffffff;
-      padding: 30px;
+      padding: 0px 0px 30px 0px;
       border-radius: 8px;
     }
 
@@ -73,7 +73,7 @@
 
     .progress-bar {
       height: 100%;
-      background-color: #e88f8f;
+      background-color: #ff9800;
       width: {{quiz_percentage}}%;
     }
 
@@ -126,8 +126,12 @@
 </head>
 <body>
   <div class="email-container">
-    <div class="header">UNIVERSIDAD VILLEGAS</div>
-    <div class="sub-header">e l v i l l e g a s . c l</div>
+    <!-- Imagen del logo horizontal -->
+<div style="text-align: center; margin: 20px 0;">
+  <img src="http://elvillegas.cl/wp-content/uploads/2025/04/academiavillegaslogohorizontal.png"
+       alt="Logo Universidad Villegas"
+       style="max-width: 300px; height: auto;">
+</div>
 
     <div class="content next-steps">
       <p>Estimado <strong>{{user_name}}</strong>, has finalizado:</p>
@@ -144,7 +148,7 @@
     <div class="next-steps">
       <h3>¿Qué pasos seguir ahora?</h3>
       <p>Ahora puedes proceder a completar todas las lecciones incluidas en este curso sobre <strong>La República Romana</strong>.</p>
-      <p>Una vez finalizadas, estarás listo para realizar la evaluación final, que reflejará el progreso alcanzado durante el curso.</p>
+      <p>Una vez finalizadas, estarás listo para realizar la Prueba Final, que reflejará el progreso alcanzado durante el curso.</p>
       <p>Recuerda que puedes avanzar a tu propio ritmo: algunos estudiantes lo completan en un día, mientras que otros pueden tardar más.</p>
 
       <a href="{{course_url}}" class="cta-button">Ir al Curso</a>
@@ -155,4 +159,5 @@
     </div>
   </div>
 </body>
+
 </html>
