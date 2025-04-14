@@ -128,3 +128,37 @@ add_action('wp_enqueue_scripts', function() {
     ));
 });
 
+/* INYECTAR EVALUACON CATEGORIAS A QUIZ (PRimera o Final) */
+
+add_action('wp_footer', 'villegas_inyectar_quiz_data_footer');
+
+function villegas_inyectar_quiz_data_footer() {
+    if (!is_singular('sfwd-quiz')) return; // Asegurarse que estamos en una página de quiz
+
+    global $post;
+
+    $quiz_id = $post->ID;
+    $course_id = learndash_get_course_id($quiz_id);
+    $course_title = get_the_title($course_id);
+
+    // Obtener la categoría de evaluación (taxonomía personalizada de LearnDash)
+    $terms = wp_get_post_terms($quiz_id, 'ld_quiz_category');
+$type = 'final';
+
+foreach ($terms as $term) {
+    if (strtolower($term->name) === 'primera') {
+        $type = 'first';
+        break;
+    }
+}
+
+
+    ?>
+    <script>
+        var quizData = {
+            courseName: <?php echo json_encode($course_title); ?>,
+            type: <?php echo json_encode($type); ?>
+        };
+    </script>
+    <?php
+}

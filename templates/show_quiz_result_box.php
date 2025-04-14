@@ -36,11 +36,22 @@ if (!defined('ABSPATH')) {
     border-radius: 8px;
     background: white;
 }
+
+.next-steps {
+    background: white;
+    padding: 40px;
+    border: 1px solid #d5d5d5;
+    border-radius: 8px;
+}
+
+.next-steps>h3 {
+    margin-top: 0px;
+}
 </style>
 
 <!-- (A) LearnDash default sending container -->
 <div style="display: none;" class="wpProQuiz_sending">
-    <h4 class="wpProQuiz_header"><?php esc_html_e('Results', 'learndash'); ?></h4>
+
     <p>
         <div>
             <?php
@@ -69,7 +80,6 @@ if (!defined('ABSPATH')) {
 
 <!-- (B) LearnDash default results container -->
 <div style="display: none;" class="wpProQuiz_results">
-    <h4 class="wpProQuiz_header"><?php esc_html_e('Results', 'learndash'); ?></h4>
 
     <?php if (!$quiz->isHideResultCorrectQuestion()) :
 
@@ -127,7 +137,7 @@ if (!defined('ABSPATH')) {
                     <?php echo esc_html(get_the_title()); ?>
                 </div>
                 <div style="color: #666; font-size: 14px;">
-                    <?php echo esc_html(date('F j')); ?>
+                <?php echo esc_html(date_i18n('j \d\e F \d\e Y')); ?>
                 </div>
             </div>
 
@@ -261,10 +271,30 @@ if (!defined('ABSPATH')) {
             if ($has_access) {
                 $button_text = 'Ir al curso';
                 $button_url  = $course_url;
+            
+                // Texto para acceso permitido
+                ?>
+                <div class="next-steps" style="margin-bottom: 20px;">
+                    <h3>¿Qué pasos seguir ahora?</h3>
+                    <p>Ahora puedes proceder a completar todas las lecciones incluidas en este curso sobre <strong><?php echo esc_html(get_the_title($course_id)); ?></strong>.</p>
+                    <p>Una vez finalizadas, estarás listo para realizar la Prueba Final, que reflejará el progreso alcanzado durante el curso.</p>
+                    <p>Recuerda que puedes avanzar a tu propio ritmo: algunos estudiantes lo completan en un día, mientras que otros pueden tardar más.</p>
+                </div>
+                <?php
             } else {
                 $button_text = 'Comprar curso';
                 $button_url  = $product_url;
+            
+                // Texto para acceso denegado
+                ?>
+                <div class="next-steps" style="margin-bottom: 20px;">
+                    <h3>Continúa tu aprendizaje</h3>
+                    <p>Ya has completado la Prueba Inicial, ahora puedes comprar el curso y acceder al contenido exclusivo sobre <strong><?php echo esc_html(get_the_title($course_id)); ?></strong>.</p>
+                    <p>Al finalizarlo, podrás rendir la Prueba Final y comparar tu progreso respecto a tu evaluación inicial.</p>
+                </div>
+                <?php
             }
+            
             ?>
             <div id="testing-button" style="margin-top: 20px;">
                 <a href="<?php echo esc_url($button_url); ?>"
@@ -322,7 +352,7 @@ if ($first_quiz_date_ts && $final_quiz_date_ts) {
                         <?php echo esc_html($first_quiz_name); ?>
                     </div>
                     <div style="color: #666; font-size: 14px;">
-                        <?php echo $first_quiz_date_ts ? esc_html(date('F j', $first_quiz_date_ts)) : 'N/A'; ?>
+                        <?php echo $first_quiz_date_ts ? esc_html(date_i18n('j \d\e F \d\e Y', $first_quiz_date_ts)) : 'N/A'; ?>
                     </div>
                 </div>
 

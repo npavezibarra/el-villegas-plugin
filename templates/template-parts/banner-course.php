@@ -32,17 +32,27 @@ $author_name = trim( esc_html( $first_name . ' ' . $last_name ) );
 
 // Generar el banner
 ?>
-<div id="body-content" style="background-image: url('<?php echo esc_url( $thumbnail_url ); ?>'); 
+<div id="body-content" style="position: relative; background-image: url('<?php echo esc_url( $thumbnail_url ); ?>'); 
                              background-size: cover; 
                              background-position: center; 
                              background-repeat: no-repeat; 
                              padding: 40px 20px; 
                              margin-bottom: 20px;
                              z-index: -9999999;">
-    <div id="datos-generales-curso">
+
+    <!-- Gradiente negro en la parte inferior -->
+    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 65%;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent); 
+                pointer-events: none;"></div>
+
+    <div id="datos-generales-curso" style="position: relative; z-index: 1; color: white;">
         <h1><?php echo esc_html( $title ); ?></h1>
         <?php if ( ! empty( $author_name ) ) : ?>
-            <h4>Profesor <?php echo $author_name; ?></h4>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <?php echo get_avatar( $author_id, 30, '', 'Foto del profesor', [ 'class' => 'foto-profesor' ] ); ?>
+                <h4 style="margin: 0;">Profesor <?php echo $author_name; ?></h4>
+            </div>
         <?php endif; ?>
     </div>
 </div>
+

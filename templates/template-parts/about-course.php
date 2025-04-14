@@ -55,11 +55,11 @@
                 if (!empty($quizzes)) {
                     echo '<hr>';
                     foreach ($quizzes as $quiz) {
-                        echo '<li style="display: flex; align-items: center;">';
-                        echo '<img src="' . esc_url(plugins_url('assets/svg/exam-icon.svg', __DIR__)) . '" alt="Exam Icon" style="width: 20px; height: 20px; margin-right: 10px;">';
-                        echo '<a href="' . esc_url(get_permalink($quiz['post']->ID)) . '">' . esc_html($quiz['post']->post_title) . '</a>';
+                        echo '<li style="display: flex; align-items: center; margin-bottom: 8px;">';
+                        echo '<img src="https://cdn-icons-png.flaticon.com/512/3965/3965068.png" alt="Icono Examen" style="width: 20px; height: 20px; margin-right: 10px;">';
+                        echo '<a href="' . esc_url(get_permalink($quiz['post']->ID)) . '" style="text-decoration: none; color: #333;">' . esc_html($quiz['post']->post_title) . '</a>';
                         echo '</li>';
-                    }
+                    }                    
                 } else {
                     echo '<p>No hay quizzes asociados a este curso.</p>';
                 }

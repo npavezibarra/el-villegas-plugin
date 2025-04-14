@@ -113,12 +113,14 @@ require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
 require_once plugin_dir_path(__FILE__) . 'shortcodes/quiz-class-shortcodes.php';
 /* AJAX HANDLER*/
 require_once plugin_dir_path(__FILE__) . 'includes/ajax-handlers.php';
-/* USUARIO OPTIONES */
+/* USER OPTIONS */
 require_once plugin_dir_path(__FILE__) . 'opciones-usuario.php';
 /* PROFILE PHOTO */
 require_once plugin_dir_path(__FILE__) . 'profile/profile-picture.php';
 /* SHORTCODES */
 require_once plugin_dir_path(__FILE__) . 'shortcodes/shortcode-cursos-finalizados.php';
+/* ADMIN PAGES */
+require_once plugin_dir_path(__FILE__) . 'admin/admin-page.php';
 
 
 // Customize LearnDash quiz result template by replacing the original with a custom one.
@@ -180,6 +182,21 @@ function villegas_enqueue_quiz_float_fix() {
 }
 add_action('wp_enqueue_scripts', 'villegas_enqueue_quiz_float_fix');
 
+add_action('wp_ajax_guardar_imagen_estilo_quiz', function () {
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('No autorizado');
+    }
+
+    $quiz_id = intval($_POST['quiz_id']);
+    $image_id = intval($_POST['image_id']);
+
+    if ($quiz_id && $image_id) {
+        update_post_meta($quiz_id, '_quiz_style_image', $image_id);
+        wp_send_json_success();
+    } else {
+        wp_send_json_error('Datos inválidos');
+    }
+});
 
 /**
  * Require the course outline functionality from an external file.

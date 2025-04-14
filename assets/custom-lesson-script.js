@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Add the course outline from the localized variable
         newDiv.innerHTML = `
             <div class="dropdown-header" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                <h4 style="margin: 0;">Contenido del curso</h4>
+                <h4 style="margin: 0;">Contenido del cursos</h4>
                 <img src="` + lessonData.arrowImageUrl + `" class="dropdown-arrow" style="width: 16px; height: 16px; transform: rotate(0deg); transition: transform 0.3s ease-in-out;">
             </div>
             <div class="dropdown-content course-outline" style="display: block; max-height: 500px; overflow-y: auto;">` + lessonData.lessonList + `</div>`;

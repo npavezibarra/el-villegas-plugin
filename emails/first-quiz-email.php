@@ -13,7 +13,7 @@
     }
 
     .email-container {
-      max-width: 500px;
+      max-width: 600px;
       margin: 0px auto;
       background: #ffffff;
       padding: 0px 0px 30px 0px;
@@ -90,6 +90,7 @@
       border-radius: 8px;
       text-align: center;
       margin-top: 20px;
+      border: 1px solid #dbdbdb;
     }
 
     .next-steps h3 {
@@ -137,12 +138,12 @@
       <p>Estimado <strong>{{user_name}}</strong>, has finalizado:</p>
 
       <div class="quiz-title">{{quiz_name}}</div>
-      <div class="quiz-subtitle">y has obtenido {{quiz_percentage}}% de respuestas correctas.</div>
+      <div class="quiz-subtitle">y has obtenido:</div>
 
       <div class="progress-container">
         <div class="progress-bar"></div>
       </div>
-      <div class="progress-label">{{quiz_percentage}}%</div>
+      <div class="progress-label">{{quiz_percentage}}% correctas</div>
     </div>
 
     <div class="next-steps">

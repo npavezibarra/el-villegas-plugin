@@ -134,9 +134,13 @@ echo do_blocks('<!-- wp:template-part {"slug":"header","area":"header","tagName"
                 if ($quiz_query->have_posts()) {
                     while ($quiz_query->have_posts()) {
                         $quiz_query->the_post();
-                        echo '<li class="lesson-item" style="margin-bottom: 5px;"><a href="' . get_permalink(get_the_ID()) . '">' . get_the_title() . '</a></li>';
+                        echo '<li class="lesson-item" style="display: flex; align-items: center; margin-bottom: 5px;">';
+                        echo '<img src="https://cdn-icons-png.flaticon.com/512/3965/3965068.png" alt="Icono Examen" style="width: 20px; height: 20px; margin-right: 10px;">';
+                        echo '<a href="' . esc_url(get_permalink(get_the_ID())) . '" style="text-decoration: none; color: #333;">' . esc_html(get_the_title()) . '</a>';
+                        echo '</li>';
                     }
                 }
+                
 
                 echo '</ul>';
             }

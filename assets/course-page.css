@@ -554,3 +554,9 @@ div#primer-test-score > a {
         font-size: 14px;
     }
 }
+
+
+#datos-generales-curso>div>img {
+    border-radius:15px;
+
+}

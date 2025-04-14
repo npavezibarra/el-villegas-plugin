@@ -5,8 +5,10 @@
     <title>Resultados del Final Quiz</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: white;">
-
-    <div style="max-width: 600px; margin: 0 auto; background-color: #f4f4f4; padding: 20px; border-radius: 8px;">
+    <div style="text-align:center; max-width: 600px; padding: 20px 20px; margin: 0px auto 0px auto; border: 1px solid #dbdbdb; border-radius: 8px 8px 0px 0px;">
+        <img src="http://elvillegas.cl/wp-content/uploads/2025/04/academiavillegaslogohorizontal.png" alt="Academia Villegas" style="max-width: 300px;">
+    </div>
+    <div style="max-width: 600px; margin: 0 auto; background-color: #f4f4f4; padding: 20px; border-radius: 0px 0px 8px 8px; border: 1px solid #dbdbdb;">
         <h2 style="color: #333; text-align: center; font-size: 22px;">¡Hola <?php echo esc_html($user_name); ?>!</h2>
         <p style="color: #555; text-align: center; font-size: 16px; max-width: 400px; margin: auto;">
             Has completado el <strong>Final Quiz</strong> del curso <strong><?php echo esc_html($quiz_title); ?></strong> el día <strong><?php echo esc_html($completion_date); ?></strong>.
