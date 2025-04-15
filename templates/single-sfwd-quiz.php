@@ -110,3 +110,23 @@ $body_class = 'quiz-style-' . $quiz_id;
 echo do_blocks('<!-- wp:template-part {"slug":"footer","area":"footer","tagName":"footer"} /-->');
 wp_footer(); 
 ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const openBtn = document.querySelector('.wp-block-navigation__responsive-container-open');
+    const closeBtn = document.querySelector('.wp-block-navigation__responsive-container-close');
+    const container = document.querySelector('.wp-block-navigation__responsive-container');
+
+    if (openBtn && container) {
+        openBtn.addEventListener('click', function () {
+            container.classList.add('is-menu-open');
+        });
+    }
+
+    if (closeBtn && container) {
+        closeBtn.addEventListener('click', function () {
+            container.classList.remove('is-menu-open');
+        });
+    }
+});
+</script>

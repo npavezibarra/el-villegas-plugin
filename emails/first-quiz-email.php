@@ -147,12 +147,8 @@
     </div>
 
     <div class="next-steps">
-      <h3>¿Qué pasos seguir ahora?</h3>
-      <p>Ahora puedes proceder a completar todas las lecciones incluidas en este curso sobre <strong>La República Romana</strong>.</p>
-      <p>Una vez finalizadas, estarás listo para realizar la Prueba Final, que reflejará el progreso alcanzado durante el curso.</p>
-      <p>Recuerda que puedes avanzar a tu propio ritmo: algunos estudiantes lo completan en un día, mientras que otros pueden tardar más.</p>
-
-      <a href="{{course_url}}" class="cta-button">Ir al Curso</a>
+      {{next_steps_text}}
+      <a href="{{course_url}}" class="cta-button">{{boton_texto}}</a>
     </div>
 
     <div class="footer">

@@ -266,6 +266,8 @@ add_action('wp_ajax_enviar_correo_first_quiz', 'enviar_correo_first_quiz_handler
 add_action('wp_ajax_nopriv_enviar_correo_first_quiz', 'enviar_correo_first_quiz_handler');
 
 function enviar_correo_first_quiz_handler() {
+    global $wpdb;
+
     // Recibir y sanitizar los datos enviados vía AJAX
     $quiz_percentage = isset($_POST['quiz_percentage']) ? intval($_POST['quiz_percentage']) : 0;
     $quiz_id = isset($_POST['quiz_id']) ? intval($_POST['quiz_id']) : 0;
@@ -286,8 +288,64 @@ function enviar_correo_first_quiz_handler() {
     $user_name  = $user->display_name;
     $quiz_title = get_the_title($quiz_id);
 
+    // Obtener Course ID desde el First Quiz
+    $course_id = $wpdb->get_var($wpdb->prepare(
+        "SELECT post_id FROM {$wpdb->prefix}postmeta 
+         WHERE meta_key = '_first_quiz_id' AND meta_value = %d 
+         LIMIT 1",
+        $quiz_id
+    ));
+
+    // Verificar acceso al curso
+    $tiene_acceso = $course_id ? sfwd_lms_has_access($course_id, $user_id) : false;
+    $course_title = $course_id ? get_the_title($course_id) : '';
+
+    if ($tiene_acceso) {
+        $boton_url = get_permalink($course_id);
+        $boton_texto = 'Ir al Curso';
+
+        $next_steps_text = '
+        <h3>¿Qué pasos seguir ahora?</h3>
+        <p>Ahora puedes proceder a completar todas las lecciones incluidas en este curso sobre <strong>' . esc_html($course_title) . '</strong>.</p>
+        <p>Una vez finalizadas, estarás listo para realizar la Prueba Final, que reflejará el progreso alcanzado durante el curso.</p>
+        <p>Recuerda que puedes avanzar a tu propio ritmo: algunos estudiantes lo completan en un día, mientras que otros pueden tardar más.</p>';
+    } else {
+        // Buscar el Product ID relacionado
+        $product_id = get_post_meta($course_id, '_linked_woocommerce_product', true);
+
+        if (!$product_id) {
+            // Buscar producto con _related_course que contenga el course_id
+            $args = array(
+                'post_type'      => 'product',
+                'post_status'    => 'publish',
+                'meta_query'     => array(
+                    array(
+                        'key'     => '_related_course',
+                        'value'   => $course_id,
+                        'compare' => 'LIKE',
+                    ),
+                ),
+                'posts_per_page' => 1,
+            );
+            $products = get_posts($args);
+            if (!empty($products)) {
+                $product_id = $products[0]->ID;
+            }
+        }
+
+        // Verifica que el ID sea válido antes de obtener permalink
+        $boton_url = ($product_id && get_post_status($product_id) === 'publish') ? get_permalink($product_id) : site_url();
+
+        $boton_texto = 'Comprar Curso';
+
+        $next_steps_text = '
+        <h3>Continúa tu aprendizaje</h3>
+        <p>Ya has completado la Prueba Inicial, ahora puedes comprar el curso y acceder al contenido exclusivo sobre <strong>' . esc_html($course_title) . '</strong>.</p>
+        <p>Al finalizarlo, podrás rendir la Prueba Final y comparar tu progreso respecto a tu evaluación inicial.</p>';
+    }
+
+
     // Cargar el contenido del correo desde el archivo de plantilla
-    // Ajusta la ruta según la estructura de tu plugin.
     $email_file = plugin_dir_path(__FILE__) . 'emails/first-quiz-email.php';
     if ( file_exists($email_file) ) {
         $email_content = file_get_contents($email_file);
@@ -296,9 +354,12 @@ function enviar_correo_first_quiz_handler() {
     }
 
     // Reemplazar los marcadores con los valores reales
-    $email_content = str_replace('{{user_name}}', $user_name, $email_content);
-    $email_content = str_replace('{{quiz_name}}', $quiz_title, $email_content);
-    $email_content = str_replace('{{quiz_percentage}}', $quiz_percentage, $email_content);
+    $email_content = str_replace('{{user_name}}', esc_html($user_name), $email_content);
+    $email_content = str_replace('{{quiz_name}}', esc_html($quiz_title), $email_content);
+    $email_content = str_replace('{{quiz_percentage}}', esc_html($quiz_percentage), $email_content);
+    $email_content = str_replace('{{course_url}}', esc_url($boton_url), $email_content);
+    $email_content = str_replace('{{boton_texto}}', esc_html($boton_texto), $email_content);
+    $email_content = str_replace('{{next_steps_text}}', $next_steps_text, $email_content);
 
     $subject = 'Has finalizado el First Quiz';
     $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -310,8 +371,10 @@ function enviar_correo_first_quiz_handler() {
     } else {
         wp_send_json_error('Error al enviar el correo');
     }
+
     wp_die();
 }
+
 
 /* FINAL QUIZ EMAIL */
 
