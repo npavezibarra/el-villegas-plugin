@@ -456,3 +456,44 @@ function handle_enviar_correo_final_quiz() {
         wp_send_json_error('Error al enviar el correo');
     }
 }
+
+/* ENQUEUE JAVASCRIPR PUNTAJE PRIVADO */
+
+add_action('wp_enqueue_scripts', 'villegas_enqueue_puntaje_privado_script');
+
+function villegas_enqueue_puntaje_privado_script() {
+    $current_url = home_url(add_query_arg([], $_SERVER['REQUEST_URI']));
+
+    if (is_singular('sfwd-quiz') || strpos($current_url, '/mi-cuenta/mis-cursos') !== false) {
+        wp_enqueue_script(
+            'puntaje-privado',
+            plugin_dir_url(__FILE__) . 'assets/js/puntaje-privado.js',
+            ['jquery'],
+            '1.0',
+            true
+        );
+        
+        wp_localize_script('puntaje-privado', 'puntajePrivadoData', [
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'userId'  => get_current_user_id()
+        ]);        
+    }
+}
+
+/* GUARDAR VALOR DE PRIVACIDAD PUNTAJE */
+
+add_action('wp_ajax_guardar_privacidad_puntaje', 'villegas_guardar_privacidad_puntaje');
+
+function villegas_guardar_privacidad_puntaje() {
+    $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+    $puntaje_privado = isset($_POST['puntaje_privado']) && $_POST['puntaje_privado'] === '1';
+
+    if (!$user_id || get_current_user_id() !== $user_id) {
+        wp_send_json_error('Usuario inválido');
+        wp_die();
+    }
+
+    update_user_meta($user_id, 'puntaje_privado', $puntaje_privado ? '1' : '0');
+    wp_send_json_success('Preferencia guardada');
+    wp_die();
+}

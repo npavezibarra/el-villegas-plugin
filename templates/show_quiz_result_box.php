@@ -47,6 +47,10 @@ if (!defined('ABSPATH')) {
 .next-steps>h3 {
     margin-top: 0px;
 }
+
+.ld-quiz-actions {
+    display: none !important;
+}
 </style>
 
 <!-- (A) LearnDash default sending container -->
@@ -427,6 +431,20 @@ if ($first_quiz_date_ts && $final_quiz_date_ts) {
         <?php
         }
 
+
+$user_id = get_current_user_id();
+$puntaje_privado = get_user_meta($user_id, 'puntaje_privado', true);
+$is_checked = ($puntaje_privado === '1' || $puntaje_privado === 1) ? 'checked' : '';
+?>
+<div class="quiz-private-toggle" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center;">
+    <label style="font-size: 15px; font-weight: 500;">
+    <input type="checkbox" id="puntaje_privado_checkbox" data-user-id="<?php echo get_current_user_id(); ?>" <?php echo $is_checked; ?>>
+        No mostrar mi puntaje en rankings públicos
+    </label>
+</div>
+
+
+<?php
         // Opcional: configurar la fecha de finalización del Final Quiz.
         global $wpdb;
         $user_id = get_current_user_id();

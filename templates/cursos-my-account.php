@@ -27,8 +27,20 @@ if ( empty( $user_courses ) ) {
 // Mostrar los cursos del usuario
 echo '<div class="cursos-usuario">';
 echo '<h3 style="color: black;">Mis Cursos</h3>';
-echo '<p>Estos son los cursos que estás cursando.</p>';
+echo '<p style="margin-bottom: 0px;">Estos son los cursos que estás cursando.</p>';
 
+$user_id = get_current_user_id();
+$puntaje_privado = get_user_meta($user_id, 'puntaje_privado', true);
+$is_checked = ($puntaje_privado === '1' || $puntaje_privado === 1) ? 'checked' : '';
+?>
+<div class="quiz-private-toggle-my-account">
+    <label style="font-size: 12px; font-weight: 500;">
+        <input type="checkbox" id="puntaje_privado_checkbox" data-user-id="<?php echo esc_attr($user_id); ?>" <?php echo $is_checked; ?>>
+        No mostrar mi puntaje en rankings públicos
+    </label>
+</div>
+
+<?php
 foreach ( $user_courses as $course_id ) {
     $course_title = get_the_title( $course_id );
     $course_link = get_permalink( $course_id );

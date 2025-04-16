@@ -198,3 +198,12 @@ div#bloque-resultados {
     transform: translate(-50%, -50%) scale(1);
     pointer-events: auto;
   }
+
+  .quiz-private-toggle-my-account {
+    margin-top: 0;
+    background: none;
+    padding: 5px 0px;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 0px;
+  }

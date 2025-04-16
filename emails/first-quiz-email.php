@@ -87,9 +87,9 @@
     .next-steps {
       background-color: #f9f9f9;
       padding: 40px;
-      border-radius: 8px;
+      border-radius: 0px 0px 8px 8px;
       text-align: center;
-      margin-top: 20px;
+      margin-top: 5px;
       border: 1px solid #dbdbdb;
     }
 
@@ -128,7 +128,7 @@
 <body>
   <div class="email-container">
     <!-- Imagen del logo horizontal -->
-<div style="text-align: center; margin: 20px 0;">
+<div id="academia-logo" style="text-align: center; padding-top: 20px; border: 1px solid #dbdbdb; border-radius: 8px 8px 0px 0px;">
   <img src="http://elvillegas.cl/wp-content/uploads/2025/04/academiavillegaslogohorizontal.png"
        alt="Logo Universidad Villegas"
        style="max-width: 300px; height: auto;">
