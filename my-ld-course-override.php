@@ -102,12 +102,12 @@ include plugin_dir_path(__FILE__) . 'parts/comprar-stats.php';
 include_once plugin_dir_path(__FILE__) . 'metabox-course-first-quiz.php';
 include_once plugin_dir_path(__FILE__) . 'woo-tabs.php';
 // Include the leaderboard-villegas.php file
-require_once plugin_dir_path(__FILE__) . 'leaderboard-villegas/leaderboard-villegas.php';
+/*require_once plugin_dir_path(__FILE__) . 'leaderboard-villegas/leaderboard-villegas.php'; */
 
-/* LOGIN MECHANISM */
+/* LOGIN MECHANISM 
 require_once plugin_dir_path(__FILE__) . 'login/shortcode-login-register.php';
 require_once plugin_dir_path(__FILE__) . 'login/email-confirmation.php';
-require_once plugin_dir_path(__FILE__) . 'login/process-registration.php';
+require_once plugin_dir_path(__FILE__) . 'login/process-registration.php';*/
 /* CLASSES */
 require_once plugin_dir_path(__FILE__) . 'classes/class-quiz-analytics.php';
 require_once plugin_dir_path(__FILE__) . 'shortcodes/quiz-class-shortcodes.php';
@@ -136,11 +136,12 @@ function custom_quiz_result_template($filepath, $name, $args, $echo, $return_fil
     return $filepath;
 }
 
+/*
 function enqueue_login_scripts() {
     wp_enqueue_script('form-toggle', plugin_dir_url(__FILE__) . 'login/form-toggle.js', array(), null, true);
 }
 add_action('wp_enqueue_scripts', 'enqueue_login_scripts');
-
+*/
 
 // Enqueue custom CSS and JavaScript for quiz and lesson pages.
 
@@ -148,7 +149,7 @@ function enqueue_quiz_resources() {
     $plugin_url = plugin_dir_url(__FILE__);
 
     // Common CSS files
-    wp_enqueue_style('quiz-result-style', $plugin_url . 'assets/quiz-result.css', [], '1.0', 'all');
+    /*wp_enqueue_style('quiz-result-style', $plugin_url . 'assets/quiz-result.css', [], '1.0', 'all'); */
     wp_enqueue_style('custom-left-div-style', $plugin_url . 'assets/custom-left-div.css', [], '1.0', 'all');
     wp_enqueue_style('woo-tabs-style', $plugin_url . 'assets/woo-tabs.css', [], '1.0', 'all');
 
