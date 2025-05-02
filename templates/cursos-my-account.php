@@ -19,7 +19,7 @@ $user_courses = ld_get_mycourses( $user_id );
 if ( empty( $user_courses ) ) {
     echo '<div class="no-courses">';
     echo '<p>No estás inscrito en ningún curso, visita el catálogo de cursos y una vez que te inscribas en uno podrás verlos en esta sección.</p>';
-    echo '<a href="' . esc_url( home_url( '/cursos' ) ) . '" class="button ver-cursos" style="display: inline-block; font-size: 12px; padding: 10px 20px; background-color: #0073aa; color: #fff; text-decoration: none; border-radius: 5px;">VER CURSOS</a>';
+    echo '<a href="' . esc_url( home_url( '/cursos' ) ) . '" class="button ver-cursos" style="display: inline-block; font-size: 12px; padding: 10px 20px; background-color: black; color: #fff; text-decoration: none; border-radius: 5px;">VER CURSOS</a>';
     echo '</div>';
     return;
 }
